@@ -42,4 +42,28 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function superAdmin(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'super_admin',
+            'is_active' => true,
+        ]);
+    }
+
+    public function editor(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'editor',
+            'is_active' => true,
+        ]);
+    }
+
+    public function inactiveAdmin(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'editor',
+            'is_active' => false,
+        ]);
+    }
 }
