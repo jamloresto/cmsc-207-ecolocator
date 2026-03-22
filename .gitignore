@@ -1,0 +1,24 @@
+# Root Node / PNPM
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+.pnpm/
+
+# pnpm internal state
+.pnpm-workspace-state-v1.json
+.modules.yaml
+
+# Turbo cache
+.turbo/
+
+# Root test
+coverage/
+test-results/
+playwright-report/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
