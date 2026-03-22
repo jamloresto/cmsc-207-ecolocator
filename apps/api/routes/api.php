@@ -1,8 +1,14 @@
 <?php
 
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::prefix('v1')->group(function () {
+    Route::get('/health', function (): JsonResponse {
+        return response()->json([
+            'status' => 'ok',
+            'service' => config('app.name'),
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    });
+});
