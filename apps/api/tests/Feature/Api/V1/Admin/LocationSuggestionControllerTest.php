@@ -208,27 +208,11 @@ class LocationSuggestionControllerTest extends TestCase
     {
         $admin = $this->createSuperAdmin();
 
-        $suggestion = LocationSuggestion::factory()->create([
-            'status' => 'under_review',
-            'location_name' => 'Approved Recycling Center',
-            'country_code' => 'PH',
-            'country_name' => 'Philippines',
-            'state_province' => 'Metro Manila',
-            'state_code' => 'NCR',
-            'city_municipality' => 'Pasay City',
-            'region' => 'National Capital Region',
-            'street_address' => '123 Mabini Street',
-            'address' => '123 Mabini Street',
-            'province' => 'Metro Manila',
-            'postal_code' => '1300',
-            'latitude' => 14.5378,
-            'longitude' => 121.0014,
-            'contact_number' => '09171234567',
-            'location_email' => 'location@example.com',
-            'operating_hours' => 'Mon-Fri 8AM-5PM',
-            'notes' => 'Open for recyclables',
-            'is_active' => true,
-        ]);
+        $suggestion = LocationSuggestion::factory()
+            ->approvable()
+            ->create([
+                'status' => 'pending',
+            ]);
 
         $response = $this->actingAs($admin, 'sanctum')
             ->postJson("/api/v1/admin/location-suggestions/{$suggestion->id}/approve");

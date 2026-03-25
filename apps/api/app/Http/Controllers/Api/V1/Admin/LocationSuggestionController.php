@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ApproveLocationSuggestionRequest;
 use App\Http\Requests\RejectLocationSuggestionRequest;
 use App\Http\Requests\UpdateLocationSuggestionRequest;
 use App\Models\LocationSuggestion;
@@ -10,6 +11,7 @@ use App\Models\WasteCollectionLocation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use OpenApi\Attributes as OA;
 
@@ -195,8 +197,10 @@ class LocationSuggestionController extends Controller
             new OA\Response(response: 422, description: 'Suggestion cannot be approved'),
         ]
     )]
-    public function approve(Request $request, LocationSuggestion $locationSuggestion): JsonResponse
-    {
+    public function approve(
+        ApproveLocationSuggestionRequest $request,
+        LocationSuggestion $locationSuggestion
+    ): JsonResponse {
         if ($locationSuggestion->status === 'approved') {
             return response()->json([
                 'message' => 'Location suggestion is already approved.',
@@ -209,36 +213,73 @@ class LocationSuggestionController extends Controller
             ], 422);
         }
 
-        $missingFields = [];
-
-        if (blank($locationSuggestion->country_code)) {
-            $missingFields[] = 'country_code';
-        }
-
-        if (blank($locationSuggestion->country_name)) {
-            $missingFields[] = 'country_name';
-        }
-
-        if (blank($locationSuggestion->state_province)) {
-            $missingFields[] = 'state_province';
-        }
-
-        if (blank($locationSuggestion->city_municipality)) {
-            $missingFields[] = 'city_municipality';
-        }
-
-        if (blank($locationSuggestion->street_address) && blank($locationSuggestion->address)) {
-            $missingFields[] = 'street_address';
-        }
-
-        if (! empty($missingFields)) {
+        if ($locationSuggestion->status !== 'pending') {
             return response()->json([
-                'message' => 'Location suggestion is missing required approval fields.',
-                'missing_fields' => $missingFields,
+                'message' => 'Only pending suggestions can be approved.',
             ], 422);
         }
 
-        $locationSuggestion = DB::transaction(function () use ($request, $locationSuggestion) {
+        $data = $locationSuggestion->only([
+            'location_name',
+            'country_code',
+            'country_name',
+            'state_province',
+            'state_code',
+            'city_municipality',
+            'region',
+            'street_address',
+            'postal_code',
+            'latitude',
+            'longitude',
+            'contact_number',
+            'location_email',
+            'operating_hours',
+            'notes',
+            'is_active',
+        ]);
+
+        $validator = Validator::make($data, [
+            'location_name' => ['required', 'string', 'max:255'],
+            'country_code' => ['required', 'string', 'size:2'],
+            'country_name' => ['required', 'string', 'max:100'],
+            'state_province' => ['required', 'string', 'max:100'],
+            'state_code' => ['nullable', 'string', 'max:20'],
+            'city_municipality' => ['required', 'string', 'max:100'],
+            'region' => ['nullable', 'string', 'max:100'],
+            'street_address' => ['required', 'string', 'max:255'],
+            'postal_code' => ['nullable', 'string', 'max:20'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'contact_number' => ['nullable', 'string', 'max:50'],
+            'location_email' => ['nullable', 'email', 'max:255'],
+            'operating_hours' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
+            'is_active' => ['nullable', 'boolean'],
+        ], [
+            'location_name.required' => 'Location name is required before approval.',
+            'country_code.required' => 'Country code is required before approval.',
+            'country_code.size' => 'Country code must be exactly 2 characters.',
+            'country_name.required' => 'Country name is required before approval.',
+            'state_province.required' => 'State/Province is required before approval.',
+            'city_municipality.required' => 'City/Municipality is required before approval.',
+            'street_address.required' => 'Street address is required before approval.',
+            'latitude.required' => 'Latitude is required before approval.',
+            'longitude.required' => 'Longitude is required before approval.',
+            'latitude.between' => 'Latitude must be between -90 and 90.',
+            'longitude.between' => 'Longitude must be between -180 and 180.',
+            'location_email.email' => 'Location email must be a valid email address.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        DB::transaction(function () use ($locationSuggestion, $user) {
             $location = WasteCollectionLocation::create([
                 'name' => $locationSuggestion->location_name,
                 'country_code' => $locationSuggestion->country_code,
@@ -246,9 +287,8 @@ class LocationSuggestionController extends Controller
                 'state_province' => $locationSuggestion->state_province,
                 'state_code' => $locationSuggestion->state_code,
                 'city_municipality' => $locationSuggestion->city_municipality,
-                'city_slug' => Str::slug($locationSuggestion->city_municipality),
                 'region' => $locationSuggestion->region,
-                'street_address' => $locationSuggestion->street_address ?? $locationSuggestion->address,
+                'street_address' => $locationSuggestion->street_address,
                 'postal_code' => $locationSuggestion->postal_code,
                 'latitude' => $locationSuggestion->latitude,
                 'longitude' => $locationSuggestion->longitude,
@@ -257,24 +297,27 @@ class LocationSuggestionController extends Controller
                 'operating_hours' => $locationSuggestion->operating_hours,
                 'notes' => $locationSuggestion->notes,
                 'is_active' => $locationSuggestion->is_active ?? true,
-                'created_by' => $request->user()->id,
-                'updated_by' => $request->user()->id,
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
             ]);
 
             $locationSuggestion->update([
                 'status' => 'approved',
-                'reviewed_at' => $locationSuggestion->reviewed_at ?? now(),
+                'approved_by' => $user->id,
                 'approved_at' => now(),
-                'approved_by' => $request->user()->id,
+                'reviewed_at' => now(),
                 'waste_collection_location_id' => $location->id,
             ]);
-
-            return $locationSuggestion->fresh();
         });
+
+        $locationSuggestion->refresh();
 
         return response()->json([
             'message' => 'Location suggestion approved successfully.',
-            'data' => $locationSuggestion,
+            'data' => [
+                'id' => $locationSuggestion->id,
+                'status' => $locationSuggestion->status,
+            ],
         ]);
     }
 
