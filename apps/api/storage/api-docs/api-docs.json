@@ -478,6 +478,160 @@
                 ]
             }
         },
+        "/api/v1/admin/material-types": {
+            "post": {
+                "tags": [
+                    "Admin Material Types"
+                ],
+                "summary": "Create a material type",
+                "operationId": "cd0b0ae7836a6c168aec8b1c32ca2700",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Plastic"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Plastic bottles and containers",
+                                        "nullable": true
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Material type created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/material-types/{id}": {
+            "put": {
+                "tags": [
+                    "Admin Material Types"
+                ],
+                "summary": "Update a material type",
+                "operationId": "ae5f748727379f88a5ea07f16fa6d18a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Plastic"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated description",
+                                        "nullable": true
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Material type updated successfully"
+                    },
+                    "404": {
+                        "description": "Material type not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Material Types"
+                ],
+                "summary": "Delete a material type",
+                "operationId": "468a47f4e6276f1367f83cd21e2eca52",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Material type deleted successfully"
+                    },
+                    "404": {
+                        "description": "Material type not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/admin/locations": {
             "get": {
                 "tags": [
@@ -919,6 +1073,48 @@
                 ]
             }
         },
+        "/api/v1/material-types": {
+            "get": {
+                "tags": [
+                    "Public Material Types"
+                ],
+                "summary": "List all active material types",
+                "operationId": "37f82f27d1057d2b49763c07e073b471",
+                "responses": {
+                    "200": {
+                        "description": "Material types retrieved successfully"
+                    }
+                }
+            }
+        },
+        "/api/v1/material-types/{id}": {
+            "get": {
+                "tags": [
+                    "Public Material Types"
+                ],
+                "summary": "Get a single active material type",
+                "operationId": "33ee8ed08c37436fb66edc83559af75c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Material type retrieved successfully"
+                    },
+                    "404": {
+                        "description": "Material type not found"
+                    }
+                }
+            }
+        },
         "/api/v1/locations": {
             "get": {
                 "tags": [
@@ -1056,8 +1252,16 @@
             "description": "Admin Auth"
         },
         {
+            "name": "Admin Material Types",
+            "description": "Admin Material Types"
+        },
+        {
             "name": "Admin Locations",
             "description": "Admin Locations"
+        },
+        {
+            "name": "Public Material Types",
+            "description": "Public Material Types"
         },
         {
             "name": "Public Locations",
