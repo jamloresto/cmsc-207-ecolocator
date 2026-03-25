@@ -50,4 +50,30 @@ class LocationSuggestionFactory extends Factory
             'user_agent' => fake()->userAgent(),
         ];
     }
+
+    public function approvable(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'location_name' => 'Approved Recycling Center',
+            'country_code' => 'PH',
+            'country_name' => 'Philippines',
+            'state_province' => 'Metro Manila',
+            'state_code' => 'NCR',
+            'city_municipality' => 'Pasay City',
+            'region' => 'National Capital Region',
+            'street_address' => '123 Mabini Street',
+            'address' => '123 Mabini Street, Pasay City, Metro Manila',
+            'province' => 'Metro Manila',
+            'postal_code' => '1300',
+            'latitude' => 14.5378,
+            'longitude' => 120.9991,
+            'contact_number' => '09171234567',
+            'location_email' => 'location@example.com',
+            'operating_hours' => 'Mon-Fri 8AM-5PM',
+            'materials_accepted' => 'Plastic, paper, e-waste',
+            'notes' => 'Open for recyclable drop-offs.',
+            'is_active' => true,
+            'status' => 'pending',
+        ]);
+    }
 }
