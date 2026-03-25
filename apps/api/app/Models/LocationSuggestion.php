@@ -13,13 +13,23 @@ class LocationSuggestion extends Model
         'name',
         'email',
         'contact_info',
+
         'location_name',
-        'address',
+        'country_code',
+        'country_name',
+        'state_province',
+        'state_code',
         'city_municipality',
+        'region',
+        'street_address',
+        'address',
         'province',
         'postal_code',
         'latitude',
         'longitude',
+        'contact_number',
+        'location_email',
+        'operating_hours',
         'materials_accepted',
         'notes',
         'review_notes',
@@ -30,6 +40,7 @@ class LocationSuggestion extends Model
         'approved_by',
         'rejected_by',
         'waste_collection_location_id',
+        'is_active',
         'ip_address',
         'user_agent',
     ];
@@ -42,6 +53,7 @@ class LocationSuggestion extends Model
             'reviewed_at' => 'datetime',
             'approved_at' => 'datetime',
             'rejected_at' => 'datetime',
+            'is_active' => 'boolean',
         ];
     }
 
