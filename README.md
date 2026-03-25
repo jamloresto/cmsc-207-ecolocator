@@ -201,7 +201,7 @@ Access documentation: http://127.0.0.1:8000/api/documentation
 If using Docker:
 
 ```bash
-docker compose -f infra/docker/docker-compose.yml up -d
+docker compose -f infra/ecolocator/docker-compose.yml up -d
 ```
 
 ---
