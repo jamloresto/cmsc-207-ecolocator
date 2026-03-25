@@ -9,6 +9,8 @@ use App\Models\LocationSuggestion;
 use App\Models\WasteCollectionLocation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(
@@ -207,27 +209,72 @@ class LocationSuggestionController extends Controller
             ], 422);
         }
 
-        $location = WasteCollectionLocation::create([
-            'name' => $locationSuggestion->location_name,
-            'address' => $locationSuggestion->address,
-            'city_municipality' => $locationSuggestion->city_municipality,
-            'province' => $locationSuggestion->province,
-            'postal_code' => $locationSuggestion->postal_code,
-            'latitude' => $locationSuggestion->latitude,
-            'longitude' => $locationSuggestion->longitude,
-        ]);
+        $missingFields = [];
 
-        $locationSuggestion->update([
-            'status' => 'approved',
-            'reviewed_at' => $locationSuggestion->reviewed_at ?? now(),
-            'approved_at' => now(),
-            'approved_by' => $request->user()->id,
-            'waste_collection_location_id' => $location->id,
-        ]);
+        if (blank($locationSuggestion->country_code)) {
+            $missingFields[] = 'country_code';
+        }
+
+        if (blank($locationSuggestion->country_name)) {
+            $missingFields[] = 'country_name';
+        }
+
+        if (blank($locationSuggestion->state_province)) {
+            $missingFields[] = 'state_province';
+        }
+
+        if (blank($locationSuggestion->city_municipality)) {
+            $missingFields[] = 'city_municipality';
+        }
+
+        if (blank($locationSuggestion->street_address) && blank($locationSuggestion->address)) {
+            $missingFields[] = 'street_address';
+        }
+
+        if (! empty($missingFields)) {
+            return response()->json([
+                'message' => 'Location suggestion is missing required approval fields.',
+                'missing_fields' => $missingFields,
+            ], 422);
+        }
+
+        $locationSuggestion = DB::transaction(function () use ($request, $locationSuggestion) {
+            $location = WasteCollectionLocation::create([
+                'name' => $locationSuggestion->location_name,
+                'country_code' => $locationSuggestion->country_code,
+                'country_name' => $locationSuggestion->country_name,
+                'state_province' => $locationSuggestion->state_province,
+                'state_code' => $locationSuggestion->state_code,
+                'city_municipality' => $locationSuggestion->city_municipality,
+                'city_slug' => Str::slug($locationSuggestion->city_municipality),
+                'region' => $locationSuggestion->region,
+                'street_address' => $locationSuggestion->street_address ?? $locationSuggestion->address,
+                'postal_code' => $locationSuggestion->postal_code,
+                'latitude' => $locationSuggestion->latitude,
+                'longitude' => $locationSuggestion->longitude,
+                'contact_number' => $locationSuggestion->contact_number,
+                'email' => $locationSuggestion->location_email,
+                'operating_hours' => $locationSuggestion->operating_hours,
+                'notes' => $locationSuggestion->notes,
+                'is_active' => $locationSuggestion->is_active ?? true,
+                'created_by' => $request->user()->id,
+                'updated_by' => $request->user()->id,
+            ]);
+
+            $locationSuggestion->update([
+                'status' => 'approved',
+                'reviewed_at' => $locationSuggestion->reviewed_at ?? now(),
+                'approved_at' => now(),
+                'approved_by' => $request->user()->id,
+                'waste_collection_location_id' => $location->id,
+            ]);
+
+            return $locationSuggestion->fresh();
+        });
 
         return response()->json([
             'message' => 'Location suggestion approved successfully.',
-            'data' => $locationSuggestion->fresh(),
+            'data' => $locationSuggestion,
         ]);
     }
 

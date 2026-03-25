@@ -47,7 +47,7 @@ class AdminLocationTest extends TestCase
             ->assertJsonPath('data.name', 'Barangay Recycling Center')
             ->assertJsonPath('data.city_slug', 'davao-city');
 
-        $this->assertDatabaseHas('waste_collection_location', [
+        $this->assertDatabaseHas('waste_collection_locations', [
             'name' => 'Barangay Recycling Center',
             'city_slug' => 'davao-city',
         ]);
@@ -87,7 +87,7 @@ class AdminLocationTest extends TestCase
 
         $response->assertOk();
 
-        $this->assertDatabaseMissing('waste_collection_location', [
+        $this->assertDatabaseMissing('waste_collection_locations', [
             'id' => $location->id,
         ]);
     }
