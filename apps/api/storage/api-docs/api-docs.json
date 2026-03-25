@@ -478,6 +478,172 @@
                 ]
             }
         },
+        "/api/v1/admin/contact-messages": {
+            "get": {
+                "tags": [
+                    "Admin Contact Messages"
+                ],
+                "summary": "List contact messages",
+                "operationId": "ac5a5d48bca4c3ed3f5296cd632f37f5",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "new",
+                                "read",
+                                "replied",
+                                "archived"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Contact messages retrieved successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/contact-messages/{id}": {
+            "get": {
+                "tags": [
+                    "Admin Contact Messages"
+                ],
+                "summary": "Get contact message details",
+                "operationId": "3d1bfcd00c3d50785d38383a6b937f46",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Contact message retrieved successfully"
+                    },
+                    "404": {
+                        "description": "Contact message not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Contact Messages"
+                ],
+                "summary": "Delete contact message",
+                "operationId": "f51f874ac378099c47c47f4c3c92d5e0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Contact message deleted successfully"
+                    },
+                    "404": {
+                        "description": "Contact message not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/contact-messages/{id}/status": {
+            "patch": {
+                "tags": [
+                    "Admin Contact Messages"
+                ],
+                "summary": "Update contact message status",
+                "operationId": "bb23030592d67af5b8707d4734dbe666",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "replied",
+                                        "enum": [
+                                            "new",
+                                            "read",
+                                            "replied",
+                                            "archived"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Contact message status updated successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Contact message not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/v1/admin/material-types": {
             "post": {
                 "tags": [
@@ -1073,6 +1239,62 @@
                 ]
             }
         },
+        "/api/v1/contact": {
+            "post": {
+                "tags": [
+                    "Public Contact Messages"
+                ],
+                "summary": "Submit contact form",
+                "operationId": "ad64f1637cf689b57095cc8602b61f7c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "subject",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Juan Dela Cruz"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@example.com"
+                                    },
+                                    "contact_info": {
+                                        "type": "string",
+                                        "example": "+639171234567"
+                                    },
+                                    "subject": {
+                                        "type": "string",
+                                        "example": "Inquiry about recycling center"
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Hello, I would like to ask about the nearest e-waste drop-off center."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Contact message submitted successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
         "/api/v1/material-types": {
             "get": {
                 "tags": [
@@ -1243,6 +1465,14 @@
         }
     },
     "tags": [
+        {
+            "name": "Admin Contact Messages",
+            "description": "Admin management for contact messages"
+        },
+        {
+            "name": "Public Contact Messages",
+            "description": "Public contact form submission endpoints"
+        },
         {
             "name": "Admin Users",
             "description": "Admin Users"
