@@ -49,8 +49,11 @@ Route::prefix('v1')->group(function () {
         
             Route::get('/location-suggestions', [LocationSuggestionController::class, 'index']);
             Route::get('/location-suggestions/{locationSuggestion}', [LocationSuggestionController::class, 'show']);
-            Route::patch('/location-suggestions/{locationSuggestion}/status', [LocationSuggestionController::class, 'updateStatus']);
+            Route::patch('/location-suggestions/{locationSuggestion}', [LocationSuggestionController::class, 'update']);
+            Route::post('/location-suggestions/{locationSuggestion}/approve', [LocationSuggestionController::class, 'approve']);
+            Route::post('/location-suggestions/{locationSuggestion}/reject', [LocationSuggestionController::class, 'reject']);
             Route::delete('/location-suggestions/{locationSuggestion}', [LocationSuggestionController::class, 'destroy']);
+        
 
             Route::middleware('role:super_admin')->group(function () {
                 Route::apiResource('users', AdminUserController::class);
