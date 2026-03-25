@@ -18,8 +18,41 @@ To promote sustainable waste management by making recycling locations accessible
 
 - 📍 Database of recycling centers with detailed location information  
 - 🔍 Search by location or material type (e.g., batteries, plastic, papers)
-- 📬 Simple contact form for inquiries 
-- 🔐 Admin dashboard for managing locations and data  
+- 📬 Contact form for inquiries
+- 📝 Public location suggestion system (users can suggest new recycling locations)
+- 🛠️ Admin review workflow for location suggestions:
+  - Review and edit submitted data
+  - Approve → automatically creates a verified location
+  - Reject with review notes
+- 🔐 Role-based admin dashboard (Super Admin & Editor) 
+
+---
+
+## 🧠 Location Suggestion Workflow
+
+EcoLocator implements a structured moderation system for adding new locations:
+
+1. **Public Submission**
+   - Users submit suggested recycling locations via API
+   - Only basic information is required
+
+2. **Admin Review**
+   - Admins (Super Admin / Editor) can:
+     - View all suggestions
+     - Edit and enrich data (e.g., country, region, contact info)
+     - Add review notes
+
+3. **Approval Process**
+   - Once approved:
+     - A new record is created in `waste_collection_locations`
+     - Suggestion is marked as `approved`
+   - If rejected:
+     - Suggestion is marked as `rejected`
+     - Admin provides reason via `review_notes`
+
+4. **Data Integrity**
+   - Approval requires required fields (e.g., country_code, state_province)
+   - Ensures only clean, verified data enters the main database
 
 ---
 
@@ -40,6 +73,23 @@ This project uses a **monorepo setup**:
 - `pnpm-workspace.yaml`
 - `turbo.json`
 
+---
+
+## 🧰 Tech Stack
+
+### Backend
+- Laravel (PHP)
+- MySQL
+- Laravel Sanctum (authentication)
+- OpenAPI (Swagger) for API documentation
+
+### Frontend
+- Next.js
+- Tailwind CSS
+
+### Dev Tools
+- Docker (optional)
+- PNPM (monorepo management)
 ---
 
 ## ⚙️ Requirements
@@ -211,8 +261,15 @@ docker compose -f infra/ecolocator/docker-compose.yml up -d
 - `node_modules` is **not included** in the repository → run `pnpm install`
 - `.env` is **not included** → copy from `.env.example`
 - Database must be **manually created** before running migrations
-- Public users can access locations without authentication
-- Admin routes require authentication (role-based)
+- Public users can:
+  - View locations
+  - Submit contact forms
+  - Suggest new locations
+- Admin users (Super Admin / Editor) can:
+  - Manage waste collection locations
+  - Review, edit, approve, or reject location suggestions
+- Location suggestions go through a **review + approval workflow**
+  before becoming official locations
 
 ---
 
