@@ -660,11 +660,35 @@
                             "type": "string",
                             "enum": [
                                 "pending",
-                                "reviewed",
+                                "under_review",
                                 "approved",
                                 "rejected",
                                 "archived"
                             ]
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "province",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city_municipality",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -737,10 +761,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Deleted successfully"
-                    },
-                    "404": {
-                        "description": "Not found"
+                        "description": "Location suggestion deleted successfully"
                     }
                 },
                 "security": [
@@ -748,15 +769,13 @@
                         "sanctum": []
                     }
                 ]
-            }
-        },
-        "/api/v1/admin/location-suggestions/{id}/status": {
+            },
             "patch": {
                 "tags": [
                     "Admin Location Suggestions"
                 ],
-                "summary": "Update location suggestion status",
-                "operationId": "a66ab5676ff1bd800196b34828d9fa35",
+                "summary": "Update location suggestion before approval",
+                "operationId": "9bd20a8b8e9c103d66c1b0c9b57a9860",
                 "parameters": [
                     {
                         "name": "id",
@@ -773,20 +792,61 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "status"
-                                ],
                                 "properties": {
-                                    "status": {
+                                    "name": {
                                         "type": "string",
-                                        "example": "approved",
-                                        "enum": [
-                                            "pending",
-                                            "reviewed",
-                                            "approved",
-                                            "rejected",
-                                            "archived"
-                                        ]
+                                        "example": "Juan Dela Cruz"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@example.com"
+                                    },
+                                    "contact_info": {
+                                        "type": "string",
+                                        "example": "09171234567"
+                                    },
+                                    "location_name": {
+                                        "type": "string",
+                                        "example": "Barangay Green Recycling Center"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Mabini Street"
+                                    },
+                                    "city_municipality": {
+                                        "type": "string",
+                                        "example": "Pasay City"
+                                    },
+                                    "province": {
+                                        "type": "string",
+                                        "example": "Metro Manila"
+                                    },
+                                    "postal_code": {
+                                        "type": "string",
+                                        "example": "1300"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 14.5378
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 121.0014
+                                    },
+                                    "materials_accepted": {
+                                        "type": "string",
+                                        "example": "Plastic, paper, e-waste"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Open every Saturday morning"
+                                    },
+                                    "review_notes": {
+                                        "type": "string",
+                                        "example": "Verified address and corrected location name"
                                     }
                                 },
                                 "type": "object"
@@ -796,10 +856,92 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Status updated successfully"
+                        "description": "Location suggestion updated successfully"
                     },
                     "422": {
                         "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/location-suggestions/{id}/approve": {
+            "post": {
+                "tags": [
+                    "Admin Location Suggestions"
+                ],
+                "summary": "Approve location suggestion",
+                "operationId": "6670868f5470bfd09885f7fee36cb7d2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Location suggestion approved successfully"
+                    },
+                    "422": {
+                        "description": "Suggestion cannot be approved"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/location-suggestions/{id}/reject": {
+            "post": {
+                "tags": [
+                    "Admin Location Suggestions"
+                ],
+                "summary": "Reject location suggestion",
+                "operationId": "89be1ed8ff3825a0c66430961cb23940",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "review_notes": {
+                                        "type": "string",
+                                        "example": "Insufficient location details"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Location suggestion rejected successfully"
+                    },
+                    "422": {
+                        "description": "Suggestion cannot be rejected"
                     }
                 },
                 "security": [

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateLocationSuggestionStatusRequest extends FormRequest
+class RejectLocationSuggestionRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,7 +14,7 @@ class UpdateLocationSuggestionStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', 'in:pending,reviewed,approved,rejected,archived'],
+            'review_notes' => ['nullable', 'string', 'max:5000'],
         ];
     }
 }
