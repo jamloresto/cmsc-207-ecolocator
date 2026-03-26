@@ -26,7 +26,42 @@ class ContactMessageController extends Controller
                 in: 'query',
                 required: false,
                 schema: new OA\Schema(type: 'string', enum: ['new', 'read', 'replied', 'archived'])
-            )
+            ),
+            new OA\Parameter(
+                name: 'search',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string'),
+                example: 'juan'
+            ),
+            new OA\Parameter(
+                name: 'date_from',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date'),
+                example: '2026-03-01'
+            ),
+            new OA\Parameter(
+                name: 'date_to',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date'),
+                example: '2026-03-31'
+            ),
+            new OA\Parameter(
+                name: 'sort_by',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string'),
+                example: 'created_at'
+            ),
+            new OA\Parameter(
+                name: 'sort_order',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', enum: ['asc', 'desc']),
+                example: 'desc'
+            ),
         ],
         responses: [
             new OA\Response(
@@ -45,13 +80,54 @@ class ContactMessageController extends Controller
     )]
     public function index(Request $request): JsonResponse
     {
-        $query = ContactMessage::query()->latest();
+        $query = ContactMessage::query();
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->string('status'));
+        // SEARCH (name, email, subject)
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('subject', 'like', "%{$search}%");
+            });
         }
 
-        $messages = $query->paginate(10);
+        // FILTER BY STATUS
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // DATE RANGE
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // SORTING
+        $allowedSortFields = [
+            'created_at',
+            'updated_at',
+            'status',
+            'name',
+            'email',
+            'subject',
+        ];
+
+        $sortBy = in_array($request->get('sort_by'), $allowedSortFields)
+            ? $request->get('sort_by')
+            : 'created_at';
+
+        $sortOrder = in_array(strtolower($request->get('sort_order')), ['asc', 'desc'])
+            ? strtolower($request->get('sort_order'))
+            : 'desc';
+
+        $messages = $query
+            ->orderBy($sortBy, $sortOrder)
+            ->paginate($request->integer('per_page', 10));
 
         return response()->json($messages);
     }
