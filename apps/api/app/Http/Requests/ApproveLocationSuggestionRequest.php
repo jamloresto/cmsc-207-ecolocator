@@ -10,7 +10,7 @@ class ApproveLocationSuggestionRequest extends FormRequest
     {
         $user = $this->user();
 
-        return $user && $user->isSuperAdmin();
+        return $user && $user->hasAdminAccess();
     }
 
     public function rules(): array
