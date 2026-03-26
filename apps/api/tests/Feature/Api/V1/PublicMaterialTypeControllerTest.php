@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\V1;
 
 use App\Models\MaterialType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class PublicMaterialTypeApiTest extends TestCase
+class PublicMaterialTypeControllerTest extends TestCase
 {
     use RefreshDatabase;
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\V1;
 
 use App\Models\MaterialType;
 use App\Models\WasteCollectionLocation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class PublicLocationTest extends TestCase
+class PublicWasteCollectionLocationControllerTest extends TestCase
 {
     use RefreshDatabase;
 

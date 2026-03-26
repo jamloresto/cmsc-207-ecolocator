@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Api\V1;
 
 use App\Models\ContactMessage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class PublicContactMessageTest extends TestCase
+class PublicContactMessageControllerTest extends TestCase
 {
     use RefreshDatabase;
 
