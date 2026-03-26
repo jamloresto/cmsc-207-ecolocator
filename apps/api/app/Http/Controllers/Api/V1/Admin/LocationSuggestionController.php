@@ -7,6 +7,7 @@ use App\Http\Requests\ApproveLocationSuggestionRequest;
 use App\Http\Requests\RejectLocationSuggestionRequest;
 use App\Http\Requests\UpdateLocationSuggestionRequest;
 use App\Models\LocationSuggestion;
+use App\Models\MaterialType;
 use App\Models\WasteCollectionLocation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -280,6 +281,21 @@ class LocationSuggestionController extends Controller
         $user = $request->user();
 
         DB::transaction(function () use ($locationSuggestion, $user) {
+            $materials = $this->parseMaterialsAccepted($locationSuggestion->materials_accepted);
+            $materialTypeIds = $this->resolveMaterialTypeIds($materials);
+
+            $uniqueMaterialSlugs = collect($materials)
+                ->map(fn ($item) => Str::slug($item))
+                ->unique()
+                ->values()
+                ->all();
+
+            if (count($uniqueMaterialSlugs) !== count($materialTypeIds)) {
+                abort(response()->json([
+                    'message' => 'Some suggested materials do not match official material types. Please review before approval.',
+                ], 422));
+            }
+
             $location = WasteCollectionLocation::create([
                 'name' => $locationSuggestion->location_name,
                 'country_code' => $locationSuggestion->country_code,
@@ -301,6 +317,8 @@ class LocationSuggestionController extends Controller
                 'updated_by' => $user->id,
             ]);
 
+            $location->materialTypes()->sync($materialTypeIds);
+
             $locationSuggestion->update([
                 'status' => 'approved',
                 'approved_by' => $user->id,
@@ -319,6 +337,55 @@ class LocationSuggestionController extends Controller
                 'status' => $locationSuggestion->status,
             ],
         ]);
+    }
+
+    private function parseMaterialsAccepted(mixed $materialsAccepted): array
+    {
+        if (is_array($materialsAccepted)) {
+            return collect($materialsAccepted)
+                ->map(fn ($item) => trim((string) $item))
+                ->filter()
+                ->values()
+                ->all();
+        }
+
+        if (is_string($materialsAccepted)) {
+            $decoded = json_decode($materialsAccepted, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return collect($decoded)
+                    ->map(fn ($item) => trim((string) $item))
+                    ->filter()
+                    ->values()
+                    ->all();
+            }
+
+            return collect(explode(',', $materialsAccepted))
+                ->map(fn ($item) => trim((string) $item))
+                ->filter()
+                ->values()
+                ->all();
+        }
+
+        return [];
+    }
+
+    private function resolveMaterialTypeIds(array $materials): array
+    {
+        if (empty($materials)) {
+            return [];
+        }
+
+        $slugs = collect($materials)
+            ->map(fn ($item) => Str::slug($item))
+            ->filter()
+            ->values()
+            ->all();
+
+        return MaterialType::query()
+            ->whereIn('slug', $slugs)
+            ->pluck('id')
+            ->all();
     }
 
     #[OA\Post(
