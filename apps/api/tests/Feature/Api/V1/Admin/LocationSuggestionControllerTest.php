@@ -3,7 +3,9 @@
 namespace Tests\Feature\Api\V1\Admin;
 
 use App\Models\LocationSuggestion;
+use App\Models\MaterialType;
 use App\Models\User;
+use App\Models\WasteCollectionLocation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -208,6 +210,21 @@ class LocationSuggestionControllerTest extends TestCase
     {
         $admin = $this->createSuperAdmin();
 
+        MaterialType::factory()->create([
+            'name' => 'Plastic',
+            'slug' => 'plastic',
+        ]);
+
+        MaterialType::factory()->create([
+            'name' => 'Paper',
+            'slug' => 'paper',
+        ]);
+
+        MaterialType::factory()->create([
+            'name' => 'E-waste',
+            'slug' => 'e-waste',
+        ]);
+
         $suggestion = LocationSuggestion::factory()
             ->approvable()
             ->create([
@@ -228,28 +245,10 @@ class LocationSuggestionControllerTest extends TestCase
 
         $suggestion->refresh();
 
+        $this->assertEquals('approved', $suggestion->status);
         $this->assertNotNull($suggestion->approved_at);
         $this->assertEquals($admin->id, $suggestion->approved_by);
         $this->assertNotNull($suggestion->waste_collection_location_id);
-
-        $this->assertDatabaseHas('waste_collection_locations', [
-            'id' => $suggestion->waste_collection_location_id,
-            'name' => 'Approved Recycling Center',
-            'country_code' => 'PH',
-            'country_name' => 'Philippines',
-            'state_province' => 'Metro Manila',
-            'city_municipality' => 'Pasay City',
-            'city_slug' => 'pasay-city',
-            'region' => 'National Capital Region',
-            'street_address' => '123 Mabini Street',
-            'postal_code' => '1300',
-            'contact_number' => '09171234567',
-            'email' => 'location@example.com',
-            'operating_hours' => 'Mon-Fri 8AM-5PM',
-            'is_active' => 1,
-            'created_by' => $admin->id,
-            'updated_by' => $admin->id,
-        ]);
     }
 
     public function test_admin_cannot_approve_already_approved_suggestion(): void
@@ -372,5 +371,165 @@ class LocationSuggestionControllerTest extends TestCase
             ->getJson('/api/v1/admin/location-suggestions');
 
         $response->assertOk();
+    }
+
+    public function test_super_admin_can_approve_suggestion_and_attach_material_types(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        $plastic = MaterialType::factory()->create([
+            'name' => 'Plastic',
+            'slug' => 'plastic',
+        ]);
+
+        $paper = MaterialType::factory()->create([
+            'name' => 'Paper',
+            'slug' => 'paper',
+        ]);
+
+        $suggestion = LocationSuggestion::factory()->create([
+            'status' => 'pending',
+            'location_name' => 'Green Earth Recycling Center',
+            'country_code' => 'PH',
+            'country_name' => 'Philippines',
+            'state_province' => 'Metro Manila',
+            'state_code' => 'NCR',
+            'city_municipality' => 'Quezon City',
+            'region' => 'National Capital Region',
+            'street_address' => '123 Eco St.',
+            'postal_code' => '1100',
+            'latitude' => 14.6760,
+            'longitude' => 121.0437,
+            'contact_number' => '09171234567',
+            'location_email' => 'greenearth@example.com',
+            'operating_hours' => '8:00 AM - 5:00 PM',
+            'notes' => 'Accepts recyclable materials',
+            'is_active' => true,
+            'materials_accepted' => json_encode(['Plastic', 'Paper']),
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->postJson("/api/v1/admin/location-suggestions/{$suggestion->id}/approve");
+
+        $response->assertOk()
+            ->assertJson([
+                'message' => 'Location suggestion approved successfully.',
+                'data' => [
+                    'id' => $suggestion->id,
+                    'status' => 'approved',
+                ],
+            ]);
+
+        $suggestion->refresh();
+
+        $this->assertEquals('approved', $suggestion->status);
+        $this->assertNotNull($suggestion->approved_at);
+        $this->assertEquals($admin->id, $suggestion->approved_by);
+        $this->assertNotNull($suggestion->waste_collection_location_id);
+
+        $location = WasteCollectionLocation::find($suggestion->waste_collection_location_id);
+
+        $this->assertNotNull($location);
+
+        $this->assertDatabaseHas('location_material_type', [
+            'waste_collection_location_id' => $location->id,
+            'material_type_id' => $plastic->id,
+        ]);
+
+        $this->assertDatabaseHas('location_material_type', [
+            'waste_collection_location_id' => $location->id,
+            'material_type_id' => $paper->id,
+        ]);
+    }
+
+    public function test_approval_fails_when_one_material_does_not_exist(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        MaterialType::factory()->create([
+            'name' => 'Plastic',
+            'slug' => 'plastic',
+        ]);
+
+        $suggestion = LocationSuggestion::factory()->create([
+            'status' => 'pending',
+            'location_name' => 'Green Earth Recycling Center',
+            'country_code' => 'PH',
+            'country_name' => 'Philippines',
+            'state_province' => 'Metro Manila',
+            'state_code' => 'NCR',
+            'city_municipality' => 'Quezon City',
+            'region' => 'National Capital Region',
+            'street_address' => '123 Eco St.',
+            'postal_code' => '1100',
+            'latitude' => 14.6760,
+            'longitude' => 121.0437,
+            'contact_number' => '09171234567',
+            'location_email' => 'greenearth@example.com',
+            'operating_hours' => '8:00 AM - 5:00 PM',
+            'notes' => 'Accepts recyclable materials',
+            'is_active' => true,
+            'materials_accepted' => json_encode(['Plastic', 'Unknown Material']),
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->postJson("/api/v1/admin/location-suggestions/{$suggestion->id}/approve");
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'message' => 'Some suggested materials do not match official material types. Please review before approval.',
+            ]);
+
+        $suggestion->refresh();
+
+        $this->assertEquals('pending', $suggestion->status);
+        $this->assertNull($suggestion->approved_at);
+        $this->assertNull($suggestion->approved_by);
+        $this->assertNull($suggestion->waste_collection_location_id);
+
+        $this->assertDatabaseMissing('waste_collection_locations', [
+            'name' => 'Green Earth Recycling Center',
+        ]);
+    }
+
+    public function test_suggestion_remains_pending_when_material_mapping_fails(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        $suggestion = LocationSuggestion::factory()->create([
+            'status' => 'pending',
+            'location_name' => 'Eco Dropoff Hub',
+            'country_code' => 'PH',
+            'country_name' => 'Philippines',
+            'state_province' => 'Metro Manila',
+            'state_code' => 'NCR',
+            'city_municipality' => 'Pasig',
+            'region' => 'National Capital Region',
+            'street_address' => '456 Recycle Ave.',
+            'postal_code' => '1600',
+            'latitude' => 14.5764,
+            'longitude' => 121.0851,
+            'contact_number' => '09981234567',
+            'location_email' => 'ecohub@example.com',
+            'operating_hours' => '9:00 AM - 6:00 PM',
+            'notes' => 'Community dropoff point',
+            'is_active' => true,
+            'materials_accepted' => json_encode(['Nonexistent Material']),
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->postJson("/api/v1/admin/location-suggestions/{$suggestion->id}/approve");
+
+        $response->assertStatus(422);
+
+        $suggestion->refresh();
+
+        $this->assertEquals('pending', $suggestion->status);
+        $this->assertNull($suggestion->approved_at);
+        $this->assertNull($suggestion->approved_by);
+        $this->assertNull($suggestion->waste_collection_location_id);
+
+        $this->assertDatabaseCount('waste_collection_locations', 0);
+        $this->assertDatabaseCount('location_material_type', 0);
     }
 }
