@@ -29,10 +29,11 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/material-types', [PublicMaterialTypeController::class, 'index']);
     Route::get('/material-types/{id}', [PublicMaterialTypeController::class, 'show']);
-
-    Route::post('/contact-messages', [PublicContactMessageController::class, 'store']);
-    Route::post('/location-suggestions', [PublicLocationSuggestionController::class, 'store']);
-
+    Route::post('/contact-messages', [PublicContactMessageController::class, 'store'])
+        ->middleware('throttle:public-contact');
+    Route::post('/location-suggestions', [PublicLocationSuggestionController::class, 'store'])
+        ->middleware('throttle:public-suggestions');;
+    
     Route::prefix('admin')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
 

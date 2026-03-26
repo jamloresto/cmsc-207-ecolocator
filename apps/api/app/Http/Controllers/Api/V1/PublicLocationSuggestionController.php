@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
 
 #[OA\Tag(
     name: 'Public Location Suggestions',
-    description: 'Public endpoints for suggesting new waste collection locations'
+    description: 'Public endpoints for suggesting new waste collection locations. Rate limited to 5 requests per minute per IP address.'
 )]
 class PublicLocationSuggestionController extends Controller
 {
@@ -41,6 +41,7 @@ class PublicLocationSuggestionController extends Controller
         responses: [
             new OA\Response(response: 201, description: 'Location suggestion submitted successfully'),
             new OA\Response(response: 422, description: 'Validation error'),
+            new OA\Response(response: 429, description: 'Too many requests')
         ]
     )]
     public function store(StoreLocationSuggestionRequest $request): JsonResponse
