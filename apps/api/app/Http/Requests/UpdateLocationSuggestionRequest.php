@@ -8,7 +8,9 @@ class UpdateLocationSuggestionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+
+        return $user && $user->hasAdminAccess();
     }
 
     public function rules(): array
