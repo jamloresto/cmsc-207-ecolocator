@@ -5,7 +5,7 @@ namespace Tests\Feature\Api\V1;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class PublicLocationSuggestionTest extends TestCase
+class PublicLocationSuggestionControllerTest extends TestCase
 {
     use RefreshDatabase;
 

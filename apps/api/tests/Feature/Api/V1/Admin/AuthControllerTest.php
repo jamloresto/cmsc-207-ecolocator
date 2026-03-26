@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Tests\Feature\Api\Admin\V1\Admin;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
-class AdminAuthTest extends TestCase
+class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
