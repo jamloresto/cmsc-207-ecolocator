@@ -17,6 +17,7 @@ class PublicContactMessageController extends Controller
     #[OA\Post(
         path: '/api/v1/contact',
         summary: 'Submit contact form',
+        description: 'Public endpoint for submitting contact messages. Rate limited to 5 requests per minute per IP address.',
         tags: ['Public Contact Messages'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -39,6 +40,10 @@ class PublicContactMessageController extends Controller
             new OA\Response(
                 response: 422,
                 description: 'Validation error'
+            ),
+            new OA\Response(
+                response: 429,
+                description: 'Too many requests'
             )
         ]
     )]
