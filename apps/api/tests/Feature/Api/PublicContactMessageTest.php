@@ -20,7 +20,7 @@ class PublicContactMessageTest extends TestCase
             'message' => 'I would like to ask about the nearest recycling center.',
         ];
 
-        $response = $this->postJson('/api/v1/contact', $payload);
+        $response = $this->postJson('/api/v1/contact-messages', $payload);
 
         $response->assertCreated()
             ->assertJson([
@@ -45,7 +45,7 @@ class PublicContactMessageTest extends TestCase
 
     public function test_public_submission_requires_required_fields(): void
     {
-        $response = $this->postJson('/api/v1/contact', []);
+        $response = $this->postJson('/api/v1/contact-messages', []);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors([
@@ -66,7 +66,7 @@ class PublicContactMessageTest extends TestCase
             'message' => 'Test message',
         ];
 
-        $response = $this->postJson('/api/v1/contact', $payload);
+        $response = $this->postJson('/api/v1/contact-messages', $payload);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['email']);
