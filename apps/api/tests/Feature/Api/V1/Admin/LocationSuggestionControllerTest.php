@@ -532,4 +532,230 @@ class LocationSuggestionControllerTest extends TestCase
         $this->assertDatabaseCount('waste_collection_locations', 0);
         $this->assertDatabaseCount('location_material_type', 0);
     }
+
+    public function test_super_admin_can_filter_location_suggestions_by_status(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        LocationSuggestion::factory()->create([
+            'status' => 'pending',
+            'location_name' => 'Pending Location',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'status' => 'approved',
+            'location_name' => 'Approved Location',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'status' => 'rejected',
+            'location_name' => 'Rejected Location',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions?status=approved');
+
+        $response->assertOk()
+            ->assertJsonFragment(['location_name' => 'Approved Location'])
+            ->assertJsonMissing(['location_name' => 'Pending Location'])
+            ->assertJsonMissing(['location_name' => 'Rejected Location']);
+    }
+
+    public function test_super_admin_can_filter_location_suggestions_by_province(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        LocationSuggestion::factory()->create([
+            'province' => 'Metro Manila',
+            'location_name' => 'Pasay Recycling Center',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'province' => 'Cebu',
+            'location_name' => 'Cebu Recycling Center',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions?province=Metro Manila');
+
+        $response->assertOk()
+            ->assertJsonFragment(['location_name' => 'Pasay Recycling Center'])
+            ->assertJsonMissing(['location_name' => 'Cebu Recycling Center']);
+    }
+
+    public function test_super_admin_can_filter_location_suggestions_by_city_municipality(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        LocationSuggestion::factory()->create([
+            'city_municipality' => 'Pasay City',
+            'location_name' => 'Pasay Recycling Center',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'city_municipality' => 'Makati City',
+            'location_name' => 'Makati Recycling Center',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions?city_municipality=Pasay City');
+
+        $response->assertOk()
+            ->assertJsonFragment(['location_name' => 'Pasay Recycling Center'])
+            ->assertJsonMissing(['location_name' => 'Makati Recycling Center']);
+    }
+
+    public function test_super_admin_can_search_location_suggestions_by_location_name(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Green Earth Recycling Center',
+            'address' => '123 Mabini Street',
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juan@example.com',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Blue Ocean Collection Hub',
+            'address' => '456 Rizal Avenue',
+            'name' => 'Maria Santos',
+            'email' => 'maria@example.com',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions?search=Green Earth');
+
+        $response->assertOk()
+            ->assertJsonFragment(['location_name' => 'Green Earth Recycling Center'])
+            ->assertJsonMissing(['location_name' => 'Blue Ocean Collection Hub']);
+    }
+
+    public function test_super_admin_can_search_location_suggestions_by_address(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Center One',
+            'address' => '123 Mabini Street',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Center Two',
+            'address' => '456 Rizal Avenue',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions?search=Mabini');
+
+        $response->assertOk()
+            ->assertJsonFragment(['location_name' => 'Center One'])
+            ->assertJsonMissing(['location_name' => 'Center Two']);
+    }
+
+    public function test_super_admin_can_search_location_suggestions_by_submitter_name_or_email(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        LocationSuggestion::factory()->create([
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juan@example.com',
+            'location_name' => 'Center One',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'name' => 'Maria Santos',
+            'email' => 'maria@example.com',
+            'location_name' => 'Center Two',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions?search=maria@example.com');
+
+        $response->assertOk()
+            ->assertJsonFragment(['location_name' => 'Center Two'])
+            ->assertJsonMissing(['location_name' => 'Center One']);
+    }
+
+    public function test_super_admin_can_sort_location_suggestions_by_location_name_ascending(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Zeta Recycling Center',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Alpha Recycling Center',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Metro Recycling Center',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions?sort_by=location_name&sort_order=asc');
+
+        $response->assertOk();
+
+        $names = array_column($response->json('data'), 'location_name');
+
+        $this->assertSame([
+            'Alpha Recycling Center',
+            'Metro Recycling Center',
+            'Zeta Recycling Center',
+        ], $names);
+    }
+
+    public function test_super_admin_can_sort_location_suggestions_by_created_at_descending(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Old Suggestion',
+            'created_at' => '2026-03-01 08:00:00',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Newest Suggestion',
+            'created_at' => '2026-03-20 08:00:00',
+        ]);
+
+        LocationSuggestion::factory()->create([
+            'location_name' => 'Middle Suggestion',
+            'created_at' => '2026-03-10 08:00:00',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions?sort_by=created_at&sort_order=desc');
+
+        $response->assertOk();
+
+        $names = array_column($response->json('data'), 'location_name');
+
+        $this->assertSame([
+            'Newest Suggestion',
+            'Middle Suggestion',
+            'Old Suggestion',
+        ], $names);
+    }
+
+    public function test_editor_can_access_location_suggestions_index(): void
+    {
+        $editor = $this->createEditor();
+
+        LocationSuggestion::factory()->count(2)->create();
+
+        $response = $this->actingAs($editor, 'sanctum')
+            ->getJson('/api/v1/admin/location-suggestions');
+
+        $response->assertOk();
+    }
+
+    public function test_guest_cannot_access_location_suggestions_index(): void
+    {
+        $response = $this->getJson('/api/v1/admin/location-suggestions');
+
+        $response->assertUnauthorized();
+    }
 }

@@ -499,6 +499,57 @@
                                 "archived"
                             ]
                         }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "juan"
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "example": "2026-03-01"
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "example": "2026-03-31"
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "created_at"
+                    },
+                    {
+                        "name": "sort_order",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        },
+                        "example": "desc"
                     }
                 ],
                 "responses": {
@@ -1552,6 +1603,7 @@
                     "Public Contact Messages"
                 ],
                 "summary": "Submit contact form",
+                "description": "Public endpoint for submitting contact messages. Rate limited to 5 requests per minute per IP address.",
                 "operationId": "ad64f1637cf689b57095cc8602b61f7c",
                 "requestBody": {
                     "required": true,
@@ -1598,6 +1650,9 @@
                     },
                     "422": {
                         "description": "Validation error"
+                    },
+                    "429": {
+                        "description": "Too many requests"
                     }
                 }
             }
@@ -1686,6 +1741,9 @@
                     },
                     "422": {
                         "description": "Validation error"
+                    },
+                    "429": {
+                        "description": "Too many requests"
                     }
                 }
             }
@@ -1874,7 +1932,7 @@
         },
         {
             "name": "Public Location Suggestions",
-            "description": "Public endpoints for suggesting new waste collection locations"
+            "description": "Public endpoints for suggesting new waste collection locations. Rate limited to 5 requests per minute per IP address."
         },
         {
             "name": "Admin Users",

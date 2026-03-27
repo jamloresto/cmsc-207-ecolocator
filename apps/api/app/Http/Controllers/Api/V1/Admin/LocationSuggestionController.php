@@ -61,7 +61,7 @@ class LocationSuggestionController extends Controller
     )]
     public function index(Request $request): JsonResponse
     {
-        $query = LocationSuggestion::query()->latest();
+        $query = LocationSuggestion::query();
 
         if ($request->filled('status')) {
             $query->where('status', $request->string('status'));
@@ -86,7 +86,28 @@ class LocationSuggestionController extends Controller
             });
         }
 
-        return response()->json($query->paginate(10));
+        $allowedSortFields = [
+            'created_at',
+            'updated_at',
+            'status',
+            'location_name',
+            'city_municipality',
+            'province',
+        ];
+
+        $sortBy = in_array($request->get('sort_by'), $allowedSortFields, true)
+            ? $request->get('sort_by')
+            : 'created_at';
+
+        $sortOrder = in_array(strtolower($request->get('sort_order', 'desc')), ['asc', 'desc'], true)
+            ? strtolower($request->get('sort_order', 'desc'))
+            : 'desc';
+
+        $query->orderBy($sortBy, $sortOrder);
+
+        return response()->json(
+            $query->paginate($request->integer('per_page', 10))
+        );
     }
 
     #[OA\Get(
