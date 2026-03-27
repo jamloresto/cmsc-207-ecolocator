@@ -86,6 +86,7 @@ class LocationSuggestionController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = LocationSuggestion::query();
+        $query = LocationSuggestion::query();
 
         // FILTERS
         if ($request->filled('status')) {
@@ -111,7 +112,6 @@ class LocationSuggestionController extends Controller
             });
         }
 
-        // SORTING
         $allowedSortFields = [
             'created_at',
             'updated_at',
@@ -121,12 +121,12 @@ class LocationSuggestionController extends Controller
             'province',
         ];
 
-        $sortBy = in_array($request->get('sort_by'), $allowedSortFields)
+        $sortBy = in_array($request->get('sort_by'), $allowedSortFields, true)
             ? $request->get('sort_by')
             : 'created_at';
 
-        $sortOrder = in_array(strtolower($request->get('sort_order')), ['asc', 'desc'])
-            ? strtolower($request->get('sort_order'))
+        $sortOrder = in_array(strtolower($request->get('sort_order', 'desc')), ['asc', 'desc'], true)
+            ? strtolower($request->get('sort_order', 'desc'))
             : 'desc';
 
         $query->orderBy($sortBy, $sortOrder);
