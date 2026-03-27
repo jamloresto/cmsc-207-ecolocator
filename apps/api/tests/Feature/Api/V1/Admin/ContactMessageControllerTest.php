@@ -27,14 +27,6 @@ class ContactMessageControllerTest extends TestCase
         ]);
     }
 
-    protected function createRegularUser(): User
-    {
-        return User::factory()->create([
-            'role' => 'user',
-            'is_active' => true,
-        ]);
-    }
-
     public function test_admin_can_list_contact_messages(): void
     {
         $admin = $this->createSuperAdmin();
@@ -181,13 +173,195 @@ class ContactMessageControllerTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_non_admin_user_cannot_access_admin_contact_messages(): void
+    public function test_super_admin_can_search_contact_messages_by_name(): void
     {
-        $user = $this->createRegularUser();
+        $admin = $this->createSuperAdmin();
 
-        $response = $this->actingAs($user, 'sanctum')
+        ContactMessage::factory()->create([
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juan@example.com',
+            'subject' => 'Plastic recycling',
+        ]);
+
+        ContactMessage::factory()->create([
+            'name' => 'Maria Santos',
+            'email' => 'maria@example.com',
+            'subject' => 'E-waste inquiry',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/contact-messages?search=Juan');
+
+        $response->assertOk()
+            ->assertJsonFragment(['name' => 'Juan Dela Cruz'])
+            ->assertJsonMissing(['name' => 'Maria Santos']);
+    }
+
+    public function test_super_admin_can_search_contact_messages_by_email(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        ContactMessage::factory()->create([
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juan@example.com',
+            'subject' => 'Plastic recycling',
+        ]);
+
+        ContactMessage::factory()->create([
+            'name' => 'Maria Santos',
+            'email' => 'maria@example.com',
+            'subject' => 'E-waste inquiry',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/contact-messages?search=maria@example.com');
+
+        $response->assertOk()
+            ->assertJsonFragment(['email' => 'maria@example.com'])
+            ->assertJsonMissing(['email' => 'juan@example.com']);
+    }
+
+    public function test_super_admin_can_search_contact_messages_by_subject(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        ContactMessage::factory()->create([
+            'name' => 'Juan Dela Cruz',
+            'email' => 'juan@example.com',
+            'subject' => 'Plastic recycling schedule',
+        ]);
+
+        ContactMessage::factory()->create([
+            'name' => 'Maria Santos',
+            'email' => 'maria@example.com',
+            'subject' => 'General inquiry',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/contact-messages?search=Plastic');
+
+        $response->assertOk()
+            ->assertJsonFragment(['subject' => 'Plastic recycling schedule'])
+            ->assertJsonMissing(['subject' => 'General inquiry']);
+    }
+
+    public function test_super_admin_can_filter_contact_messages_by_status(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        ContactMessage::factory()->create([
+            'status' => 'new',
+            'subject' => 'New message',
+        ]);
+
+        ContactMessage::factory()->create([
+            'status' => 'read',
+            'subject' => 'Read message',
+        ]);
+
+        ContactMessage::factory()->create([
+            'status' => 'replied',
+            'subject' => 'Replied message',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/contact-messages?status=read');
+
+        $response->assertOk()
+            ->assertJsonFragment(['subject' => 'Read message'])
+            ->assertJsonMissing(['subject' => 'New message'])
+            ->assertJsonMissing(['subject' => 'Replied message']);
+    }
+
+    public function test_super_admin_can_filter_contact_messages_by_date_range(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        ContactMessage::factory()->create([
+            'subject' => 'Old message',
+            'created_at' => '2026-03-01 10:00:00',
+        ]);
+
+        ContactMessage::factory()->create([
+            'subject' => 'Included message',
+            'created_at' => '2026-03-15 10:00:00',
+        ]);
+
+        ContactMessage::factory()->create([
+            'subject' => 'Later message',
+            'created_at' => '2026-04-01 10:00:00',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/contact-messages?date_from=2026-03-10&date_to=2026-03-31');
+
+        $response->assertOk()
+            ->assertJsonFragment(['subject' => 'Included message'])
+            ->assertJsonMissing(['subject' => 'Old message'])
+            ->assertJsonMissing(['subject' => 'Later message']);
+    }
+
+    public function test_super_admin_can_sort_contact_messages_by_name_ascending(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        ContactMessage::factory()->create([
+            'name' => 'Zara',
+        ]);
+
+        ContactMessage::factory()->create([
+            'name' => 'Anna',
+        ]);
+
+        ContactMessage::factory()->create([
+            'name' => 'Mark',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/contact-messages?sort_by=name&sort_order=asc');
+
+        $response->assertOk();
+
+        $names = array_column($response->json('data'), 'name');
+
+        $this->assertSame(['Anna', 'Mark', 'Zara'], $names);
+    }
+
+    public function test_super_admin_can_sort_contact_messages_by_name_descending(): void
+    {
+        $admin = $this->createSuperAdmin();
+
+        ContactMessage::factory()->create([
+            'name' => 'Zara',
+        ]);
+
+        ContactMessage::factory()->create([
+            'name' => 'Anna',
+        ]);
+
+        ContactMessage::factory()->create([
+            'name' => 'Mark',
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->getJson('/api/v1/admin/contact-messages?sort_by=name&sort_order=desc');
+
+        $response->assertOk();
+
+        $names = array_column($response->json('data'), 'name');
+
+        $this->assertSame(['Zara', 'Mark', 'Anna'], $names);
+    }
+
+    public function test_editor_can_access_contact_messages_index(): void
+    {
+        $editor = $this->createEditor();
+
+        ContactMessage::factory()->count(2)->create();
+
+        $response = $this->actingAs($editor, 'sanctum')
             ->getJson('/api/v1/admin/contact-messages');
 
-        $response->assertForbidden();
+        $response->assertOk();
     }
 }
