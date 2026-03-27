@@ -51,7 +51,31 @@ class LocationSuggestionController extends Controller
                 in: 'query',
                 required: false,
                 schema: new OA\Schema(type: 'string')
-            )
+            ),
+            new OA\Parameter(
+                name: 'sort_by',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['created_at', 'updated_at', 'status', 'location_name', 'city_municipality', 'province']
+                ),
+                example: 'created_at'
+            ),
+            new OA\Parameter(
+                name: 'sort_order',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', enum: ['asc', 'desc']),
+                example: 'desc'
+            ),
+            new OA\Parameter(
+                name: 'per_page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100),
+                example: 10
+            ),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Location suggestions retrieved successfully'),
@@ -61,8 +85,9 @@ class LocationSuggestionController extends Controller
     )]
     public function index(Request $request): JsonResponse
     {
-        $query = LocationSuggestion::query()->latest();
+        $query = LocationSuggestion::query();
 
+        // FILTERS
         if ($request->filled('status')) {
             $query->where('status', $request->string('status'));
         }
@@ -80,13 +105,35 @@ class LocationSuggestionController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('location_name', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%")
-                    ->orWhere('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                ->orWhere('address', 'like', "%{$search}%")
+                ->orWhere('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
-        return response()->json($query->paginate(10));
+        // SORTING
+        $allowedSortFields = [
+            'created_at',
+            'updated_at',
+            'status',
+            'location_name',
+            'city_municipality',
+            'province',
+        ];
+
+        $sortBy = in_array($request->get('sort_by'), $allowedSortFields)
+            ? $request->get('sort_by')
+            : 'created_at';
+
+        $sortOrder = in_array(strtolower($request->get('sort_order')), ['asc', 'desc'])
+            ? strtolower($request->get('sort_order'))
+            : 'desc';
+
+        $query->orderBy($sortBy, $sortOrder);
+
+        return response()->json(
+            $query->paginate($request->integer('per_page', 10))
+        );
     }
 
     #[OA\Get(
