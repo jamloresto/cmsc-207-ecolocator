@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             ContactMessageSeeder::class,
             MaterialTypeSeeder::class,
+            WasteCollectionLocationSeeder::class,
         ]);
     }
 }
