@@ -13,52 +13,74 @@ class MaterialTypeSeeder extends Seeder
         $materials = [
             [
                 'name' => 'Batteries',
-                'description' => 'Used household and industrial batteries including rechargeable and single-use batteries.',
+                'description' => 'Used household, automotive, and industrial batteries including rechargeable and single-use batteries.',
             ],
             [
-                'name' => 'Cans & aluminium',
-                'description' => 'Aluminum cans and similar recyclable aluminium materials.',
+                'name' => 'Metals',
+                'description' => 'Recyclable metal materials such as aluminum cans, steel, iron, copper, bronze, and mixed scrap metals.',
             ],
             [
                 'name' => 'Electronics',
-                'description' => 'Old gadgets and electronic devices such as phones, chargers, and appliances.',
+                'description' => 'Old electronic devices and components such as phones, chargers, computers, and other e-waste.',
+            ],
+            [
+                'name' => 'Appliances',
+                'description' => 'Household and commercial appliances such as refrigerators, washing machines, air conditioners, and similar items.',
             ],
             [
                 'name' => 'Glass',
-                'description' => 'Glass bottles, jars, and other recyclable glass materials.',
+                'description' => 'Glass bottles, jars, flat glass, container glass, and other recyclable glass materials.',
             ],
             [
                 'name' => 'Paper & cardboard',
-                'description' => 'Newspapers, cartons, cardboard boxes, and office paper.',
+                'description' => 'Office paper, newspapers, cartons, corrugated boxes, cardboard, and similar paper-based recyclables.',
             ],
             [
                 'name' => 'Plastic',
-                'description' => 'Plastic bottles, containers, packaging, and similar plastic waste.',
+                'description' => 'Plastic bottles, packaging, containers, styrofoam, polystyrene, and other plastic materials.',
             ],
             [
-                'name' => 'Organic waste',
-                'description' => 'Biodegradable waste such as food scraps, leaves, and garden waste.',
+                'name' => 'Rubber & tires',
+                'description' => 'Used tires and other rubber materials for recycling, retreading, or reprocessing.',
+            ],
+            [
+                'name' => 'Ink cartridges',
+                'description' => 'Used printer ink and toner cartridges for recycling or proper disposal.',
+            ],
+            [
+                'name' => 'Wood & lumber',
+                'description' => 'Secondhand wood, lumber, and other reusable or recyclable wood materials.',
             ],
             [
                 'name' => 'Oils & hazardous waste',
-                'description' => 'Used oils, chemicals, and other hazardous waste requiring proper disposal.',
+                'description' => 'Used oils, chemicals, and other hazardous waste that require special handling and disposal.',
             ],
             [
-                'name' => 'Scrap metal',
-                'description' => 'Metal scraps including steel, iron, and mixed recyclable metals.',
+                'name' => 'Industrial waste',
+                'description' => 'Bulk, industrial, or manufacturing-related recyclable waste and surplus materials.',
+            ],
+            [
+                'name' => 'Mixed recyclables',
+                'description' => 'Facilities that accept multiple recyclable material types in one location.',
             ],
             [
                 'name' => 'Textiles',
-                'description' => 'Old clothes, fabrics, and other textile materials for recycling or reuse.',
+                'description' => 'Old clothes, fabrics, garments, and other textile materials for recycling or reuse.',
+            ],
+            [
+                'name' => 'Organic waste',
+                'description' => 'Biodegradable waste such as food scraps, leaves, yard waste, and other compostable materials.',
             ],
         ];
 
         foreach ($materials as $material) {
+            $slug = Str::slug($material['name']);
+
             MaterialType::updateOrCreate(
-                ['slug' => Str::slug($material['name'])],
+                ['slug' => $slug],
                 [
                     'name' => $material['name'],
-                    'slug' => Str::slug($material['name']),
+                    'slug' => $slug,
                     'description' => $material['description'],
                     'is_active' => true,
                 ]
