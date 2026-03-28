@@ -4,6 +4,7 @@ import { LoadingState } from '@/components/shared/loading-state';
 import { Section } from '@/components/shared/section';
 import { SectionHeading } from '@/components/shared/section-heading';
 import { SectionSubheading } from '@/components/shared/section-subheading';
+import { TableEmptyState } from '@/components/shared/table-empty-state';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +13,16 @@ import { Input } from '@/components/ui/input';
 import { StatusPill } from '@/components/ui/status-pill';
 import { Textarea } from '@/components/ui/textarea';
 
+interface Sample {
+  id: number,
+  name: string
+}
 export default function HomePage() {
+  const items: Sample[] = [
+    // { id: 1, name: 'Item A' },
+    // { id: 2, name: 'Item B' },
+    // { id: 3, name: 'Item C' },
+  ];
   return (
     <PublicLayout>
       <section className="mx-auto max-w-7xl px-6 py-16">
@@ -115,6 +125,23 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </div>
+        </Section>
+        <Section>
+          <tbody>
+            {items && items.length > 0 ? (
+              items.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.name}</td>
+                </tr>
+              ))
+            ) : (
+              <TableEmptyState
+                colSpan={6}
+                title="Empty Table"
+                description="Try adjusting your filters or search keyword."
+              />
+            )}
+          </tbody>
         </Section>
       </section>
     </PublicLayout>
