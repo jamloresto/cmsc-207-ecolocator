@@ -32,7 +32,7 @@ class MaterialTypeSeeder extends Seeder
                 'description' => 'Glass bottles, jars, flat glass, container glass, and other recyclable glass materials.',
             ],
             [
-                'name' => 'Paper & cardboard',
+                'name' => 'Paper & Cardboard',
                 'description' => 'Office paper, newspapers, cartons, corrugated boxes, cardboard, and similar paper-based recyclables.',
             ],
             [
@@ -40,36 +40,44 @@ class MaterialTypeSeeder extends Seeder
                 'description' => 'Plastic bottles, packaging, containers, styrofoam, polystyrene, and other plastic materials.',
             ],
             [
-                'name' => 'Rubber & tires',
+                'name' => 'Rubber & Tires',
                 'description' => 'Used tires and other rubber materials for recycling, retreading, or reprocessing.',
             ],
             [
-                'name' => 'Ink cartridges',
+                'name' => 'Ink Cartridges',
                 'description' => 'Used printer ink and toner cartridges for recycling or proper disposal.',
             ],
             [
-                'name' => 'Wood & lumber',
-                'description' => 'Secondhand wood, lumber, and other reusable or recyclable wood materials.',
+                'name' => 'Wood & Lumber',
+                'description' => 'Secondhand wood, lumber, plywood, and other reusable or recyclable wood materials.',
             ],
             [
-                'name' => 'Oils & hazardous waste',
-                'description' => 'Used oils, chemicals, and other hazardous waste that require special handling and disposal.',
+                'name' => 'Oils & Hazardous Waste',
+                'description' => 'Used oils, chemicals, solvents, and hazardous waste requiring special handling and disposal.',
             ],
             [
-                'name' => 'Industrial waste',
-                'description' => 'Bulk, industrial, or manufacturing-related recyclable waste and surplus materials.',
+                'name' => 'Industrial Waste',
+                'description' => 'Bulk industrial and manufacturing waste including scrap materials, production by-products, and surplus resources.',
             ],
             [
-                'name' => 'Mixed recyclables',
-                'description' => 'Facilities that accept multiple recyclable material types in one location.',
+                'name' => 'Construction & Mineral Waste',
+                'description' => 'Construction-related waste such as scrap marble chips, concrete debris, sand, gravel, and similar materials.',
+            ],
+            [
+                'name' => 'Organic Waste',
+                'description' => 'Biodegradable waste such as food scraps, leaves, yard waste, and compostable materials.',
             ],
             [
                 'name' => 'Textiles',
                 'description' => 'Old clothes, fabrics, garments, and other textile materials for recycling or reuse.',
             ],
             [
-                'name' => 'Organic waste',
-                'description' => 'Biodegradable waste such as food scraps, leaves, yard waste, and other compostable materials.',
+                'name' => 'Manufacturing By-products',
+                'description' => 'Industrial by-products such as scrap detergent bars, saw dust, and similar residual materials from production processes.',
+            ],
+            [
+                'name' => 'Mixed Recyclables',
+                'description' => 'Facilities that accept multiple recyclable material types in one location.',
             ],
         ];
 

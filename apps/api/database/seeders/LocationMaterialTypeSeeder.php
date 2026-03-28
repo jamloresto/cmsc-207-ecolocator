@@ -20,20 +20,89 @@ class LocationMaterialTypeSeeder extends Seeder
             $matchedMaterialIds = [];
 
             $mapping = [
-                'batteries' => ['battery'],
-                'metals' => ['metal', 'aluminum', 'steel', 'copper', 'bronze', 'iron', 'solder'],
-                'electronics' => ['electronics', 'computer', 'e-waste'],
-                'appliances' => ['appliance'],
-                'glass' => ['glass'],
-                'paper-cardboard' => ['paper', 'carton', 'box'],
-                'plastic' => ['plastic', 'polystyrene', 'styrofoam'],
-                'rubber-tires' => ['tire', 'rubber'],
-                'ink-cartridges' => ['ink'],
-                'wood-lumber' => ['lumber', 'wood'],
-                'oils-hazardous-waste' => ['oil', 'hazardous'],
-                'industrial-waste' => ['industrial'],
-                'mixed-recyclables' => ['all materials', 'mixed', 'segregated', 'all types'],
-                'textiles' => ['fabric', 'textile'],
+                'batteries' => [
+                    'battery', 'batteries', 'lead-acid', 'dry cell'
+                ],
+
+                'metals' => [
+                    'metal', 'metals', 'aluminum', 'aluminium', 'steel', 'iron',
+                    'copper', 'bronze', 'scrap metal', 'tin', 'can', 'cans',
+                    'sheet metal', 'alloy'
+                ],
+
+                'electronics' => [
+                    'electronics', 'electronic', 'e-waste', 'ewaste',
+                    'computer', 'laptop', 'phone', 'mobile', 'charger',
+                    'circuit', 'pcb', 'printer', 'monitor'
+                ],
+
+                'appliances' => [
+                    'appliance', 'appliances', 'refrigerator', 'fridge',
+                    'washing machine', 'aircon', 'air conditioner'
+                ],
+
+                'glass' => [
+                    'glass', 'bottle', 'bottles', 'jar', 'jars',
+                    'basag', 'bubog'
+                ],
+
+                'paper-cardboard' => [
+                    'paper', 'papers', 'cardboard', 'carton', 'cartons',
+                    'box', 'boxes', 'newspaper', 'magazine', 'corrugated'
+                ],
+
+                'plastic' => [
+                    'plastic', 'plastics', 'pet', 'pet bottle',
+                    'polystyrene', 'styrofoam', 'polyethylene',
+                    'polypropylene', 'packaging'
+                ],
+
+                'rubber-tires' => [
+                    'tire', 'tires', 'rubber', 'rubberized'
+                ],
+
+                'ink-cartridges' => [
+                    'ink', 'cartridge', 'cartridges', 'toner', 'printer ink'
+                ],
+
+                'wood-lumber' => [
+                    'wood', 'lumber', 'plywood', 'timber'
+                ],
+
+                'construction-mineral-waste' => [
+                    'marble', 'marble chips', 'concrete', 'sand',
+                    'gravel', 'construction', 'cement', 'tiles'
+                ],
+
+                'manufacturing-by-products' => [
+                    'sawdust', 'scrap detergent', 'detergent bars',
+                    'industrial by-product', 'residue'
+                ],
+
+                'oils-hazardous-waste' => [
+                    'oil', 'used oil', 'hazardous', 'chemical',
+                    'solvent', 'toxic', 'battery acid'
+                ],
+
+                'industrial-waste' => [
+                    'industrial', 'factory waste', 'manufacturing waste',
+                    'bulk waste'
+                ],
+
+                'mixed-recyclables' => [
+                    'all materials', 'mixed', 'mixed recyclables',
+                    'segregated', 'all types', 'various materials'
+                ],
+
+                'textiles' => [
+                    'fabric', 'textile', 'clothes', 'clothing',
+                    'garments', 'rags'
+                ],
+
+                'organic-waste' => [
+                    'organic', 'biodegradable', 'compost',
+                    'food waste', 'yard waste'
+                ],
             ];
 
             foreach ($mapping as $slug => $keywords) {
