@@ -22,6 +22,9 @@ class DatabaseSeeder extends Seeder
             MaterialTypeSeeder::class,
             WasteCollectionLocationSeeder::class,
             LocationMaterialTypeSeeder::class,
+            PendingLocationSuggestionSeeder::class,
+            ApprovedLocationSuggestionSeeder::class,
+            RejectedLocationSuggestionSeeder::class,
         ]);
 
         // Check if there are locations with missing or 0,0 coordinates
