@@ -4,10 +4,12 @@ import { LoadingState } from '@/components/shared/loading-state';
 import { Section } from '@/components/shared/section';
 import { SectionHeading } from '@/components/shared/section-heading';
 import { SectionSubheading } from '@/components/shared/section-subheading';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
+import { StatusPill } from '@/components/ui/status-pill';
 import { Textarea } from '@/components/ui/textarea';
 
 export default function HomePage() {
@@ -80,6 +82,13 @@ export default function HomePage() {
                   Search by city or material type to find the nearest location.
                 </p>
                 <img src={`https://placehold.co/400`} />
+                <div className="flex flex-wrap gap-2 pt-3">
+                  <StatusPill status="pending" />
+                  <StatusPill status="approved" />
+                  <StatusPill status="inactive" />
+                  <StatusPill status="replied" />
+                  <StatusPill status="archived">Custom Status</StatusPill>
+                </div>
               </CardContent>
             </Card>
             <Card>
@@ -96,6 +105,13 @@ export default function HomePage() {
                   Search by city or material type to find the nearest location.
                 </p>
                 <img src={`https://placehold.co/400`} />
+                <div className="flex flex-wrap gap-2 pt-3">
+                  <Badge>Plastic</Badge>
+                  <Badge variant="primary">E-waste</Badge>
+                  <Badge variant="outline">Metro Manila</Badge>
+                  <Badge variant="success">Verified</Badge>
+                  <Badge variant="warning">Unverified</Badge>
+                </div>
               </CardContent>
             </Card>
           </div>
