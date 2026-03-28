@@ -4,25 +4,21 @@ import { LoadingState } from '@/components/shared/loading-state';
 import { Section } from '@/components/shared/section';
 import { SectionHeading } from '@/components/shared/section-heading';
 import { SectionSubheading } from '@/components/shared/section-subheading';
-import { TableEmptyState } from '@/components/shared/table-empty-state';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { SelectCustom } from '@/components/ui/select-custom';
 import { StatusPill } from '@/components/ui/status-pill';
 import { Textarea } from '@/components/ui/textarea';
+import { CheckCircle, Clock, XCircle } from 'lucide-react';
 
-interface Sample {
-  id: number,
-  name: string
-}
+
 export default function HomePage() {
-  const items: Sample[] = [
-    // { id: 1, name: 'Item A' },
-    // { id: 2, name: 'Item B' },
-    // { id: 3, name: 'Item C' },
-  ];
+  const status = "pending";
+  
   return (
     <PublicLayout>
       <section className="mx-auto max-w-7xl px-6 py-16">
@@ -50,17 +46,52 @@ export default function HomePage() {
             <Input type="email" label="Email" name="email" />
             <FormField
               helperText="Use your active email address."
+              htmlFor="email1"
               error="sample error"
             >
-              <Input id="email" label="Email Address" type="email" />
+              <Input id="email1" label="Email Address" type="email" />
             </FormField>
             <FormField
               label="Email Address"
-              htmlFor="email"
+              htmlFor="email2"
               required
               helperText="Use your active email address."
             >
-              <Input id="email" type="email" placeholder="name@example.com" />
+              <Input id="email2" type="email" placeholder="name@example.com" />
+            </FormField>
+            <FormField label="Sample Select" htmlFor="sample-select">
+              <Select
+                placeholder="Select Status"
+                id="sample-select"
+                options={[
+                  { label: 'Pending', value: 'pending' },
+                  { label: 'Approved', value: 'approved' },
+                  { label: 'Rejected', value: 'rejected' },
+                ]}
+              />
+            </FormField>
+            <FormField label="Sample Select" htmlFor="sample-select">
+              <SelectCustom
+                value={status}
+                // onChange={(e) => {console.log(e.target.value)}}
+                options={[
+                  {
+                    label: 'Pending',
+                    value: 'pending',
+                    icon: <Clock className="h-4 w-4 text-yellow-500" />,
+                  },
+                  {
+                    label: 'Approved',
+                    value: 'approved',
+                    icon: <CheckCircle className="h-4 w-4 text-green-500" />,
+                  },
+                  {
+                    label: 'Rejected',
+                    value: 'rejected',
+                    icon: <XCircle className="h-4 w-4 text-red-500" />,
+                  },
+                ]}
+              />
             </FormField>
             <Textarea label="Your message" />
             <Button type="submit">Send Message</Button>
@@ -125,23 +156,6 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </div>
-        </Section>
-        <Section>
-          <tbody>
-            {items && items.length > 0 ? (
-              items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.name}</td>
-                </tr>
-              ))
-            ) : (
-              <TableEmptyState
-                colSpan={6}
-                title="Empty Table"
-                description="Try adjusting your filters or search keyword."
-              />
-            )}
-          </tbody>
         </Section>
       </section>
     </PublicLayout>
