@@ -1,6 +1,8 @@
 import { Recycle } from 'lucide-react';
 import Link from 'next/link';
 
+import { Container } from '@/components/shared/container';
+
 const quickLinks = [
   { href: '/', label: 'Home' },
   { href: '/find-centers', label: 'Find Centers' },
@@ -17,9 +19,9 @@ const resources = [
 export function SiteFooter() {
   return (
     <footer className="bg-brand-950 text-center text-white md:text-left">
-      <div className="mx-auto max-w-7xl px-6 py-14">
+      <Container className="py-14">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-4 md:gap-16">
-          <div className="md:col-span-2 col-span-1 flex flex-col gap-6">
+          <div className="col-span-1 flex flex-col gap-6 md:col-span-2">
             <div className="mx-auto flex items-center gap-3 md:mx-0">
               <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-full font-bold">
                 <Recycle />
@@ -30,6 +32,7 @@ export function SiteFooter() {
                 <span className="text-xs">Waste & Recycling Solutions</span>
               </div>
             </div>
+
             <div className="space-y-3 text-sm text-white/80">
               <p className="text-balance">
                 Lorem ipsum dolor sit amet consectetur, adipisicing elit. Fuga,
@@ -46,6 +49,7 @@ export function SiteFooter() {
               </p>
             </div>
           </div>
+
           <div className="flex flex-col gap-6">
             <div>
               <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
@@ -61,6 +65,7 @@ export function SiteFooter() {
                 ))}
               </div>
             </div>
+
             <div>
               <h3 className="mb-4 text-lg font-semibold">Resources</h3>
               <div className="space-y-3">
@@ -91,7 +96,7 @@ export function SiteFooter() {
           © 2026 EcoLocator. All rights reserved. Making recycling easier for
           everyone.
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }
