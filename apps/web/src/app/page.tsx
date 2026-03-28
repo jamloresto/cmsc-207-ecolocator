@@ -1,4 +1,6 @@
 import { PublicLayout } from '@/components/layout/public-layout';
+import { EmptyState } from '@/components/shared/empty-state';
+import { LoadingState } from '@/components/shared/loading-state';
 import { Section } from '@/components/shared/section';
 import { SectionHeading } from '@/components/shared/section-heading';
 import { SectionSubheading } from '@/components/shared/section-subheading';
@@ -14,6 +16,14 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-6 py-16">
         <h1 className="text-4xl font-bold">EcoLocator</h1>
         <p className="text-muted-foreground mt-4">Test form components</p>
+        <Section>
+          <SectionHeading title="Loading States Samplers" className="pb-8" />
+          <LoadingState message="Loading recycling centers..." />
+          <EmptyState
+            title="No location suggestions yet"
+            description="Submitted suggestions from users will appear here once available."
+          />
+        </Section>
         <Section>
           <SectionHeading
             align="center"
