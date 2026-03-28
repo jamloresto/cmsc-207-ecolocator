@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-
 import { Recycle } from 'lucide-react';
 
+import { Container } from '@/components/shared/container';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 
 const navLinks = [
@@ -16,7 +16,7 @@ const navLinks = [
 export function SiteHeader() {
   return (
     <header className="border-border bg-card border-b">
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-6">
+      <Container className="flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-full font-bold">
             <Recycle />
@@ -47,7 +47,7 @@ export function SiteHeader() {
 
           <ThemeToggle />
         </div>
-      </div>
+      </Container>
     </header>
   );
 }
