@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
+
 import './globals.css';
-import { ThemeProvider } from '@/components/providers/theme-provider';
+import { AppProvider } from '@/components/providers/app-provider';
 
 export const metadata: Metadata = {
   title: {
@@ -17,15 +18,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          storageKey="ecolocator-theme"
-        >
-          {children}
-        </ThemeProvider>
+      <body className="bg-background text-foreground min-h-screen antialiased">
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );
