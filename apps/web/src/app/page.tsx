@@ -8,6 +8,7 @@ import { SectionSubheading } from '@/components/shared/section-subheading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
@@ -95,6 +96,11 @@ export default function HomePage() {
               />
             </FormField>
             <Textarea label="Your message" />
+            <Checkbox label="Accept terms and conditions" />
+            <Checkbox
+              label="Mark as active"
+              description="This location will be visible to users on the public site."
+            />
             <Button type="submit">Send Message</Button>
           </form>
         </Section>
