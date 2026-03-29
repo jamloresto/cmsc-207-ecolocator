@@ -5,6 +5,7 @@ import { LoadingState } from '@/components/shared/loading-state';
 import { Section } from '@/components/shared/section';
 import { SectionHeading } from '@/components/shared/section-heading';
 import { SectionSubheading } from '@/components/shared/section-subheading';
+import { ToastDemo } from '@/components/ToastDemo';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -116,6 +117,7 @@ export default function HomePage() {
         </Section>
 
         <DialogDemo />
+        <ToastDemo />
 
         <Section>
           <SectionHeading title="Sample Section Heading" className="pb-4" />
