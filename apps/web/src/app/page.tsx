@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { SelectCustom } from '@/components/ui/select-custom';
 import { StatusPill } from '@/components/ui/status-pill';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle, Clock, XCircle } from 'lucide-react';
 
@@ -96,6 +97,15 @@ export default function HomePage() {
               />
             </FormField>
             <Textarea label="Your message" />
+            <Switch label="Active status" />
+            <Switch
+              label="Publish location"
+              description="This location will be visible on the public site."
+            />
+            <Switch
+              label="Enable feature"
+              error="This setting could not be updated."
+            />
             <Checkbox label="Accept terms and conditions" />
             <Checkbox
               label="Mark as active"
