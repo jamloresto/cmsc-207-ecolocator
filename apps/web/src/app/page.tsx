@@ -1,3 +1,4 @@
+import { DialogDemo } from '@/components/DialogDemo';
 import { PublicLayout } from '@/components/layout/public-layout';
 import { EmptyState } from '@/components/shared/empty-state';
 import { LoadingState } from '@/components/shared/loading-state';
@@ -97,6 +98,8 @@ export default function HomePage() {
             <Button type="submit">Send Message</Button>
           </form>
         </Section>
+
+        <DialogDemo />
 
         <Section>
           <SectionHeading title="Sample Section Heading" className="pb-4" />
