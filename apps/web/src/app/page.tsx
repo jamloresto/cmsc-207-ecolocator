@@ -1,3 +1,7 @@
+import { CardSkeleton } from '@/components/common/loading/card-skeleton';
+import { FormSkeleton } from '@/components/common/loading/form-skeleton';
+import { PageSkeleton } from '@/components/common/loading/page-skeleton';
+import { TableSkeleton } from '@/components/common/loading/table-skeleton';
 import { DialogDemo } from '@/components/DialogDemo';
 import { PublicLayout } from '@/components/layout/public-layout';
 import { EmptyState } from '@/components/shared/empty-state';
@@ -118,6 +122,14 @@ export default function HomePage() {
 
         <DialogDemo />
         <ToastDemo />
+
+        <Section>
+          <SectionHeading title="Skeleton Demo" className="pb-4" />
+          <PageSkeleton />
+          <CardSkeleton />
+          <FormSkeleton />
+          <TableSkeleton />
+        </Section>
 
         <Section>
           <SectionHeading title="Sample Section Heading" className="pb-4" />
