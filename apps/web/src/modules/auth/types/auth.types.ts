@@ -23,3 +23,10 @@ export type AdminApiErrorResponse = {
   message?: string;
   errors?: Record<string, string[]>;
 };
+
+export type AuthState = {
+  user: AdminUser | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+};
