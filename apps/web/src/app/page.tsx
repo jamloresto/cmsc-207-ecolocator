@@ -4,8 +4,8 @@ import { PageSkeleton } from '@/components/common/loading/page-skeleton';
 import { TableSkeleton } from '@/components/common/loading/table-skeleton';
 import { DialogDemo } from '@/components/DialogDemo';
 import { PublicLayout } from '@/components/layout/public-layout';
-import { EmptyState } from '@/components/shared/empty-state';
-import { LoadingState } from '@/components/shared/loading-state';
+import { EmptyState } from '@/components/common/states/empty-state';
+import { LoadingState } from '@/components/common/states/loading-state';
 import { Section } from '@/components/shared/section';
 import { SectionHeading } from '@/components/shared/section-heading';
 import { SectionSubheading } from '@/components/shared/section-subheading';
@@ -22,6 +22,8 @@ import { StatusPill } from '@/components/ui/status-pill';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle, Clock, XCircle } from 'lucide-react';
+import { ErrorState } from '@/components/common/states/error-state';
+import { NoResultsState } from '@/components/common/states/no-results-state';
 
 
 export default function HomePage() {
@@ -39,6 +41,8 @@ export default function HomePage() {
             title="No location suggestions yet"
             description="Submitted suggestions from users will appear here once available."
           />
+          <ErrorState />
+          <NoResultsState />
         </Section>
         <Section>
           <SectionHeading
