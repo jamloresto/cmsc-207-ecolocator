@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Loader2 } from 'lucide-react';
 
+import { SectionSubheading } from '@/components/shared/section-subheading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
@@ -10,18 +11,18 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { MaterialCheckboxGroup } from './material-checkbox-group';
 
-type LocationSuggestionFormValues = {
-  name: string;
-  email: string;
-  location_name: string;
-  location_email: string;
-  location_contact: string;
-  address: string;
-  province: string;
-  city_municipality: string;
-  materials_accepted: string[];
-  materials_other: string;
-};
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  clearLocationSuggestionState,
+  submitLocationSuggestionRequest,
+} from '@/modules/location-suggestions/store/location-suggestions.slice';
+import {
+  selectLocationSuggestionError,
+  selectLocationSuggestionSubmitting,
+  selectLocationSuggestionSuccess,
+  selectLocationSuggestionSuccessMessage,
+} from '@/modules/location-suggestions/store/location-suggestions.selectors';
+import type { LocationSuggestionFormValues } from '@/modules/location-suggestions/types/location-suggestions.types';
 
 type LocationSuggestionFormErrors = Partial<
   Record<
@@ -50,14 +51,32 @@ const initialValues: LocationSuggestionFormValues = {
   city_municipality: '',
   materials_accepted: [],
   materials_other: '',
+  notes: '',
 };
 
 export function LocationSuggestionForm() {
+  const dispatch = useAppDispatch();
+
+  const isSubmitting = useAppSelector(selectLocationSuggestionSubmitting);
+  const isSuccess = useAppSelector(selectLocationSuggestionSuccess);
+  const successMessage = useAppSelector(selectLocationSuggestionSuccessMessage);
+  const error = useAppSelector(selectLocationSuggestionError);
+
   const [values, setValues] =
     React.useState<LocationSuggestionFormValues>(initialValues);
   const [errors, setErrors] = React.useState<LocationSuggestionFormErrors>({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
+
+  React.useEffect(() => {
+    return () => {
+      dispatch(clearLocationSuggestionState());
+    };
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    if (isSuccess) {
+      setValues(initialValues);
+    }
+  }, [isSuccess]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -75,8 +94,8 @@ export function LocationSuggestionForm() {
       general: '',
     }));
 
-    if (isSuccess) {
-      setIsSuccess(false);
+    if (error || isSuccess) {
+      dispatch(clearLocationSuggestionState());
     }
   }
 
@@ -96,7 +115,6 @@ export function LocationSuggestionForm() {
     if (values.materials_accepted.length === 0) {
       nextErrors.materials_accepted = 'Select at least one material.';
     }
-
     if (
       values.materials_accepted.includes('others') &&
       !values.materials_other.trim()
@@ -109,30 +127,52 @@ export function LocationSuggestionForm() {
     return Object.keys(nextErrors).length === 0;
   }
 
+  function buildMaterialsAccepted(): string {
+    const selected = values.materials_accepted.filter(
+      (item) => item !== 'others',
+    );
+
+    if (
+      values.materials_accepted.includes('others') &&
+      values.materials_other.trim()
+    ) {
+      selected.push(values.materials_other.trim());
+    }
+
+    // Convert array to string
+    return selected.join(', ');
+  }
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    setErrors({});
-    setIsSuccess(false);
+    setErrors((prev) => ({
+      ...prev,
+      general: '',
+    }));
 
     if (!validate()) return;
 
-    setIsSubmitting(true);
-
-    // UI only for now
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      setValues(initialValues);
-    }, 800);
+    dispatch(
+      submitLocationSuggestionRequest({
+        name: values.name.trim(),
+        email: values.email.trim(),
+        location_name: values.location_name.trim(),
+        location_email: values.location_email.trim() || null,
+        contact_number: values.location_contact.trim() || null,
+        address: values.address.trim(),
+        province: values.province.trim(),
+        city_municipality: values.city_municipality.trim(),
+        materials_accepted: buildMaterialsAccepted(),
+        notes: values.notes.trim(),
+      }),
+    );
   }
 
   return (
     <Card className="border-border shadow-sm">
       <CardHeader>
-        <CardTitle className="text-foreground text-xl font-semibold">
-          Location Suggestion Form
-        </CardTitle>
+        <CardTitle>Location Suggestion Form</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -146,7 +186,7 @@ export function LocationSuggestionForm() {
               <Input
                 id="name"
                 name="name"
-                label="Full Name"
+                label="Full Name*"
                 value={values.name}
                 onChange={handleChange}
                 disabled={isSubmitting}
@@ -162,7 +202,7 @@ export function LocationSuggestionForm() {
                 id="email"
                 name="email"
                 type="email"
-                label="Email Address"
+                label="Email Address*"
                 value={values.email}
                 onChange={handleChange}
                 disabled={isSubmitting}
@@ -170,15 +210,13 @@ export function LocationSuggestionForm() {
             </FormField>
           </div>
 
-          <FormField
-            htmlFor="location_name"
-            helperText="Enter the name of the recycling or collection site."
-            error={errors.location_name}
-          >
+          <SectionSubheading title="About the location" />
+
+          <FormField htmlFor="location_name" error={errors.location_name}>
             <Input
               id="location_name"
               name="location_name"
-              label="Location Name"
+              label="Name of the recycling or collection site*"
               value={values.location_name}
               onChange={handleChange}
               disabled={isSubmitting}
@@ -186,11 +224,7 @@ export function LocationSuggestionForm() {
           </FormField>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <FormField
-              htmlFor="location_email"
-              helperText="Suggested location's Email Address."
-              error={errors.location_email}
-            >
+            <FormField htmlFor="location_email" error={errors.location_email}>
               <Input
                 id="location_email"
                 name="location_email"
@@ -202,15 +236,11 @@ export function LocationSuggestionForm() {
               />
             </FormField>
 
-            <FormField
-              htmlFor="location_contact"
-              helperText="Suggested Location's Contact Number"
-              error={errors.name}
-            >
+            <FormField htmlFor="location_contact">
               <Input
                 id="location_contact"
                 name="location_contact"
-                label="Location's Contact Number."
+                label="Location's Contact Number"
                 value={values.location_contact}
                 onChange={handleChange}
                 disabled={isSubmitting}
@@ -220,7 +250,7 @@ export function LocationSuggestionForm() {
 
           <FormField
             htmlFor="address"
-            helperText="Provide the full address or nearest landmark."
+            helperText="Provide the full address or nearest landmark.*"
             error={errors.address}
           >
             <Textarea
@@ -239,7 +269,7 @@ export function LocationSuggestionForm() {
               <Input
                 id="province"
                 name="province"
-                label="Province"
+                label="Province*"
                 value={values.province}
                 onChange={handleChange}
                 disabled={isSubmitting}
@@ -253,7 +283,7 @@ export function LocationSuggestionForm() {
               <Input
                 id="city_municipality"
                 name="city_municipality"
-                label="City / Municipality"
+                label="City / Municipality*"
                 value={values.city_municipality}
                 onChange={handleChange}
                 disabled={isSubmitting}
@@ -263,8 +293,9 @@ export function LocationSuggestionForm() {
 
           <FormField
             htmlFor="materials_accepted"
-            helperText="Select all materials accepted in this location."
+            helperText="Select all materials accepted in this location.*"
             error={errors.materials_accepted}
+            label="Materials Accepted"
           >
             <MaterialCheckboxGroup
               selectedValues={values.materials_accepted}
@@ -279,6 +310,10 @@ export function LocationSuggestionForm() {
                   ...prev,
                   materials_accepted: '',
                 }));
+
+                if (error || isSuccess) {
+                  dispatch(clearLocationSuggestionState());
+                }
               }}
               onOtherValueChange={(nextValue) => {
                 setValues((prev) => ({
@@ -290,21 +325,37 @@ export function LocationSuggestionForm() {
                   ...prev,
                   materials_accepted: '',
                 }));
+
+                if (error || isSuccess) {
+                  dispatch(clearLocationSuggestionState());
+                }
               }}
               disabled={isSubmitting}
               error={Boolean(errors.materials_accepted)}
             />
           </FormField>
 
-          {errors.general ? (
+          <FormField htmlFor="notes">
+            <Textarea
+              id="notes"
+              name="notes"
+              rows={2}
+              value={values.notes}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              placeholder="Additional Notes"
+            />
+          </FormField>
+
+          {error ? (
             <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border px-4 py-3 text-sm">
-              {errors.general}
+              {error}
             </div>
           ) : null}
 
-          {isSuccess ? (
+          {isSuccess && successMessage ? (
             <div className="rounded-lg border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
-              Your suggestion is ready for submission.
+              {successMessage}
             </div>
           ) : null}
 
