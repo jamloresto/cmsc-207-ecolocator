@@ -12,15 +12,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   clearContactState,
-  submitContactRequest,
-} from '@/modules/contact/store/contact.slice';
-import {
   selectContactError,
   selectContactSubmitting,
   selectContactSuccess,
   selectContactSuccessMessage,
-} from '@/modules/contact/store/contact.selectors';
-import type { ContactFormValues } from '@/modules/contact/types/contact.types';
+  submitContactRequest,
+} from '@/modules/contact';
+import type { ContactFormValues } from '@/modules/contact';
 
 type ContactFormErrors = Partial<Record<keyof ContactFormValues, string>> & {
   general?: string;
