@@ -1,30 +1,16 @@
 'use client';
 
 import * as React from 'react';
+
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+
 import { cn } from '@/lib/utils';
+import { MaterialType, withOtherMaterialOption } from '@/modules/material-types';
 
-export const MATERIAL_OPTIONS = [
-  { label: 'Batteries', value: 'batteries' },
-  { label: 'Metals', value: 'metals' },
-  { label: 'Electronics', value: 'electronics' },
-  { label: 'Appliances', value: 'appliances' },
-  { label: 'Glass', value: 'glass' },
-  { label: 'Paper & Cardboard', value: 'paper-cardboard' },
-  { label: 'Plastic', value: 'plastic' },
-  { label: 'Rubber / Tires', value: 'rubber-tires' },
-  { label: 'Ink Cartridges', value: 'ink-cartridges' },
-  { label: 'Wood / Lumber', value: 'wood-lumber' },
-  { label: 'Oils / Hazardous Waste', value: 'oils-hazardous-waste' },
-  { label: 'Industrial Waste', value: 'industrial-waste' },
-  { label: 'Mixed Recyclables', value: 'mixed-recyclables' },
-  { label: 'Others', value: 'others' },
-] as const;
-
-export type MaterialOptionValue = (typeof MATERIAL_OPTIONS)[number]['value'];
 
 type MaterialCheckboxGroupProps = {
+  options?: MaterialType[];
   selectedValues: string[];
   otherValue: string;
   onSelectedValuesChange: (values: string[]) => void;
@@ -34,6 +20,7 @@ type MaterialCheckboxGroupProps = {
 };
 
 export function MaterialCheckboxGroup({
+  options = [],
   selectedValues,
   otherValue,
   onSelectedValuesChange,
@@ -42,6 +29,11 @@ export function MaterialCheckboxGroup({
   error = false,
 }: MaterialCheckboxGroupProps) {
   const hasOthersSelected = selectedValues.includes('others');
+
+  const materialOptions = React.useMemo(
+    () => withOtherMaterialOption(options),
+    [options],
+  );
 
   function handleCheckedChange(materialValue: string, checked: boolean) {
     if (checked) {
@@ -71,13 +63,13 @@ export function MaterialCheckboxGroup({
           error && 'border-destructive/20 rounded-lg border p-3',
         )}
       >
-        {MATERIAL_OPTIONS.map((option) => {
-          const isChecked = selectedValues.includes(option.value);
+        {materialOptions.map((option) => {
+          const isChecked = selectedValues.includes(option.slug);
 
           return (
             <label
-              key={option.value}
-              htmlFor={`material-${option.value}`}
+              key={option.slug}
+              htmlFor={`material-${option.slug}`}
               className={cn(
                 'border-border bg-background flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition',
                 'hover:border-ring',
@@ -85,19 +77,30 @@ export function MaterialCheckboxGroup({
               )}
             >
               <Checkbox
-                id={`material-${option.value}`}
+                id={`material-${option.slug}`}
                 checked={isChecked}
                 onChange={(e) =>
-                  handleCheckedChange(option.value, e.target.checked)
+                  handleCheckedChange(option.slug, e.target.checked)
                 }
                 disabled={disabled}
                 className="mt-0.5"
               />
 
               <div className="min-w-0">
-                <p className="text-foreground text-sm font-medium">
-                  {option.label}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-foreground text-sm font-medium">
+                    {option.name}
+                  </p>
+
+                  {option.description ? (
+                    <span
+                      className="text-muted-foreground cursor-help text-xs"
+                      title={option.description}
+                    >
+                      ⓘ
+                    </span>
+                  ) : null}
+                </div>
               </div>
             </label>
           );
@@ -108,7 +111,7 @@ export function MaterialCheckboxGroup({
         <Input
           id="materials_other"
           name="materials_other"
-          label="Please specify other materials. Separate materials with a comma (,)."
+          label="Please specify other materials"
           value={otherValue}
           onChange={(e) => onOtherValueChange(e.target.value)}
           disabled={disabled}
