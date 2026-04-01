@@ -1,4 +1,4 @@
-import { LocationSuggestionForm } from "@/components/features/location-suggestions/location-suggestion-form";
+import { LocationSuggestionForm } from "@/modules/location-suggestions/components/location-suggestion-form";
 
 export default function SuggestLocationPage() {
   return (
