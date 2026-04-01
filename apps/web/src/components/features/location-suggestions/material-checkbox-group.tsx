@@ -108,7 +108,7 @@ export function MaterialCheckboxGroup({
         <Input
           id="materials_other"
           name="materials_other"
-          label="Please specify other materials"
+          label="Please specify other materials. Separate materials with a comma (,)."
           value={otherValue}
           onChange={(e) => onOtherValueChange(e.target.value)}
           disabled={disabled}
