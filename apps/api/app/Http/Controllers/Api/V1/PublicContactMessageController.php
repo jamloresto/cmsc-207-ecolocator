@@ -15,7 +15,7 @@ use OpenApi\Attributes as OA;
 class PublicContactMessageController extends Controller
 {
     #[OA\Post(
-        path: '/api/v1/contact',
+        path: '/api/v1/contact-messages',
         summary: 'Submit contact form',
         description: 'Public endpoint for submitting contact messages. Rate limited to 5 requests per minute per IP address.',
         tags: ['Public Contact Messages'],

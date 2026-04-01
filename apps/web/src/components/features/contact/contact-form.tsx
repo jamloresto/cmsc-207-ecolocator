@@ -9,13 +9,18 @@ import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-type ContactFormValues = {
-  name: string;
-  email: string;
-  contact_info: string;
-  subject: string;
-  message: string;
-};
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  clearContactState,
+  submitContactRequest,
+} from '@/modules/contact/store/contact.slice';
+import {
+  selectContactError,
+  selectContactSubmitting,
+  selectContactSuccess,
+  selectContactSuccessMessage,
+} from '@/modules/contact/store/contact.selectors';
+import type { ContactFormValues } from '@/modules/contact/types/contact.types';
 
 type ContactFormErrors = Partial<Record<keyof ContactFormValues, string>> & {
   general?: string;
@@ -30,10 +35,27 @@ const initialValues: ContactFormValues = {
 };
 
 export function ContactForm() {
+  const dispatch = useAppDispatch();
+
+  const isSubmitting = useAppSelector(selectContactSubmitting);
+  const isSuccess = useAppSelector(selectContactSuccess);
+  const successMessage = useAppSelector(selectContactSuccessMessage);
+  const error = useAppSelector(selectContactError);
+
   const [values, setValues] = React.useState<ContactFormValues>(initialValues);
   const [errors, setErrors] = React.useState<ContactFormErrors>({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
+
+  React.useEffect(() => {
+    return () => {
+      dispatch(clearContactState());
+    };
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    if (isSuccess) {
+      setValues(initialValues);
+    }
+  }, [isSuccess]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -51,8 +73,8 @@ export function ContactForm() {
       general: '',
     }));
 
-    if (isSuccess) {
-      setIsSuccess(false);
+    if (error || isSuccess) {
+      dispatch(clearContactState());
     }
   }
 
@@ -72,19 +94,22 @@ export function ContactForm() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    setIsSuccess(false);
-    setErrors({});
+    setErrors((prev) => ({
+      ...prev,
+      general: '',
+    }));
 
     if (!validate()) return;
 
-    setIsSubmitting(true);
-
-    // UI only for now
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      setValues(initialValues);
-    }, 800);
+    dispatch(
+      submitContactRequest({
+        name: values.name.trim(),
+        email: values.email.trim(),
+        contact_info: values.contact_info.trim() || null,
+        subject: values.subject.trim(),
+        message: values.message.trim(),
+      }),
+    );
   }
 
   return (
@@ -97,10 +122,7 @@ export function ContactForm() {
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
-          <FormField
-            htmlFor="name"
-            error={errors.name}
-          >
+          <FormField htmlFor="name" error={errors.name}>
             <Input
               id="name"
               name="name"
@@ -111,10 +133,7 @@ export function ContactForm() {
             />
           </FormField>
 
-          <FormField
-            htmlFor="email"
-            error={errors.email}
-          >
+          <FormField htmlFor="email" error={errors.email}>
             <Input
               id="email"
               name="email"
@@ -126,10 +145,7 @@ export function ContactForm() {
             />
           </FormField>
 
-          <FormField
-            htmlFor="contact_info"
-            error={errors.contact_info}
-          >
+          <FormField htmlFor="contact_info" error={errors.contact_info}>
             <Input
               id="contact_info"
               name="contact_info"
@@ -155,10 +171,7 @@ export function ContactForm() {
             />
           </FormField>
 
-          <FormField
-            htmlFor="message"
-            error={errors.message}
-          >
+          <FormField htmlFor="message" error={errors.message}>
             <Textarea
               id="message"
               name="message"
@@ -170,15 +183,15 @@ export function ContactForm() {
             />
           </FormField>
 
-          {errors.general ? (
+          {error ? (
             <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border px-4 py-3 text-sm">
-              {errors.general}
+              {error}
             </div>
           ) : null}
 
-          {isSuccess ? (
+          {isSuccess && successMessage ? (
             <div className="rounded-lg border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
-              Your message has been prepared successfully.
+              {successMessage}
             </div>
           ) : null}
 
