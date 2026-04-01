@@ -334,14 +334,6 @@
                                             "type": "string",
                                             "example": "Login successful."
                                         },
-                                        "token": {
-                                            "type": "string",
-                                            "example": "1|abcdef123456"
-                                        },
-                                        "token_type": {
-                                            "type": "string",
-                                            "example": "Bearer"
-                                        },
                                         "user": {
                                             "properties": {
                                                 "id": {
@@ -473,7 +465,7 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": []
+                        "sanctum": []
                     }
                 ]
             }
@@ -686,6 +678,65 @@
                     },
                     "404": {
                         "description": "Contact message not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/dashboard/stats": {
+            "get": {
+                "tags": [
+                    "Admin Dashboard"
+                ],
+                "summary": "Get admin dashboard statistics",
+                "operationId": "997d9ce1e1863d409e844a724cbd240c",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard statistics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "recycling_centers_count": {
+                                                    "type": "integer",
+                                                    "example": 128
+                                                },
+                                                "material_types_count": {
+                                                    "type": "integer",
+                                                    "example": 12
+                                                },
+                                                "pending_location_suggestions_count": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "unread_contact_messages_count": {
+                                                    "type": "integer",
+                                                    "example": 6
+                                                },
+                                                "contact_messages_this_month_count": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     }
                 },
                 "security": [
@@ -1982,6 +2033,10 @@
         {
             "name": "Admin Auth",
             "description": "Admin Auth"
+        },
+        {
+            "name": "Admin Dashboard",
+            "description": "Admin Dashboard"
         },
         {
             "name": "Admin Material Types",

@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminLoginRequest;
 use App\Http\Resources\AdminUserResource;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
@@ -33,8 +32,6 @@ class AuthController extends Controller
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'message', type: 'string', example: 'Login successful.'),
-                        new OA\Property(property: 'token', type: 'string', example: '1|abcdef123456'),
-                        new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
                         new OA\Property(
                             property: 'user',
                             properties: [
@@ -57,28 +54,32 @@ class AuthController extends Controller
     )]
     public function login(AdminLoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $credentials = $request->validated();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! Auth::guard('web')->attempt($credentials)) {
             return response()->json([
-                'message' => 'Invalid credentials.'
+                'message' => 'Invalid credentials.',
             ], 401);
         }
 
-        if (!$user->hasAdminAccess() || !$user->is_active) {
+        $request->session()->regenerate();
+
+        /** @var \App\Models\User|null $user */
+$user = Auth::guard('web')->user();
+
+        if (! $user || ! $user->hasAdminAccess() || ! $user->is_active) {
+            Auth::guard('web')->logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
             return response()->json([
-                'message' => 'Your account is not allowed to access the admin panel.'
+                'message' => 'Your account is not allowed to access the admin panel.',
             ], 403);
         }
 
-        $user->tokens()->delete();
-
-        $token = $user->createToken('admin-token')->plainTextToken;
-
         return response()->json([
             'message' => 'Login successful.',
-            'token' => $token,
-            'token_type' => 'Bearer',
             'user' => new AdminUserResource($user),
         ]);
     }
@@ -119,10 +120,10 @@ class AuthController extends Controller
         ]);
     }
 
-    #[OA\Post(
+        #[OA\Post(
         path: '/api/v1/admin/logout',
         summary: 'Logout admin',
-        security: [['bearerAuth' => []]],
+        security: [['sanctum' => []]],
         tags: ['Admin Auth'],
         responses: [
             new OA\Response(
@@ -140,7 +141,10 @@ class AuthController extends Controller
     )]
     public function logout(Request $request)
     {
-        $request->user()?->currentAccessToken()?->delete();
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'message' => 'Logged out successfully.',
