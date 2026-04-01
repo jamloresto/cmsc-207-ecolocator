@@ -1638,14 +1638,14 @@
                 ]
             }
         },
-        "/api/v1/contact": {
+        "/api/v1/contact-messages": {
             "post": {
                 "tags": [
                     "Public Contact Messages"
                 ],
                 "summary": "Submit contact form",
                 "description": "Public endpoint for submitting contact messages. Rate limited to 5 requests per minute per IP address.",
-                "operationId": "ad64f1637cf689b57095cc8602b61f7c",
+                "operationId": "5ea8acee7159a970a1f10297e07cab99",
                 "requestBody": {
                     "required": true,
                     "content": {
