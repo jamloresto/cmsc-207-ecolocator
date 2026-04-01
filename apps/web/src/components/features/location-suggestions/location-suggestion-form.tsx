@@ -14,15 +14,13 @@ import { MaterialCheckboxGroup } from './material-checkbox-group';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   clearLocationSuggestionState,
-  submitLocationSuggestionRequest,
-} from '@/modules/location-suggestions/store/location-suggestions.slice';
-import {
   selectLocationSuggestionError,
   selectLocationSuggestionSubmitting,
   selectLocationSuggestionSuccess,
   selectLocationSuggestionSuccessMessage,
-} from '@/modules/location-suggestions/store/location-suggestions.selectors';
-import type { LocationSuggestionFormValues } from '@/modules/location-suggestions/types/location-suggestions.types';
+  submitLocationSuggestionRequest,
+} from '@/modules/location-suggestions';
+import type { LocationSuggestionFormValues } from '@/modules/location-suggestions';
 import { useMaterialTypes } from '@/modules/material-types';
 
 type LocationSuggestionFormErrors = Partial<

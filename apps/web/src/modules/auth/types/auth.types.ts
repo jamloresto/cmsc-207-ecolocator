@@ -1,3 +1,8 @@
+export type AdminLoginFormValues = {
+  email: string;
+  password: string;
+};
+
 export type AdminLoginPayload = {
   email: string;
   password: string;

@@ -10,17 +10,14 @@ import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { clearAuthError, loginRequest } from '@/modules/auth/store/auth.slice';
 import {
+  clearAuthError,
+  loginRequest,
   selectAuthError,
   selectAuthLoading,
   selectIsAuthenticated,
-} from '@/modules/auth/store/auth.selectors';
-
-type AdminLoginFormValues = {
-  email: string;
-  password: string;
-};
+} from '@/modules/auth';
+import type { AdminLoginFormValues } from '@/modules/auth';
 
 type AdminLoginFormErrors = Partial<Record<keyof AdminLoginFormValues, string>>;
 
