@@ -1,9 +1,9 @@
-import { LoginForm } from '@/components/features/admin/login-form';
+import { AdminLoginForm } from "@/components/features/admin/login-form";
 
 export default function AdminLoginPage() {
   return (
     <main className="bg-background min-h-screen">
-      <div className="mx-auto flex min-h-screen w-full max-w-md items-center justify-center px-6 py-12">
+      <div className="mx-auto flex min-h-screen w-full max-w-md items-center justify-center px-4 py-12 md:px-6">
         <div className="w-full">
           <div className="mb-8 text-center">
             <p className="text-primary text-sm font-medium tracking-[0.2em] uppercase">
@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
             </p>
           </div>
 
-          <LoginForm />
+          <AdminLoginForm />
         </div>
       </div>
     </main>

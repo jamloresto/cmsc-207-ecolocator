@@ -2,110 +2,156 @@
 
 import * as React from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 
-export function LoginForm() {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { clearAuthError, loginRequest } from '@/modules/auth/store/auth.slice';
+import {
+  selectAuthError,
+  selectAuthLoading,
+  selectIsAuthenticated,
+} from '@/modules/auth/store/auth.selectors';
+
+type AdminLoginFormValues = {
+  email: string;
+  password: string;
+};
+
+type AdminLoginFormErrors = Partial<Record<keyof AdminLoginFormValues, string>>;
+
+const initialValues: AdminLoginFormValues = {
+  email: '',
+  password: '',
+};
+
+export function AdminLoginForm() {
+  const router = useRouter();
+  
+  const dispatch = useAppDispatch();
+
+  const isLoading = useAppSelector(selectAuthLoading);
+  const error = useAppSelector(selectAuthError);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+  const [values, setValues] =
+    React.useState<AdminLoginFormValues>(initialValues);
+  const [errors, setErrors] = React.useState<AdminLoginFormErrors>({});
   const [showPassword, setShowPassword] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  React.useEffect(() => {
+    return () => {
+      dispatch(clearAuthError());
+    };
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/admin');
+    }
+  }, [isAuthenticated, router]);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: '',
+    }));
+
+    if (error) {
+      dispatch(clearAuthError());
+    }
+  }
+
+  function validate() {
+    const nextErrors: AdminLoginFormErrors = {};
+
+    if (!values.email.trim()) {
+      nextErrors.email = 'Email is required.';
+    }
+
+    if (!values.password.trim()) {
+      nextErrors.password = 'Password is required.';
+    }
+
+    setErrors(nextErrors);
+
+    return Object.keys(nextErrors).length === 0;
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
 
-    if (!email.trim() || !password.trim()) {
-      setError('Please enter both email and password.');
-      return;
-    }
+    if (!validate()) return;
 
-    try {
-      setIsSubmitting(true);
-
-      // Temporary mock delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Replace this later with your actual API call
-      console.log('Login payload:', { email, password });
-
-      // Example:
-      // const response = await fetch('/api/v1/admin/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      //   credentials: 'include',
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error('Invalid email or password.');
-      // }
-
-      // redirect after success
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Something went wrong. Please try again.',
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    dispatch(
+      loginRequest({
+        email: values.email.trim(),
+        password: values.password,
+      }),
+    );
   }
 
   return (
     <Card className="border-border shadow-sm">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-xl font-semibold">Admin Login</CardTitle>
+      <CardHeader>
+        <CardTitle className="text-foreground text-xl font-semibold">
+          Admin Login
+        </CardTitle>
       </CardHeader>
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="text-foreground text-sm font-medium"
-            >
-              Email
-            </label>
+          <FormField
+            htmlFor="email"
+            helperText="Use your admin email address."
+            error={errors.email}
+          >
             <Input
               id="email"
+              name="email"
               type="email"
-              placeholder="admin@example.com"
+              label="Email Address"
+              value={values.email}
+              onChange={handleChange}
+              disabled={isLoading}
               autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isSubmitting}
             />
-          </div>
+          </FormField>
 
-          <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="text-foreground text-sm font-medium"
-            >
-              Password
-            </label>
-
+          <FormField
+            htmlFor="password"
+            helperText="Enter your account password."
+            error={errors.password}
+          >
             <div className="relative">
               <Input
                 id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
+                label="Password"
+                value={values.password}
+                onChange={handleChange}
+                disabled={isLoading}
                 autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isSubmitting}
-                className="pr-11"
+                className="pr-12"
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                disabled={isSubmitting}
-                className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex w-11 items-center justify-center transition"
+                disabled={isLoading}
+                className="text-muted-foreground hover:text-foreground absolute top-1/2 right-4 -translate-y-1/2 transition"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? (
@@ -115,16 +161,16 @@ export function LoginForm() {
                 )}
               </button>
             </div>
-          </div>
+          </FormField>
 
           {error ? (
-            <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-xl border px-3 py-2 text-sm">
+            <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border px-4 py-3 text-sm">
               {error}
             </div>
           ) : null}
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? (
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing in...
