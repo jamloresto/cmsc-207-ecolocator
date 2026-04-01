@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\AdminUserController;
 use App\Http\Controllers\Api\V1\Admin\AuthController;
 use App\Http\Controllers\Api\V1\Admin\ContactMessageController;
+use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\LocationSuggestionController;
 use App\Http\Controllers\Api\V1\Admin\MaterialTypeController;
 use App\Http\Controllers\Api\V1\Admin\WasteCollectionLocationController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Api\V1\PublicContactMessageController;
 use App\Http\Controllers\Api\V1\PublicLocationSuggestionController;
 use App\Http\Controllers\Api\V1\PublicMaterialTypeController;
 use App\Http\Controllers\Api\V1\PublicWasteCollectionLocationController;
+use Illuminate\Http\Request;
 
 Route::prefix('v1')->group(function () {
     Route::get('/health', function (): JsonResponse {
@@ -32,7 +34,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/contact-messages', [PublicContactMessageController::class, 'store'])
         ->middleware('throttle:public-contact');
     Route::post('/location-suggestions', [PublicLocationSuggestionController::class, 'store'])
-        ->middleware('throttle:public-suggestions');;
+        ->middleware('throttle:public-suggestions');
     
     Route::prefix('admin')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
@@ -40,6 +42,8 @@ Route::prefix('v1')->group(function () {
         Route::middleware(['auth:sanctum', 'admin'])->group(function () {
             Route::get('/me', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
+
+            Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
             Route::apiResource('locations', WasteCollectionLocationController::class);
 

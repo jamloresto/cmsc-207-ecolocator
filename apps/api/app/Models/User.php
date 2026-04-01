@@ -45,6 +45,6 @@ class User extends Authenticatable
 
     public function hasAdminAccess(): bool
     {
-        return in_array($this->role, ['super_admin', 'editor']);
+        return in_array($this->role, ['super_admin', 'editor'], true);
     }
 }

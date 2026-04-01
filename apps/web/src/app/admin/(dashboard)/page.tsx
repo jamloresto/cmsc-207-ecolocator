@@ -1,4 +1,4 @@
-import { DashboardStats } from '@/modules/admin/dashboard/components/dashboard-stats';
+import { DashboardStats } from '@/modules/admin/components/dashboard/dashboard-stats';
 
 export default function AdminDashboardPage() {
   return (
