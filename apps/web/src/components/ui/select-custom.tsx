@@ -36,7 +36,7 @@ export function SelectCustom({
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
-          'border-input bg-background text-foreground flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-sm',
+          'border-input bg-background text-foreground flex w-full items-center justify-between rounded-lg border px-4 py-3 text-sm',
           className,
         )}
       >
