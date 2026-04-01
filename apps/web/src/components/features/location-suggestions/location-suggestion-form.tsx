@@ -23,6 +23,7 @@ import {
   selectLocationSuggestionSuccessMessage,
 } from '@/modules/location-suggestions/store/location-suggestions.selectors';
 import type { LocationSuggestionFormValues } from '@/modules/location-suggestions/types/location-suggestions.types';
+import { useMaterialTypes } from '@/modules/material-types';
 
 type LocationSuggestionFormErrors = Partial<
   Record<
@@ -61,6 +62,8 @@ export function LocationSuggestionForm() {
   const isSuccess = useAppSelector(selectLocationSuggestionSuccess);
   const successMessage = useAppSelector(selectLocationSuggestionSuccessMessage);
   const error = useAppSelector(selectLocationSuggestionError);
+
+  const { materialTypes } = useMaterialTypes();
 
   const [values, setValues] =
     React.useState<LocationSuggestionFormValues>(initialValues);
@@ -298,6 +301,7 @@ export function LocationSuggestionForm() {
             label="Materials Accepted"
           >
             <MaterialCheckboxGroup
+              options={materialTypes}
               selectedValues={values.materials_accepted}
               otherValue={values.materials_other}
               onSelectedValuesChange={(nextValues) => {

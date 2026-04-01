@@ -25,7 +25,7 @@ class PublicMaterialTypeController extends Controller
         $materialTypes = MaterialType::query()
             ->where('is_active', true)
             ->orderBy('name')
-            ->get();
+            ->get(['name', 'slug', 'description']);
 
         return response()->json([
             'success' => true,
