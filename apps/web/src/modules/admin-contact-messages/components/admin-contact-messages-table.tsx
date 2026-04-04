@@ -6,10 +6,19 @@ import Link from 'next/link';
 
 import { StatusPill } from '@/components/ui/status-pill';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableHeaderCell,
+  TableCell,
+} from '@/components/shared/table';
 
 import { cn } from '@/lib/utils';
 import { archiveAdminContactMessage } from '@/modules/admin-contact-messages';
 import type { ContactMessage } from '@/modules/admin-contact-messages';
+import { TableEmptyState } from '@/components/shared/table-empty-state';
 
 interface AdminContactMessagesTableProps {
   messages: ContactMessage[];
@@ -56,161 +65,143 @@ export function AdminContactMessagesTable({
   }
 
   return (
-    <div className="border-border bg-card overflow-hidden rounded-2xl border">
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse">
-          <thead className="bg-muted/40">
-            <tr className="text-left">
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Sender
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Subject
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Message
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Status
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Date
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Action
-              </th>
-            </tr>
-          </thead>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableHeaderCell>Sender</TableHeaderCell>
+            <TableHeaderCell>Subject</TableHeaderCell>
+            <TableHeaderCell>Message</TableHeaderCell>
+            <TableHeaderCell>Status</TableHeaderCell>
+            <TableHeaderCell>Date</TableHeaderCell>
+            <TableHeaderCell>Action</TableHeaderCell>
+          </TableRow>
+        </TableHead>
 
-          <tbody>
-            {loading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <tr key={index} className="border-border border-t">
-                  <td className="px-4 py-4">
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-3 w-40" />
-                      <Skeleton className="h-3 w-24" />
-                    </div>
-                  </td>
+        <tbody>
+          {loading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-40" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                </TableCell>
 
-                  <td className="px-4 py-4">
-                    <Skeleton className="h-4 w-36" />
-                  </td>
+                <TableCell>
+                  <Skeleton className="h-4 w-36" />
+                </TableCell>
 
-                  <td className="px-4 py-4">
-                    <Skeleton className="h-4 w-56" />
-                  </td>
+                <TableCell>
+                  <Skeleton className="h-4 w-56" />
+                </TableCell>
 
-                  <td className="px-4 py-4">
-                    <Skeleton className="h-6 w-24 rounded-full" />
-                  </td>
+                <TableCell>
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                </TableCell>
 
-                  <td className="px-4 py-4">
-                    <Skeleton className="h-4 w-24" />
-                  </td>
+                <TableCell>
+                  <Skeleton className="h-4 w-24" />
+                </TableCell>
 
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-2">
-                      <Skeleton className="h-8 w-8 rounded-md" />
-                      <Skeleton className="h-8 w-8 rounded-md" />
-                      <Skeleton className="h-8 w-8 rounded-md" />
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : messages.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="text-muted-foreground px-4 py-10 text-center text-sm"
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : messages.length === 0 ? (
+            <TableEmptyState
+              colSpan={6}
+              title="No contact messages"
+              description="No inquiries yet. New messages will appear here."
+            />
+          ) : (
+            messages.map((message) => {
+              const isArchiving = archivingId === message.id;
+
+              return (
+                <TableRow
+                  key={message.id}
+                  className={cn(
+                    'hover:bg-muted/50 cursor-pointer',
+                    message.status === 'new' &&
+                      'bg-primary/5 border-primary border-l-3 border-l-success!',
+                    isArchiving && 'opacity-60',
+                  )}
                 >
-                  No contact messages found.
-                </td>
-              </tr>
-            ) : (
-              messages.map((message) => {
-                const isArchiving = archivingId === message.id;
-
-                return (
-                  <tr
-                    key={message.id}
-                    className={cn(
-                      'border-border hover:bg-muted/20 border-t align-top transition',
-                      message.status === 'new' && 'bg-primary/5',
-                      isArchiving && 'opacity-60',
-                    )}
-                  >
-                    <td className="px-4 py-4">
-                      <div className="space-y-1">
-                        <p className="text-foreground text-sm font-semibold">
-                          {message.name}
+                  <TableCell>
+                    <div className="space-y-1">
+                      <p className="text-foreground text-sm font-semibold">
+                        {message.name}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {message.email}
+                      </p>
+                      {message.contact_info ? (
+                        <p className="text-muted-foreground text-xs">
+                          {message.contact_info}
                         </p>
-                        <p className="text-muted-foreground text-sm">
-                          {message.email}
-                        </p>
-                        {message.contact_info ? (
-                          <p className="text-muted-foreground text-xs">
-                            {message.contact_info}
-                          </p>
-                        ) : null}
-                      </div>
-                    </td>
+                      ) : null}
+                    </div>
+                  </TableCell>
 
-                    <td className="text-foreground px-4 py-4 text-sm font-medium">
-                      {message.subject}
-                    </td>
+                  <TableCell className="text-foreground font-medium">
+                    {message.subject}
+                  </TableCell>
 
-                    <td className="text-muted-foreground px-4 py-4 text-sm">
-                      {truncate(message.message)}
-                    </td>
+                  <TableCell className={cn("text-muted-foreground", message.status === 'new' && 'font-medium text-foreground')}>
+                    {truncate(message.message)}
+                  </TableCell>
 
-                    <td className="px-4 py-4">
-                      <StatusPill status={message.status} />
-                    </td>
+                  <TableCell>
+                    <StatusPill status={message.status} />
+                  </TableCell>
 
-                    <td className="text-muted-foreground px-4 py-4 text-sm">
-                      {formatDate(message.created_at)}
-                    </td>
+                  <TableCell>{formatDate(message.created_at)}</TableCell>
 
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-1.5">
-                        <Link
-                          href={`/admin/contact-messages/${message.id}`}
-                          className="hover:bg-muted inline-flex rounded-md p-1.5 transition"
-                          title="View message"
+                  <TableCell>
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        href={`/admin/contact-messages/${message.id}`}
+                        className="hover:bg-muted inline-flex rounded-md p-1.5 transition"
+                        title="View message"
+                      >
+                        <Eye className="text-muted-foreground hover:text-foreground h-4 w-4" />
+                      </Link>
+
+                      <Link
+                        href={`/admin/contact-messages/${message.id}`}
+                        className="hover:bg-muted inline-flex rounded-md p-1.5 transition"
+                        title="Reply to message"
+                      >
+                        <Mail className="text-muted-foreground hover:text-primary h-4 w-4" />
+                      </Link>
+
+                      {message.status !== 'archived' && (
+                        <button
+                          type="button"
+                          onClick={() => handleArchive(message)}
+                          disabled={isArchiving}
+                          className="hover:bg-muted inline-flex rounded-md p-1.5 transition disabled:cursor-not-allowed disabled:opacity-50"
+                          title="Archive message"
                         >
-                          <Eye className="text-muted-foreground hover:text-foreground h-4 w-4" />
-                        </Link>
-
-                        <Link
-                          href={`/admin/contact-messages/${message.id}`}
-                          className="hover:bg-muted inline-flex rounded-md p-1.5 transition"
-                          title="Reply to message"
-                        >
-                          <Mail className="text-muted-foreground hover:text-primary h-4 w-4" />
-                        </Link>
-
-                        {message.status !== 'archived' && (
-                          <button
-                            type="button"
-                            onClick={() => handleArchive(message)}
-                            disabled={isArchiving}
-                            className="hover:bg-muted inline-flex rounded-md p-1.5 transition disabled:cursor-not-allowed disabled:opacity-50"
-                            title="Archive message"
-                          >
-                            <Archive className="text-muted-foreground hover:text-destructive h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                          <Archive className="text-muted-foreground hover:text-destructive h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          )}
+        </tbody>
+      </Table>
+    </TableContainer>
   );
 }
