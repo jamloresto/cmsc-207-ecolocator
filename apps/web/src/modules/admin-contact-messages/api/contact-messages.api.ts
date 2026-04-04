@@ -1,8 +1,11 @@
 import { API_BASE_URL } from '@/lib/api';
 import { apiClient } from '@/lib/api-client';
 import type {
+  ContactMessage,
   ContactMessagesListResponse,
   ContactMessagesParams,
+  ReplyContactMessagePayload,
+  ReplyContactMessageResponse,
 } from '@/modules/admin-contact-messages';
 
 function buildQuery(params: ContactMessagesParams) {
@@ -33,7 +36,38 @@ export async function getAdminContactMessages(
   params: ContactMessagesParams = {},
 ): Promise<ContactMessagesListResponse> {
   const response = await apiClient.get(
-    `${API_BASE_URL}/api/v1/admin/contact-messages${buildQuery(params)}`,);
+    `/api/v1/admin/contact-messages${buildQuery(params)}`,
+  );
+
+  return response.data;
+}
+
+export async function getAdminContactMessageById(
+  id: number | string,
+): Promise<{ data: ContactMessage }> {
+  const response = await apiClient.get(`/api/v1/admin/contact-messages/${id}`);
+
+  return response.data;
+}
+
+export async function archiveAdminContactMessage(
+  id: number | string,
+): Promise<{ message: string; data?: ContactMessage }> {
+  const response = await apiClient.patch(
+    `/api/v1/admin/contact-messages/${id}/archive`,
+  );
+
+  return response.data;
+}
+
+export async function replyToAdminContactMessage(
+  id: number | string,
+  payload: ReplyContactMessagePayload,
+): Promise<ReplyContactMessageResponse> {
+  const response = await apiClient.post(
+    `/api/v1/admin/contact-messages/${id}/reply`,
+    payload,
+  );
 
   return response.data;
 }

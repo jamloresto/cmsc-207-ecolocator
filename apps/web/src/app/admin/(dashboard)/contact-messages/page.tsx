@@ -1,13 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ContactMessagesToolbar } from '@/modules/admin-contact-messages/components/contact-messages-toolbar';
-import { AdminContactMessagesTable } from '@/modules/admin-contact-messages/components/admin-contact-messages-table';
-import { getAdminContactMessages } from '@/modules/admin-contact-messages/api/contact-messages.api';
+import { MailCheck, MailMinus, MailOpen, MailPlus, Mails } from 'lucide-react';
+
+import { SelectCustom } from '@/components/ui/select-custom';
+import { Pagination } from '@/components/shared/pagination';
+import { TableToolbar } from '@/components/shared/table-toolbar';
+
+import {
+  AdminContactMessagesTable,
+  getAdminContactMessages,
+} from '@/modules/admin-contact-messages';
 import type {
   ContactMessage,
   ContactMessageStatus,
-} from '@/modules/admin-contact-messages/types/contact-message.types';
+  ContactMessagesListResponse,
+} from '@/modules/admin-contact-messages';
 
 export default function AdminContactMessagesPage() {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -17,6 +25,19 @@ export default function AdminContactMessagesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
+
+  const [pagination, setPagination] = useState<
+    ContactMessagesListResponse['meta'] | null
+  >(null);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setSearch(searchInput);
+      setPage(1);
+    }, 400);
+
+    return () => window.clearTimeout(timeout);
+  }, [searchInput]);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,7 +55,8 @@ export default function AdminContactMessagesPage() {
         });
 
         if (!cancelled) {
-          setMessages(response.data);
+          setMessages(response.data ?? []);
+          setPagination(response.meta ?? null);
         }
       } catch (err) {
         if (!cancelled) {
@@ -58,14 +80,13 @@ export default function AdminContactMessagesPage() {
     };
   }, [search, status, page]);
 
-  useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      setSearch(searchInput);
-      setPage(1);
-    }, 400);
-
-    return () => window.clearTimeout(timeout);
-  }, [searchInput]);
+  function handleArchived(updatedMessage: ContactMessage, archivedId: number) {
+    setMessages((prev) =>
+      prev.map((message) =>
+        message.id === archivedId ? updatedMessage : message,
+      ),
+    );
+  }
 
   return (
     <main className="space-y-6 p-4 md:p-6">
@@ -78,17 +99,49 @@ export default function AdminContactMessagesPage() {
         </p>
       </div>
 
-      <ContactMessagesToolbar
-        search={searchInput}
-        status={status}
-        onSearchChange={(value) => {
-          setSearch(value);
-          setPage(1);
-        }}
-        onStatusChange={(value) => {
-          setStatus(value);
-          setPage(1);
-        }}
+      <TableToolbar
+        searchValue={searchInput}
+        onSearchChange={(value) => setSearchInput(value)}
+        searchPlaceholder="Search name, email, subject..."
+        filters={
+          <SelectCustom
+            className='min-w-48 lg:min-w-72'
+            value={status}
+            onChange={(value) => {
+              setStatus(value as '' | ContactMessageStatus);
+              setPage(1);
+            }}
+            options={[
+              {
+                label: 'All statuses',
+                value: '',
+                icon: <Mails className="text-warning h-4 w-4" />,
+              },
+              {
+                label: 'New',
+                value: 'new',
+                icon: <MailCheck className="text-primary h-4 w-4" />,
+              },
+              {
+                label: 'Read',
+                value: 'read',
+                icon: <MailOpen className="text-muted-foreground h-4 w-4" />,
+              },
+              {
+                label: 'Replied',
+                value: 'replied',
+                icon: (
+                  <MailPlus className="text-secondary-foreground h-4 w-4" />
+                ),
+              },
+              {
+                label: 'Archived',
+                value: 'archived',
+                icon: <MailMinus className="text-muted-foreground h-4 w-4" />,
+              },
+            ]}
+          />
+        }
       />
 
       {error ? (
@@ -97,7 +150,19 @@ export default function AdminContactMessagesPage() {
         </div>
       ) : null}
 
-      <AdminContactMessagesTable messages={messages} loading={loading} />
+      <AdminContactMessagesTable
+        messages={messages}
+        loading={loading}
+        onArchived={handleArchived}
+      />
+
+      {!loading && pagination ? (
+        <Pagination
+          currentPage={pagination.current_page}
+          totalPages={pagination.last_page}
+          onPageChange={(page) => setPage(page)}
+        />
+      ) : null}
     </main>
   );
 }
