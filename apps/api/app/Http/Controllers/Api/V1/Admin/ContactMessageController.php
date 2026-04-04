@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateContactMessageStatusRequest;
 use App\Models\ContactMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -64,41 +63,29 @@ class ContactMessageController extends Controller
             ),
         ],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Contact messages retrieved successfully'
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Unauthorized'
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Forbidden'
-            )
+            new OA\Response(response: 200, description: 'Contact messages retrieved successfully'),
+            new OA\Response(response: 401, description: 'Unauthorized'),
+            new OA\Response(response: 403, description: 'Forbidden'),
         ]
     )]
     public function index(Request $request): JsonResponse
     {
         $query = ContactMessage::query();
 
-        // SEARCH (name, email, subject)
         if ($request->filled('search')) {
             $search = trim($request->search);
 
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhere('subject', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('subject', 'like', "%{$search}%");
             });
         }
 
-        // FILTER BY STATUS
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // DATE RANGE
         if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
@@ -107,7 +94,6 @@ class ContactMessageController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        // SORTING
         $allowedSortFields = [
             'created_at',
             'updated_at',
@@ -117,11 +103,11 @@ class ContactMessageController extends Controller
             'subject',
         ];
 
-        $sortBy = in_array($request->get('sort_by'), $allowedSortFields)
+        $sortBy = in_array($request->get('sort_by'), $allowedSortFields, true)
             ? $request->get('sort_by')
             : 'created_at';
 
-        $sortOrder = in_array(strtolower($request->get('sort_order')), ['asc', 'desc'])
+        $sortOrder = in_array(strtolower($request->get('sort_order')), ['asc', 'desc'], true)
             ? strtolower($request->get('sort_order'))
             : 'desc';
 
@@ -146,14 +132,8 @@ class ContactMessageController extends Controller
             )
         ],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Contact message retrieved successfully'
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Contact message not found'
-            )
+            new OA\Response(response: 200, description: 'Contact message retrieved successfully'),
+            new OA\Response(response: 404, description: 'Contact message not found'),
         ]
     )]
     public function show(ContactMessage $contactMessage): JsonResponse
@@ -166,13 +146,49 @@ class ContactMessageController extends Controller
         }
 
         return response()->json([
-            'data' => $contactMessage->fresh(),
+            'data' => $contactMessage,
         ]);
     }
 
     #[OA\Patch(
-        path: '/api/v1/admin/contact-messages/{id}/status',
-        summary: 'Update contact message status',
+        path: '/api/v1/admin/contact-messages/{id}/archive',
+        summary: 'Archive contact message',
+        tags: ['Admin Contact Messages'],
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Contact message archived successfully'),
+            new OA\Response(response: 404, description: 'Contact message not found'),
+        ]
+    )]
+    public function archive(ContactMessage $contactMessage): JsonResponse
+    {
+        $data = [
+            'status' => 'archived',
+        ];
+
+        if ($contactMessage->read_at === null) {
+            $data['read_at'] = now();
+        }
+
+        $contactMessage->update($data);
+
+        return response()->json([
+            'message' => 'Contact message archived successfully.',
+            'data' => $contactMessage->fresh(),
+        ]);
+    }
+
+    #[OA\Post(
+        path: '/api/v1/admin/contact-messages/{id}/reply',
+        summary: 'Reply to contact message',
         tags: ['Admin Contact Messages'],
         security: [['sanctum' => []]],
         parameters: [
@@ -186,88 +202,48 @@ class ContactMessageController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['status'],
+                required: ['reply_message'],
                 properties: [
                     new OA\Property(
-                        property: 'status',
+                        property: 'reply_message',
                         type: 'string',
-                        enum: ['new', 'read', 'replied', 'archived'],
-                        example: 'replied'
+                        example: 'Thank you for your inquiry. We will get back to you shortly.'
                     ),
                 ]
             )
         ),
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Contact message status updated successfully'
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Validation error'
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Contact message not found'
-            )
+            new OA\Response(response: 200, description: 'Reply sent successfully'),
+            new OA\Response(response: 422, description: 'Validation error'),
+            new OA\Response(response: 404, description: 'Contact message not found'),
         ]
     )]
-    public function updateStatus(
-        UpdateContactMessageStatusRequest $request,
-        ContactMessage $contactMessage
-    ): JsonResponse {
-        $status = $request->status;
+    public function reply(Request $request, ContactMessage $contactMessage): JsonResponse
+    {
+        $validated = $request->validate([
+            'reply_message' => ['required', 'string'],
+        ]);
+
+        // TODO:
+        // Send email / notification here using $validated['reply_message']
 
         $data = [
-            'status' => $status,
+            'status' => 'replied',
         ];
 
-        if ($status === 'read' && $contactMessage->read_at === null) {
+        if ($contactMessage->read_at === null) {
             $data['read_at'] = now();
         }
 
-        if ($status === 'replied' && $contactMessage->replied_at === null) {
+        if ($contactMessage->replied_at === null) {
             $data['replied_at'] = now();
         }
 
         $contactMessage->update($data);
 
         return response()->json([
-            'message' => 'Contact message status updated successfully.',
+            'message' => 'Reply sent successfully.',
             'data' => $contactMessage->fresh(),
-        ]);
-    }
-
-    #[OA\Delete(
-        path: '/api/v1/admin/contact-messages/{id}',
-        summary: 'Delete contact message',
-        tags: ['Admin Contact Messages'],
-        security: [['sanctum' => []]],
-        parameters: [
-            new OA\Parameter(
-                name: 'id',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer', example: 1)
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Contact message deleted successfully'
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Contact message not found'
-            )
-        ]
-    )]
-    public function destroy(ContactMessage $contactMessage): JsonResponse
-    {
-        $contactMessage->delete();
-
-        return response()->json([
-            'message' => 'Contact message deleted successfully.',
         ]);
     }
 }
