@@ -47,9 +47,13 @@ Route::prefix('v1')->group(function () {
 
             Route::apiResource('locations', WasteCollectionLocationController::class);
 
-            Route::post('/material-types', [MaterialTypeController::class, 'store']);
-            Route::put('/material-types/{id}', [MaterialTypeController::class, 'update']);
-            Route::delete('/material-types/{id}', [MaterialTypeController::class, 'destroy']);
+            Route::prefix('material-types')->group(function () {
+                Route::get('/', [MaterialTypeController::class, 'index']);
+                Route::get('/{materialType}', [MaterialTypeController::class, 'show']);
+                Route::post('/', [MaterialTypeController::class, 'store']);
+                Route::put('/{materialType}', [MaterialTypeController::class, 'update']);
+                Route::patch('/{materialType}/status', [MaterialTypeController::class, 'updateStatus']);
+            });
 
             Route::prefix('contact-messages')->group(function () {
                 Route::get('/', [ContactMessageController::class, 'index']);

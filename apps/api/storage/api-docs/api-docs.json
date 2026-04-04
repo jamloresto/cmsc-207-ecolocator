@@ -1091,6 +1091,83 @@
             }
         },
         "/api/v1/admin/material-types": {
+            "get": {
+                "tags": [
+                    "Admin Material Types"
+                ],
+                "summary": "List material types",
+                "operationId": "960f5db43746a5d78843adee9aebf644",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search by name or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "is_active",
+                        "in": "query",
+                        "description": "Filter by active status",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Sort field",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "name",
+                                "created_at",
+                                "updated_at"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "description": "Sort direction",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Material types fetched successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Admin Material Types"
@@ -1143,16 +1220,50 @@
                 ]
             }
         },
-        "/api/v1/admin/material-types/{id}": {
+        "/api/v1/admin/material-types/{materialType}": {
+            "get": {
+                "tags": [
+                    "Admin Material Types"
+                ],
+                "summary": "Get a material type",
+                "operationId": "43359e24e1c48959b18ada07f4f6bb98",
+                "parameters": [
+                    {
+                        "name": "materialType",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Material type fetched successfully"
+                    },
+                    "404": {
+                        "description": "Material type not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
                     "Admin Material Types"
                 ],
                 "summary": "Update a material type",
-                "operationId": "ae5f748727379f88a5ea07f16fa6d18a",
+                "operationId": "1d7ba0f5aed8134fb3745662e9029c23",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "materialType",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1208,16 +1319,18 @@
                         "bearerAuth": []
                     }
                 ]
-            },
-            "delete": {
+            }
+        },
+        "/api/v1/admin/material-types/{materialType}/status": {
+            "patch": {
                 "tags": [
                     "Admin Material Types"
                 ],
-                "summary": "Delete a material type",
-                "operationId": "468a47f4e6276f1367f83cd21e2eca52",
+                "summary": "Update material type status",
+                "operationId": "f07ed7955e1293df190b7a84be0b36cd",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "materialType",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1226,12 +1339,34 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Material type deleted successfully"
+                        "description": "Material type status updated successfully"
                     },
                     "404": {
                         "description": "Material type not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
                     },
                     "401": {
                         "description": "Unauthenticated"
