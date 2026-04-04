@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { CircleCheck, CircleX, List } from 'lucide-react';
 
 import { Pagination } from '@/components/shared/pagination';
@@ -8,6 +9,7 @@ import { SelectCustom } from '@/components/ui/select-custom';
 
 import {
   AdminMaterialTypesTable,
+  EditMaterialTypeModal,
   useAdminMaterialTypes,
   type AdminMaterialTypesListParams,
 } from '@/modules/admin-material-types';
@@ -21,6 +23,7 @@ export default function AdminMaterialTypesPage() {
     params,
     setParams,
     handleStatusToggle,
+    refetch,
   } = useAdminMaterialTypes();
 
   const statusOptions = [
@@ -28,6 +31,16 @@ export default function AdminMaterialTypesPage() {
     { label: 'Active', value: '1', icon: <CircleCheck className='text-success' /> },
     { label: 'Inactive', value: '0', icon: <CircleX className='text-destructive' /> },
   ];
+
+  const [selectedMaterialTypeId, setSelectedMaterialTypeId] = useState<
+    number | null
+  >(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  function handleEdit(id: number) {
+    setSelectedMaterialTypeId(id);
+    setIsEditModalOpen(true);
+  }
 
   return (
     <div className="space-y-6">
@@ -73,6 +86,7 @@ export default function AdminMaterialTypesPage() {
         params={params}
         setParams={setParams}
         onToggleStatus={handleStatusToggle}
+        onEdit={handleEdit}
       />
 
       {pagination ? (
@@ -87,6 +101,13 @@ export default function AdminMaterialTypesPage() {
           }
         />
       ) : null}
+
+      <EditMaterialTypeModal
+        materialTypeId={selectedMaterialTypeId}
+        open={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSaved={refetch}
+      />
     </div>
   );
 }

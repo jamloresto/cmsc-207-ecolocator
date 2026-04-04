@@ -13,14 +13,24 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-primary text-primary-foreground hover:bg-primary-hover border border-primary',
+  'bg-primary text-primary-foreground border border-primary ' +
+  'hover:bg-primary-hover hover:shadow-sm active:scale-[0.98]',
+
   secondary:
-    'bg-secondary text-secondary-foreground hover:opacity-90 border border-secondary',
-  outline: 'border border-border bg-transparent text-foreground hover:bg-muted',
+    'bg-secondary text-secondary-foreground border border-secondary ' +
+    'hover:bg-secondary/90 active:scale-[0.98]',
+
+  outline:
+    'border border-border bg-transparent text-foreground ' +
+    'hover:bg-muted active:scale-[0.98]',
+
   ghost:
-    'border border-transparent bg-transparent text-foreground hover:bg-muted',
+    'border border-transparent bg-transparent text-foreground ' +
+    'hover:bg-muted active:scale-[0.98]',
+
   danger:
-    'border border-destructive bg-destructive text-white hover:opacity-90',
+    'border border-destructive bg-destructive text-white ' +
+    'hover:bg-destructive/90 active:scale-[0.98]',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -44,7 +54,7 @@ export function Button({
       type={type}
       disabled={disabled}
       className={cn(
-        'focus:ring-ring inline-flex items-center justify-center rounded-lg font-medium transition focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60',
+        'focus:ring-ring inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 ease-out focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',
