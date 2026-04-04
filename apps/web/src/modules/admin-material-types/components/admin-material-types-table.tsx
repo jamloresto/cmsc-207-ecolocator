@@ -1,7 +1,10 @@
 'use client';
 
+import { Edit } from 'lucide-react';
+
 import { TableSkeleton } from '@/components/common/loading/table-skeleton';
 import { StatusPill } from '@/components/ui/status-pill';
+import { Button } from '@/components/ui/button';
 import { TableEmptyState } from '@/components/shared/table-empty-state';
 import {
   SortableHeader,
@@ -25,6 +28,7 @@ type AdminMaterialTypesTableProps = {
   params: AdminMaterialTypesListParams;
   setParams: React.Dispatch<React.SetStateAction<AdminMaterialTypesListParams>>;
   onToggleStatus: (materialType: AdminMaterialType) => Promise<void>;
+  onEdit: (id: number) => void;
 };
 
 function getNextSortOrder(
@@ -43,6 +47,7 @@ export function AdminMaterialTypesTable({
   params,
   setParams,
   onToggleStatus,
+  onEdit,
 }: AdminMaterialTypesTableProps) {
   const handleSort = (field: string) => {
     setParams((prev) => ({
@@ -130,6 +135,19 @@ export function AdminMaterialTypesTable({
                     checked={materialType.is_active}
                     onChange={() => void onToggleStatus(materialType)}
                   />
+                  <Button
+                    onClick={() => onEdit(materialType.id)}
+                    variant="primary"
+                    size="sm"
+                    title="Edit Material Type"
+                    className='mt-3'
+                  >
+                    <Edit
+                      className="h-4"
+                      onClick={() => onEdit(materialType.id)}
+                    />
+                    Update
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
