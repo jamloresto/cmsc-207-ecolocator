@@ -1,14 +1,23 @@
-import { Input } from "@/components/ui/input";
-import { SelectCustom } from "@/components/ui/select-custom";
-import {
-  MailCheck,
-  MailMinus,
-  MailOpen,
-  MailPlus,
-  Mails,
-} from 'lucide-react';
+'use client';
 
-export function ContactMessagesToolbar() {
+import { Input } from '@/components/ui/input';
+import { SelectCustom } from '@/components/ui/select-custom';
+import { MailCheck, MailMinus, MailOpen, MailPlus, Mails } from 'lucide-react';
+import type { ContactMessageStatus } from '../types/contact-message.types';
+
+interface ContactMessagesToolbarProps {
+  search: string;
+  status: '' | ContactMessageStatus;
+  onSearchChange: (value: string) => void;
+  onStatusChange: (value: '' | ContactMessageStatus) => void;
+}
+
+export function ContactMessagesToolbar({
+  search,
+  status,
+  onSearchChange,
+  onStatusChange,
+}: ContactMessagesToolbarProps) {
   return (
     <div className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-4">
       <div>
@@ -20,10 +29,18 @@ export function ContactMessagesToolbar() {
         </p>
       </div>
 
-      <div className="flex w-full flex-col gap-2 lg:flex-row">
-        <Input placeholder="Search name, email, subject..." />
+      <div className="flex w-full flex-col gap-2 md:flex-row">
+        <Input
+          value={search}
+          onChange={(event) => onSearchChange(event.target.value)}
+          placeholder="Search name, email, subject..."
+        />
+
         <SelectCustom
-          value={''}
+          value={status}
+          onChange={(value) =>
+            onStatusChange(value as '' | ContactMessageStatus)
+          }
           options={[
             {
               label: 'All statuses',

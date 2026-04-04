@@ -10,5 +10,38 @@ export interface ContactMessage {
   status: ContactMessageStatus;
   read_at?: string | null;
   replied_at?: string | null;
+  ip_address?: string | null;
+  user_agent?: string | null;
   created_at: string;
+  updated_at: string;
+}
+
+export interface ContactMessagesPagination {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export interface ContactMessagesListResponse {
+  data: ContactMessage[];
+  meta?: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+  links?: {
+    first?: string | null;
+    last?: string | null;
+    prev?: string | null;
+    next?: string | null;
+  };
+}
+
+export interface ContactMessagesParams {
+  search?: string;
+  status?: '' | ContactMessageStatus;
+  page?: number;
+  per_page?: number;
 }
