@@ -15,7 +15,6 @@ use App\Http\Controllers\Api\V1\PublicContactMessageController;
 use App\Http\Controllers\Api\V1\PublicLocationSuggestionController;
 use App\Http\Controllers\Api\V1\PublicMaterialTypeController;
 use App\Http\Controllers\Api\V1\PublicWasteCollectionLocationController;
-use Illuminate\Http\Request;
 
 Route::prefix('v1')->group(function () {
     Route::get('/health', function (): JsonResponse {
@@ -31,49 +30,53 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/material-types', [PublicMaterialTypeController::class, 'index']);
     Route::get('/material-types/{id}', [PublicMaterialTypeController::class, 'show']);
+
     Route::post('/contact-messages', [PublicContactMessageController::class, 'store'])
         ->middleware('throttle:public-contact');
+
     Route::post('/location-suggestions', [PublicLocationSuggestionController::class, 'store'])
         ->middleware('throttle:public-suggestions');
-    
-    Route::prefix('admin')->group(function () {
-        Route::post('/login', [AuthController::class, 'login']);
 
-        Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-            Route::get('/me', [AuthController::class, 'me']);
-            Route::post('/logout', [AuthController::class, 'logout']);
+    Route::prefix('admin')
+        ->middleware(['web'])
+        ->group(function () {
+            Route::post('/login', [AuthController::class, 'login']);
 
-            Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+            Route::middleware(['admin'])->group(function () {
+                Route::get('/me', [AuthController::class, 'me']);
+                Route::post('/logout', [AuthController::class, 'logout']);
 
-            Route::apiResource('locations', WasteCollectionLocationController::class);
+                Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
-            Route::prefix('material-types')->group(function () {
-                Route::get('/', [MaterialTypeController::class, 'index']);
-                Route::get('/{materialType}', [MaterialTypeController::class, 'show']);
-                Route::post('/', [MaterialTypeController::class, 'store']);
-                Route::put('/{materialType}', [MaterialTypeController::class, 'update']);
-                Route::patch('/{materialType}/status', [MaterialTypeController::class, 'updateStatus']);
-            });
+                Route::apiResource('locations', WasteCollectionLocationController::class);
 
-            Route::prefix('contact-messages')->group(function () {
-                Route::get('/', [ContactMessageController::class, 'index']);
-                Route::get('/{contactMessage}', [ContactMessageController::class, 'show']);
-                Route::patch('/{contactMessage}/archive', [ContactMessageController::class, 'archive']);
-                Route::post('/{contactMessage}/reply', [ContactMessageController::class, 'reply']);
-            });
+                Route::prefix('material-types')->group(function () {
+                    Route::get('/', [MaterialTypeController::class, 'index']);
+                    Route::get('/{materialType}', [MaterialTypeController::class, 'show']);
+                    Route::post('/', [MaterialTypeController::class, 'store']);
+                    Route::put('/{materialType}', [MaterialTypeController::class, 'update']);
+                    Route::patch('/{materialType}/status', [MaterialTypeController::class, 'updateStatus']);
+                });
 
-            Route::prefix('location-suggestions')->group(function () {
-                Route::get('/', [LocationSuggestionController::class, 'index']);
-                Route::get('/{locationSuggestion}', [LocationSuggestionController::class, 'show']);
-                Route::patch('/{locationSuggestion}', [LocationSuggestionController::class, 'update']);
-                Route::post('/{locationSuggestion}/approve', [LocationSuggestionController::class, 'approve']);
-                Route::post('/{locationSuggestion}/reject', [LocationSuggestionController::class, 'reject']);
-                Route::delete('/{locationSuggestion}', [LocationSuggestionController::class, 'destroy']);
-            });
+                Route::prefix('contact-messages')->group(function () {
+                    Route::get('/', [ContactMessageController::class, 'index']);
+                    Route::get('/{contactMessage}', [ContactMessageController::class, 'show']);
+                    Route::patch('/{contactMessage}/archive', [ContactMessageController::class, 'archive']);
+                    Route::post('/{contactMessage}/reply', [ContactMessageController::class, 'reply']);
+                });
 
-            Route::middleware('role:super_admin')->group(function () {
-                Route::apiResource('users', AdminUserController::class);
+                Route::prefix('location-suggestions')->group(function () {
+                    Route::get('/', [LocationSuggestionController::class, 'index']);
+                    Route::get('/{locationSuggestion}', [LocationSuggestionController::class, 'show']);
+                    Route::patch('/{locationSuggestion}', [LocationSuggestionController::class, 'update']);
+                    Route::post('/{locationSuggestion}/approve', [LocationSuggestionController::class, 'approve']);
+                    Route::post('/{locationSuggestion}/reject', [LocationSuggestionController::class, 'reject']);
+                    Route::delete('/{locationSuggestion}', [LocationSuggestionController::class, 'destroy']);
+                });
+
+                Route::middleware('role:super_admin')->group(function () {
+                    Route::apiResource('users', AdminUserController::class);
+                });
             });
         });
-    });
 });
