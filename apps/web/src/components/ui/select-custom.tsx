@@ -40,7 +40,7 @@ export function SelectCustom({
           className,
         )}
       >
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 whitespace-nowrap">
           {selected?.icon}
           {selected?.label ?? placeholder}
         </span>
@@ -67,7 +67,7 @@ export function SelectCustom({
                     isSelected && 'bg-muted',
                   )}
                 >
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 whitespace-nowrap">
                     {option.icon}
                     {option.label}
                   </span>

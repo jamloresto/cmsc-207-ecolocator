@@ -26,7 +26,7 @@ export function TableToolbar({
   return (
     <div
       className={cn(
-        'flex flex-col gap-4 md:flex-row md:items-end md:justify-between',
+        'flex flex-col gap-4 md:flex-row md:items-end md:justify-between flex-wrap lg:flex-nowrap',
         className,
       )}
     >
@@ -44,9 +44,9 @@ export function TableToolbar({
       </div>
 
       {(filters || actions) && (
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+        <div className="flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-end">
           {filters ? (
-            <div className="flex flex-col gap-3 md:flex-row md:items-center">
+            <div className="flex w-full flex-col gap-3 md:flex-row md:items-center">
               {filters}
             </div>
           ) : null}
