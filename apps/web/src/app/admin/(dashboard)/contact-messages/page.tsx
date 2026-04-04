@@ -25,6 +25,8 @@ export default function AdminContactMessagesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState<string>('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const [pagination, setPagination] = useState<
     ContactMessagesListResponse['meta'] | null
@@ -52,6 +54,8 @@ export default function AdminContactMessagesPage() {
           status,
           page,
           per_page: 10,
+          sort_by: sortBy,
+          sort_order: sortOrder,
         });
 
         if (!cancelled) {
@@ -78,7 +82,7 @@ export default function AdminContactMessagesPage() {
     return () => {
       cancelled = true;
     };
-  }, [search, status, page]);
+  }, [search, status, page, sortBy, sortOrder]);
 
   function handleArchived(updatedMessage: ContactMessage, archivedId: number) {
     setMessages((prev) =>
@@ -105,7 +109,7 @@ export default function AdminContactMessagesPage() {
         searchPlaceholder="Search name, email, subject..."
         filters={
           <SelectCustom
-            className='min-w-48 lg:min-w-72'
+            className="min-w-48 lg:min-w-72"
             value={status}
             onChange={(value) => {
               setStatus(value as '' | ContactMessageStatus);
@@ -153,6 +157,18 @@ export default function AdminContactMessagesPage() {
       <AdminContactMessagesTable
         messages={messages}
         loading={loading}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSort={(field: string) => {
+          setPage(1);
+
+          if (sortBy === field) {
+            setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+          } else {
+            setSortBy(field);
+            setSortOrder('asc');
+          }
+        }}
         onArchived={handleArchived}
       />
 

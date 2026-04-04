@@ -27,13 +27,23 @@ function buildQuery(params: ContactMessagesParams) {
     searchParams.set('per_page', String(params.per_page));
   }
 
+  if (params.sort_by) {
+    searchParams.set('sort_by', String(params.sort_by));
+  }
+
+  if (params.sort_order) {
+    searchParams.set('sort_order', String(params.sort_order));
+  }
+
   const query = searchParams.toString();
 
   return query ? `?${query}` : '';
 }
 
 export async function getAdminContactMessages(
-  params: ContactMessagesParams = {},
+  params: ContactMessagesParams = {
+    sort_order: 'desc'
+  }
 ): Promise<ContactMessagesListResponse> {
   const response = await apiClient.get(
     `/api/v1/admin/contact-messages${buildQuery(params)}`,

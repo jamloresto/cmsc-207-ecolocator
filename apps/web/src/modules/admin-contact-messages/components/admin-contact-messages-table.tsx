@@ -13,6 +13,7 @@ import {
   TableRow,
   TableHeaderCell,
   TableCell,
+  SortableHeader,
 } from '@/components/shared/table';
 
 import { cn } from '@/lib/utils';
@@ -24,6 +25,10 @@ interface AdminContactMessagesTableProps {
   messages: ContactMessage[];
   loading?: boolean;
   onArchived?: (updatedMessage: ContactMessage, archivedId: number) => void;
+
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  onSort?: (field: string) => void;
 }
 
 function formatDate(dateString: string) {
@@ -43,6 +48,9 @@ export function AdminContactMessagesTable({
   messages,
   loading = false,
   onArchived,
+  sortBy,
+  sortOrder,
+  onSort,
 }: AdminContactMessagesTableProps) {
   const [archivingId, setArchivingId] = useState<number | null>(null);
 
@@ -69,11 +77,43 @@ export function AdminContactMessagesTable({
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeaderCell>Sender</TableHeaderCell>
-            <TableHeaderCell>Subject</TableHeaderCell>
+            <TableHeaderCell>
+              <SortableHeader
+                label="Sender"
+                field="name"
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+              />
+            </TableHeaderCell>
+            <TableHeaderCell>
+              <SortableHeader
+                label="Subject"
+                field="subject"
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+              />
+            </TableHeaderCell>
             <TableHeaderCell>Message</TableHeaderCell>
-            <TableHeaderCell>Status</TableHeaderCell>
-            <TableHeaderCell>Date</TableHeaderCell>
+            <TableHeaderCell>
+              <SortableHeader
+                label="Status"
+                field="status"
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+              />
+            </TableHeaderCell>
+            <TableHeaderCell>
+              <SortableHeader
+                label="Date"
+                field="create_at"
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+              />
+            </TableHeaderCell>
             <TableHeaderCell>Action</TableHeaderCell>
           </TableRow>
         </TableHead>
@@ -131,7 +171,7 @@ export function AdminContactMessagesTable({
                   className={cn(
                     'hover:bg-muted/50 cursor-pointer',
                     message.status === 'new' &&
-                      'bg-primary/5 border-primary border-l-3 border-l-success!',
+                      'bg-primary/5 border-primary border-l-success! border-l-3',
                     isArchiving && 'opacity-60',
                   )}
                 >
@@ -155,7 +195,12 @@ export function AdminContactMessagesTable({
                     {message.subject}
                   </TableCell>
 
-                  <TableCell className={cn("text-muted-foreground", message.status === 'new' && 'font-medium text-foreground')}>
+                  <TableCell
+                    className={cn(
+                      'text-muted-foreground',
+                      message.status === 'new' && 'text-foreground font-medium',
+                    )}
+                  >
                     {truncate(message.message)}
                   </TableCell>
 

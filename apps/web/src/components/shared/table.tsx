@@ -72,3 +72,32 @@ export function TableCell({
 }) {
   return <td className={cn('px-4 py-4 text-sm', className)}>{children}</td>;
 }
+
+export function SortableHeader({
+  label,
+  field,
+  sortBy,
+  sortOrder,
+  onSort,
+}: {
+  label: string;
+  field: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  onSort?: (field: string) => void;
+}) {
+  const isActive = sortBy === field;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSort?.(field)}
+      className="hover:text-primary flex items-center gap-1 transition"
+    >
+      {label}
+      {isActive ? (
+        <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+      ) : null}
+    </button>
+  );
+}
