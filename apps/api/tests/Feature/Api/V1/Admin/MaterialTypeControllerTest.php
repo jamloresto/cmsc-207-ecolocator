@@ -409,7 +409,10 @@ class MaterialTypeControllerTest extends TestCase
     {
         $response = $this->getJson('/api/v1/admin/material-types');
 
-        $response->assertStatus(401);
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 
     public function test_guest_cannot_view_a_single_material_type(): void
@@ -418,7 +421,10 @@ class MaterialTypeControllerTest extends TestCase
 
         $response = $this->getJson("/api/v1/admin/material-types/{$materialType->id}");
 
-        $response->assertStatus(401);
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 
     public function test_guest_cannot_create_a_material_type(): void
@@ -427,7 +433,10 @@ class MaterialTypeControllerTest extends TestCase
             'name' => 'Plastic',
         ]);
 
-        $response->assertStatus(401);
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 
     public function test_guest_cannot_update_a_material_type(): void
@@ -438,7 +447,10 @@ class MaterialTypeControllerTest extends TestCase
             'name' => 'Updated Name',
         ]);
 
-        $response->assertStatus(401);
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 
     public function test_guest_cannot_update_material_type_status(): void
@@ -449,7 +461,10 @@ class MaterialTypeControllerTest extends TestCase
             'is_active' => false,
         ]);
 
-        $response->assertStatus(401);
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 
     public function test_admin_cannot_create_a_material_type_with_duplicate_name(): void

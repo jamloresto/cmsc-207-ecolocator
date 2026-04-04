@@ -360,7 +360,10 @@ class LocationSuggestionControllerTest extends TestCase
     {
         $response = $this->getJson('/api/v1/admin/location-suggestions');
 
-        $response->assertUnauthorized();
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 
     public function test_editor_can_access_admin_location_suggestions_if_allowed_by_middleware(): void
@@ -756,6 +759,9 @@ class LocationSuggestionControllerTest extends TestCase
     {
         $response = $this->getJson('/api/v1/admin/location-suggestions');
 
-        $response->assertUnauthorized();
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 }

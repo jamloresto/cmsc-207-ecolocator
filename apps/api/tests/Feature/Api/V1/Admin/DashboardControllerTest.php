@@ -52,6 +52,9 @@ class DashboardControllerTest extends TestCase
     public function test_guest_cannot_get_dashboard_stats(): void
     {
         $this->getJson('/api/v1/admin/dashboard/stats')
-            ->assertUnauthorized();
+            ->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 }

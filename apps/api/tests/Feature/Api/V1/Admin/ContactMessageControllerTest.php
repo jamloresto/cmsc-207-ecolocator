@@ -182,7 +182,10 @@ class ContactMessageControllerTest extends TestCase
     {
         $response = $this->getJson('/api/v1/admin/contact-messages');
 
-        $response->assertUnauthorized();
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 
     public function test_editor_can_access_admin_contact_messages_if_allowed_by_middleware(): void

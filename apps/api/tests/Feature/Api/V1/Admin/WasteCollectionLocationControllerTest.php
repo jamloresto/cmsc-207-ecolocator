@@ -96,6 +96,9 @@ class WasteCollectionLocationControllerTest extends TestCase
     {
         $response = $this->postJson('/api/v1/admin/locations', []);
 
-        $response->assertUnauthorized();
+        $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Unauthorized.',
+        ]);
     }
 }
