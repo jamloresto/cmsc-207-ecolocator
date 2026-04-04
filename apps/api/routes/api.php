@@ -54,8 +54,8 @@ Route::prefix('v1')->group(function () {
             Route::prefix('contact-messages')->group(function () {
                 Route::get('/', [ContactMessageController::class, 'index']);
                 Route::get('/{contactMessage}', [ContactMessageController::class, 'show']);
-                Route::patch('/{contactMessage}/status', [ContactMessageController::class, 'updateStatus']);
-                Route::delete('/{contactMessage}', [ContactMessageController::class, 'destroy']);
+                Route::patch('/{contactMessage}/archive', [ContactMessageController::class, 'archive']);
+                Route::post('/{contactMessage}/reply', [ContactMessageController::class, 'reply']);
             });
 
             Route::prefix('location-suggestions')->group(function () {

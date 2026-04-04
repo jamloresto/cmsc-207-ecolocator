@@ -1,13 +1,34 @@
+'use client';
+
+import { useState } from 'react';
+import { Archive, Eye, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { Eye, Mail, Archive } from 'lucide-react';
+
 import { StatusPill } from '@/components/ui/status-pill';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableHeaderCell,
+  TableCell,
+  SortableHeader,
+} from '@/components/shared/table';
+
 import { cn } from '@/lib/utils';
-import type { ContactMessage } from '../types/contact-message.types';
-import { TableSkeleton } from '@/components/common/loading/table-skeleton';
+import { archiveAdminContactMessage } from '@/modules/admin-contact-messages';
+import type { ContactMessage } from '@/modules/admin-contact-messages';
+import { TableEmptyState } from '@/components/shared/table-empty-state';
 
 interface AdminContactMessagesTableProps {
   messages: ContactMessage[];
   loading?: boolean;
+  onArchived?: (updatedMessage: ContactMessage, archivedId: number) => void;
+
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  onSort?: (field: string) => void;
 }
 
 function formatDate(dateString: string) {
@@ -26,60 +47,135 @@ function truncate(text: string, max = 90) {
 export function AdminContactMessagesTable({
   messages,
   loading = false,
+  onArchived,
+  sortBy,
+  sortOrder,
+  onSort,
 }: AdminContactMessagesTableProps) {
-  return (
-    <div className="border-border bg-card overflow-hidden rounded-2xl border">
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse">
-          <thead className="bg-muted/40">
-            <tr className="text-left">
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Sender
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Subject
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Message
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Status
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Date
-              </th>
-              <th className="text-foreground px-4 py-3 text-sm font-semibold">
-                Action
-              </th>
-            </tr>
-          </thead>
+  const [archivingId, setArchivingId] = useState<number | null>(null);
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6}>
-                  <TableSkeleton column={6}  rows={4} />
-                </td>
-              </tr>
-            ) : messages.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="text-muted-foreground px-4 py-10 text-center text-sm"
-                >
-                  No contact messages found.
-                </td>
-              </tr>
-            ) : (
-              messages.map((message) => (
-                <tr
+  async function handleArchive(message: ContactMessage) {
+    if (message.status === 'archived') return;
+
+    try {
+      setArchivingId(message.id);
+
+      const response = await archiveAdminContactMessage(message.id);
+
+      if (response.data && onArchived) {
+        onArchived(response.data, message.id);
+      }
+    } catch (error) {
+      console.error('Failed to archive message:', error);
+    } finally {
+      setArchivingId(null);
+    }
+  }
+
+  return (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableHeaderCell>
+              <SortableHeader
+                label="Sender"
+                field="name"
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+              />
+            </TableHeaderCell>
+            <TableHeaderCell>
+              <SortableHeader
+                label="Subject"
+                field="subject"
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+              />
+            </TableHeaderCell>
+            <TableHeaderCell>Message</TableHeaderCell>
+            <TableHeaderCell>
+              <SortableHeader
+                label="Status"
+                field="status"
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+              />
+            </TableHeaderCell>
+            <TableHeaderCell>
+              <SortableHeader
+                label="Date"
+                field="create_at"
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={onSort}
+              />
+            </TableHeaderCell>
+            <TableHeaderCell>Action</TableHeaderCell>
+          </TableRow>
+        </TableHead>
+
+        <tbody>
+          {loading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-40" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  <Skeleton className="h-4 w-36" />
+                </TableCell>
+
+                <TableCell>
+                  <Skeleton className="h-4 w-56" />
+                </TableCell>
+
+                <TableCell>
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                </TableCell>
+
+                <TableCell>
+                  <Skeleton className="h-4 w-24" />
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : messages.length === 0 ? (
+            <TableEmptyState
+              colSpan={6}
+              title="No contact messages"
+              description="No inquiries yet. New messages will appear here."
+            />
+          ) : (
+            messages.map((message) => {
+              const isArchiving = archivingId === message.id;
+
+              return (
+                <TableRow
                   key={message.id}
                   className={cn(
-                    'border-border hover:bg-muted/20 border-t align-top transition',
-                    message.status === 'new' && 'bg-primary/5',
+                    'hover:bg-muted/50 cursor-pointer',
+                    message.status === 'new' &&
+                      'bg-primary/5 border-primary border-l-success! border-l-3',
+                    isArchiving && 'opacity-60',
                   )}
                 >
-                  <td className="px-4 py-4">
+                  <TableCell>
                     <div className="space-y-1">
                       <p className="text-foreground text-sm font-semibold">
                         {message.name}
@@ -93,25 +189,28 @@ export function AdminContactMessagesTable({
                         </p>
                       ) : null}
                     </div>
-                  </td>
+                  </TableCell>
 
-                  <td className="text-foreground px-4 py-4 text-sm font-medium">
+                  <TableCell className="text-foreground font-medium">
                     {message.subject}
-                  </td>
+                  </TableCell>
 
-                  <td className="text-muted-foreground px-4 py-4 text-sm">
+                  <TableCell
+                    className={cn(
+                      'text-muted-foreground',
+                      message.status === 'new' && 'text-foreground font-medium',
+                    )}
+                  >
                     {truncate(message.message)}
-                  </td>
+                  </TableCell>
 
-                  <td className="px-4 py-4">
+                  <TableCell>
                     <StatusPill status={message.status} />
-                  </td>
+                  </TableCell>
 
-                  <td className="text-muted-foreground px-4 py-4 text-sm">
-                    {formatDate(message.created_at)}
-                  </td>
+                  <TableCell>{formatDate(message.created_at)}</TableCell>
 
-                  <td className="px-4 py-4">
+                  <TableCell>
                     <div className="flex items-center gap-1.5">
                       <Link
                         href={`/admin/contact-messages/${message.id}`}
@@ -132,20 +231,22 @@ export function AdminContactMessagesTable({
                       {message.status !== 'archived' && (
                         <button
                           type="button"
-                          className="hover:bg-muted inline-flex rounded-md p-1.5 transition"
+                          onClick={() => handleArchive(message)}
+                          disabled={isArchiving}
+                          className="hover:bg-muted inline-flex rounded-md p-1.5 transition disabled:cursor-not-allowed disabled:opacity-50"
                           title="Archive message"
                         >
                           <Archive className="text-muted-foreground hover:text-destructive h-4 w-4" />
                         </button>
                       )}
                     </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          )}
+        </tbody>
+      </Table>
+    </TableContainer>
   );
 }

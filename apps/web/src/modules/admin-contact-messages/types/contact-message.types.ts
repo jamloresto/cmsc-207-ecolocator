@@ -1,5 +1,7 @@
 export type ContactMessageStatus = 'new' | 'read' | 'replied' | 'archived';
 
+export type SortOrder = 'asc' | 'desc';
+
 export interface ContactMessage {
   id: number;
   name: string;
@@ -27,8 +29,11 @@ export interface ContactMessagesListResponse {
   data: ContactMessage[];
   meta?: {
     current_page: number;
+    from: number | null;
     last_page: number;
+    path: string;
     per_page: number;
+    to: number | null;
     total: number;
   };
   links?: {
@@ -44,4 +49,15 @@ export interface ContactMessagesParams {
   status?: '' | ContactMessageStatus;
   page?: number;
   per_page?: number;
+  sort_by?: string;
+  sort_order: SortOrder;
+}
+
+export interface ReplyContactMessagePayload {
+  reply_message: string;
+}
+
+export interface ReplyContactMessageResponse {
+  message: string;
+  data?: ContactMessage;
 }

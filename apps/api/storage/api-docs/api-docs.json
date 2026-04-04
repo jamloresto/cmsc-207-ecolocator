@@ -593,13 +593,15 @@
                         "sanctum": []
                     }
                 ]
-            },
-            "delete": {
+            }
+        },
+        "/api/v1/admin/contact-messages/{id}/archive": {
+            "patch": {
                 "tags": [
                     "Admin Contact Messages"
                 ],
-                "summary": "Delete contact message",
-                "operationId": "f51f874ac378099c47c47f4c3c92d5e0",
+                "summary": "Archive contact message",
+                "operationId": "62f67ef2f9dac867a983bb197cfab59e",
                 "parameters": [
                     {
                         "name": "id",
@@ -613,7 +615,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Contact message deleted successfully"
+                        "description": "Contact message archived successfully"
                     },
                     "404": {
                         "description": "Contact message not found"
@@ -626,13 +628,13 @@
                 ]
             }
         },
-        "/api/v1/admin/contact-messages/{id}/status": {
-            "patch": {
+        "/api/v1/admin/contact-messages/{id}/reply": {
+            "post": {
                 "tags": [
                     "Admin Contact Messages"
                 ],
-                "summary": "Update contact message status",
-                "operationId": "bb23030592d67af5b8707d4734dbe666",
+                "summary": "Reply to contact message",
+                "operationId": "c078278fbc3e441c788ba5fe169cffdc",
                 "parameters": [
                     {
                         "name": "id",
@@ -650,18 +652,12 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "status"
+                                    "reply_message"
                                 ],
                                 "properties": {
-                                    "status": {
+                                    "reply_message": {
                                         "type": "string",
-                                        "example": "replied",
-                                        "enum": [
-                                            "new",
-                                            "read",
-                                            "replied",
-                                            "archived"
-                                        ]
+                                        "example": "Thank you for your inquiry. We will get back to you shortly."
                                     }
                                 },
                                 "type": "object"
@@ -671,7 +667,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Contact message status updated successfully"
+                        "description": "Reply sent successfully"
                     },
                     "422": {
                         "description": "Validation error"
