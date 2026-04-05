@@ -1,5 +1,6 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { LucideIcon } from 'lucide-react';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -9,12 +10,15 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   fullWidth?: boolean;
+
+  leftIcon?: LucideIcon;
+  rightIcon?: LucideIcon;
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-  'bg-primary text-primary-foreground border border-primary ' +
-  'hover:bg-primary-hover hover:shadow-sm active:scale-[0.98]',
+    'bg-primary text-primary-foreground border border-primary ' +
+    'hover:bg-primary-hover hover:shadow-sm active:scale-[0.98]',
 
   secondary:
     'bg-secondary text-secondary-foreground border border-secondary ' +
@@ -39,6 +43,12 @@ const sizeClasses: Record<ButtonSize, string> = {
   lg: 'h-12 px-5 text-base',
 };
 
+const iconSizeClasses: Record<ButtonSize, string> = {
+  sm: 'h-4 w-4',
+  md: 'h-4 w-4',
+  lg: 'h-5 w-5',
+};
+
 export function Button({
   children,
   className,
@@ -47,6 +57,10 @@ export function Button({
   fullWidth = false,
   type = 'button',
   disabled,
+
+  leftIcon: LeftIcon,
+  rightIcon: RightIcon,
+
   ...props
 }: ButtonProps) {
   return (
@@ -54,7 +68,9 @@ export function Button({
       type={type}
       disabled={disabled}
       className={cn(
-        'focus:ring-ring inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 ease-out focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 ease-out',
+        'focus:ring-ring focus:ring-2 focus:ring-offset-2 focus:outline-none',
+        'disabled:cursor-not-allowed disabled:opacity-60',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',
@@ -62,7 +78,11 @@ export function Button({
       )}
       {...props}
     >
+      {LeftIcon && <LeftIcon className={cn(iconSizeClasses[size])} />}
+
       {children}
+
+      {RightIcon && <RightIcon className={cn(iconSizeClasses[size])} />}
     </button>
   );
 }

@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { ShieldAlert } from 'lucide-react';
+import { Plus, ShieldAlert } from 'lucide-react';
 
 import { AdminUsersTable } from '@/modules/admin-users/components/admin-users-table';
 import { useAdminUsers } from '@/modules/admin-users/hooks/use-admin-users';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
@@ -102,7 +104,21 @@ export default function AdminUsersPage() {
 
       <Card className="rounded-2xl">
         <CardHeader>
-          <CardTitle>All Admin Users</CardTitle>
+          <CardTitle>
+            <div className='w-full flex'>
+              <Link
+                href={`/admin/admin-users/create`}
+                title="View message"
+                className='ml-auto'
+              >
+                <Button size='sm' leftIcon={Plus}>
+                  <span className='text-sm'>
+                    Create New Admin
+                  </span>
+                </Button>
+              </Link>
+            </div>
+          </CardTitle>
         </CardHeader>
 
         <CardContent>

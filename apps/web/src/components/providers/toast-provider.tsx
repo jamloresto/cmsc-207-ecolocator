@@ -15,6 +15,7 @@ type ToastInput = {
   title: string;
   description?: string;
   variant?: ToastVariant;
+  duration?: number;
 };
 
 type ToastContextType = {
@@ -22,6 +23,8 @@ type ToastContextType = {
 };
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
+
+const DEFAULT_TOAST_DURATION = 4000;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -31,14 +34,26 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const toast = useCallback(
-    ({ title, description, variant = 'info' }: ToastInput) => {
+    ({ title, description, variant = 'info', duration }: ToastInput) => {
       const id = crypto.randomUUID();
+      const resolvedDuration = duration ?? DEFAULT_TOAST_DURATION;
+      const showProgress = duration !== undefined;
 
-      setToasts((prev) => [...prev, { id, title, description, variant }]);
+      setToasts((prev) => [
+        ...prev,
+        {
+          id,
+          title,
+          description,
+          variant,
+          duration: resolvedDuration,
+          showProgress,
+        },
+      ]);
 
       window.setTimeout(() => {
         setToasts((prev) => prev.filter((toast) => toast.id !== id));
-      }, 4000);
+      }, resolvedDuration);
     },
     [],
   );
