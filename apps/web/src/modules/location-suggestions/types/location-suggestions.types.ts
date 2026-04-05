@@ -32,11 +32,6 @@ export type SubmitLocationSuggestionResponse = {
   };
 };
 
-export type LocationSuggestionApiErrorResponse = {
-  message?: string;
-  errors?: Record<string, string[]>;
-};
-
 export type LocationSuggestionsState = {
   isSubmitting: boolean;
   isSuccess: boolean;

@@ -1,4 +1,5 @@
-import { AdminUser, AdminUserRole } from "@/modules/auth";
+import { AdminUser, AdminUserRole } from '@/modules/auth';
+import { PaginatedResponse } from '@/types/api.types';
 
 export type AdminUsersQueryParams = {
   page?: number;
@@ -10,21 +11,17 @@ export type AdminUsersQueryParams = {
   direction?: 'asc' | 'desc';
 };
 
-export type PaginatedAdminUsersResponse = {
-  data: AdminUser[];
-  links: {
-    first?: string | null;
-    last?: string | null;
-    prev?: string | null;
-    next?: string | null;
-  };
-  meta: {
-    current_page: number;
-    from: number | null;
-    last_page: number;
-    path: string;
-    per_page: number;
-    to: number | null;
-    total: number;
-  };
+export type PaginatedAdminUsersResponse = PaginatedResponse<AdminUser>;
+
+export type CreateAdminUserPayload = {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+  role: AdminUserRole;
+  is_active: boolean;
+};
+
+export type AdminUserApiResponse = {
+  data: AdminUser;
 };

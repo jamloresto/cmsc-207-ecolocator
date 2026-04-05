@@ -1,15 +1,12 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+
 import { API_BASE_URL } from '@/lib/api';
 import { getAccessToken, removeAccessToken } from '@/lib/token';
-
-export type ApiErrorPayload = {
-  message?: string;
-  errors?: Record<string, string[]>;
-};
+import { ApiErrorResponse, ValidationErrors } from '@/types/api.types';
 
 export class ApiError extends Error {
   status?: number;
-  errors?: Record<string, string[]>;
+  errors?: ValidationErrors
 
   constructor(
     message: string,
@@ -49,7 +46,7 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError<ApiErrorPayload>) => {
+  (error: AxiosError<ApiErrorResponse>) => {
     const status = error.response?.status;
     const data = error.response?.data;
 

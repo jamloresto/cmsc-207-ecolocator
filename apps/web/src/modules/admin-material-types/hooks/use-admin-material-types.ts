@@ -7,12 +7,12 @@ import {
   updateAdminMaterialTypeStatus,
   type AdminMaterialType,
   type AdminMaterialTypesListParams,
-  type LaravelPaginatedResponse,
 } from '@/modules/admin-material-types';
+import { PaginatedResponse } from '@/types/api.types';
 
 type UseAdminMaterialTypesReturn = {
   materialTypes: AdminMaterialType[];
-  pagination: LaravelPaginatedResponse<AdminMaterialType> | null;
+  pagination: PaginatedResponse<AdminMaterialType> | null;
   isLoading: boolean;
   error: string | null;
   params: AdminMaterialTypesListParams;
@@ -24,7 +24,7 @@ type UseAdminMaterialTypesReturn = {
 export function useAdminMaterialTypes(): UseAdminMaterialTypesReturn {
   const [materialTypes, setMaterialTypes] = useState<AdminMaterialType[]>([]);
   const [pagination, setPagination] =
-    useState<LaravelPaginatedResponse<AdminMaterialType> | null>(null);
+    useState<PaginatedResponse<AdminMaterialType> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

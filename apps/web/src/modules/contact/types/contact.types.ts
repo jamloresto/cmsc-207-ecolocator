@@ -18,11 +18,6 @@ export type SubmitContactResponse = {
   message: string;
 };
 
-export type ContactApiErrorResponse = {
-  message?: string;
-  errors?: Record<string, string[]>;
-};
-
 export type ContactState = {
   isSubmitting: boolean;
   isSuccess: boolean;
