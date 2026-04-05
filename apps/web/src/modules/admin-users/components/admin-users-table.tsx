@@ -1,9 +1,19 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { CircleCheck, CircleX, Crown, List, PenTool, Shield, Users } from 'lucide-react';
+import Link from 'next/link';
+import {
+  CircleCheck,
+  CircleX,
+  Crown,
+  List,
+  Pencil,
+  PenTool,
+  Users,
+} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { SelectCustom } from '@/components/ui/select-custom';
 import { Pagination } from '@/components/shared/pagination';
 import {
@@ -19,7 +29,8 @@ import { TableEmptyState } from '@/components/shared/table-empty-state';
 import { TableToolbar } from '@/components/shared/table-toolbar';
 
 import { cn } from '@/lib/utils';
-import { AdminUser, AdminUserRole } from '@/modules/auth';
+import { AdminUser, AdminUserRole } from '@/modules/admin-users';
+import { SortOrder } from '@/types/api.types';
 
 type AdminUsersTableProps = {
   data: AdminUser[];
@@ -30,7 +41,7 @@ type AdminUsersTableProps = {
   roleFilter: string;
   statusFilter: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: SortOrder;
   isLoading?: boolean;
   className?: string;
   onSearchChange: (value: string) => void;
@@ -101,9 +112,7 @@ function RoleBadge({ role }: { role: AdminUserRole }) {
 
 function StatusBadge({ isActive }: { isActive: boolean }) {
   return (
-    <Badge
-      variant={isActive ? 'success' : 'danger'}
-    >
+    <Badge variant={isActive ? 'success' : 'danger'}>
       {isActive ? 'Active' : 'Inactive'}
     </Badge>
   );
@@ -143,7 +152,7 @@ export function AdminUsersTable({
           onSearchChange(value);
         }}
         filters={
-          <div className='w-full grid grid-cols-1 md:grid-cols-2 gap-3'>
+          <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
             <SelectCustom
               value={roleFilter}
               options={roleOptions}
@@ -213,6 +222,7 @@ export function AdminUsersTable({
                   onSort={onSort}
                 />
               </TableHeaderCell>
+              <TableHeaderCell>Actions</TableHeaderCell>
             </TableRow>
           </TableHead>
 
@@ -276,6 +286,14 @@ export function AdminUsersTable({
                     <p className="text-muted-foreground">
                       {formatDate(user.created_at)}
                     </p>
+                  </TableCell>
+
+                  <TableCell>
+                    <Link href={`/admin/admin-users/${user.id}/edit`}>
+                      <Button variant="outline" size="sm" leftIcon={Pencil}>
+                        Edit
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))

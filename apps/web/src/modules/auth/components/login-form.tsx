@@ -17,11 +17,11 @@ import {
   selectAuthLoading,
   selectIsAuthenticated,
 } from '@/modules/auth';
-import type { AdminLoginFormValues } from '@/modules/auth';
+import type { AdminLoginPayload } from '@/modules/auth';
 
-type AdminLoginFormErrors = Partial<Record<keyof AdminLoginFormValues, string>>;
+type AdminLoginFormErrors = Partial<Record<keyof AdminLoginPayload, string>>;
 
-const initialValues: AdminLoginFormValues = {
+const initialValues: AdminLoginPayload = {
   email: '',
   password: '',
 };
@@ -35,8 +35,7 @@ export function AdminLoginForm() {
   const error = useAppSelector(selectAuthError);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
-  const [values, setValues] =
-    React.useState<AdminLoginFormValues>(initialValues);
+  const [values, setValues] = React.useState<AdminLoginPayload>(initialValues);
   const [errors, setErrors] = React.useState<AdminLoginFormErrors>({});
   const [showPassword, setShowPassword] = React.useState(false);
 
