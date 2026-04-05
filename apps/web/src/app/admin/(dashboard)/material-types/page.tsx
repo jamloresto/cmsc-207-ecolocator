@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { CircleCheck, CircleX, List } from 'lucide-react';
+import { CircleCheck, CircleX, List, Plus } from 'lucide-react';
 
 import { Pagination } from '@/components/shared/pagination';
 import { TableToolbar } from '@/components/shared/table-toolbar';
+import { Button } from '@/components/ui/button';
 import { SelectCustom } from '@/components/ui/select-custom';
 
 import {
   AdminMaterialTypesTable,
+  CreateMaterialTypeModal,
   EditMaterialTypeModal,
   useAdminMaterialTypes,
   type AdminMaterialTypesListParams,
@@ -27,15 +29,24 @@ export default function AdminMaterialTypesPage() {
   } = useAdminMaterialTypes();
 
   const statusOptions = [
-    { label: 'All Status', value: '', icon: <List className='text-warning' /> },
-    { label: 'Active', value: '1', icon: <CircleCheck className='text-success' /> },
-    { label: 'Inactive', value: '0', icon: <CircleX className='text-destructive' /> },
+    { label: 'All Status', value: '', icon: <List className="text-warning" /> },
+    {
+      label: 'Active',
+      value: '1',
+      icon: <CircleCheck className="text-success" />,
+    },
+    {
+      label: 'Inactive',
+      value: '0',
+      icon: <CircleX className="text-destructive" />,
+    },
   ];
 
   const [selectedMaterialTypeId, setSelectedMaterialTypeId] = useState<
     number | null
   >(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   function handleEdit(id: number) {
     setSelectedMaterialTypeId(id);
@@ -44,35 +55,46 @@ export default function AdminMaterialTypesPage() {
 
   return (
     <div className="space-y-6">
-      <TableToolbar
-        searchValue={params.search ?? ''}
-        searchPlaceholder="Search by name or description"
-        onSearchChange={(value) =>
-          setParams((prev) => ({
-            ...prev,
-            page: 1,
-            search: value,
-          }))
-        }
-        filters={
-          <SelectCustom
-            options={statusOptions}
-            value={params.is_active ?? ''}
-            placeholder="All Status"
-            onChange={(value) => {
-              const typedValue =
-                value as AdminMaterialTypesListParams['is_active'];
+      <div className='w-full flex justify-end'>
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          leftIcon={Plus}
+          size="sm"
+        >
+          New Material Type
+        </Button>
+      </div>
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <TableToolbar
+          searchValue={params.search ?? ''}
+          searchPlaceholder="Search by name or description"
+          onSearchChange={(value) =>
+            setParams((prev) => ({
+              ...prev,
+              page: 1,
+              search: value,
+            }))
+          }
+          filters={
+            <SelectCustom
+              options={statusOptions}
+              value={params.is_active ?? ''}
+              placeholder="All Status"
+              onChange={(value) => {
+                const typedValue =
+                  value as AdminMaterialTypesListParams['is_active'];
 
-              setParams((prev) => ({
-                ...prev,
-                page: 1,
-                is_active: typedValue,
-              }));
-            }}
-            className="min-w-48 lg:min-w-72"
-          />
-        }
-      />
+                setParams((prev) => ({
+                  ...prev,
+                  page: 1,
+                  is_active: typedValue,
+                }));
+              }}
+              className="min-w-48 md:min-w-72"
+            />
+          }
+        />
+      </div>
 
       {error ? (
         <div className="border-destructive/30 bg-destructive/5 text-destructive rounded-xl border p-4 text-sm">
@@ -101,6 +123,12 @@ export default function AdminMaterialTypesPage() {
           }
         />
       ) : null}
+
+      <CreateMaterialTypeModal
+        open={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSaved={refetch}
+      />
 
       <EditMaterialTypeModal
         materialTypeId={selectedMaterialTypeId}

@@ -26,7 +26,7 @@ export function TableToolbar({
   return (
     <div
       className={cn(
-        'flex flex-col gap-4 md:flex-row md:items-end md:justify-between flex-wrap lg:flex-nowrap',
+        'flex flex-1 flex-col gap-4 md:flex-row md:items-end md:justify-between flex-wrap lg:flex-nowrap',
         className,
       )}
     >
