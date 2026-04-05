@@ -7,6 +7,7 @@ import {
 } from '@/modules/admin-users';
 
 export function useAdminUsers(params: AdminUsersQueryParams) {
+  console.log("Admin Users: ", params)
   return useQuery({
     queryKey: ['admin-users', params],
     queryFn: () => getAdminUsers(params),

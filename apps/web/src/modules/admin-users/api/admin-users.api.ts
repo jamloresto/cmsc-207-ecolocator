@@ -10,7 +10,24 @@ import type {
 export async function getAdminUsers(
   params: AdminUsersQueryParams = {},
 ): Promise<PaginatedAdminUsersResponse> {
-  const response = await apiClient.get('/api/v1/admin/users', { params });
+  const cleanedParams: Record<string, string | number> = {};
+
+  if (params.page) cleanedParams.page = params.page;
+  if (params.per_page) cleanedParams.per_page = params.per_page;
+  if (params.search?.trim()) cleanedParams.search = params.search.trim();
+  if (params.role) {
+    cleanedParams.role = params.role;
+  }
+  if (params.is_active !== '') {
+    cleanedParams.is_active = params.is_active === 'true' ? 1 : 0;
+  }
+  if (params.sort) cleanedParams.sort = params.sort;
+  if (params.direction) cleanedParams.direction = params.direction;
+
+  const response = await apiClient.get('/api/v1/admin/users', {
+    params: cleanedParams,
+  });
+
   return response.data;
 }
 

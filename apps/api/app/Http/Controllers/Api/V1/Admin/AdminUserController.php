@@ -23,9 +23,45 @@ class AdminUserController extends Controller
             new OA\Response(response: 403, description: 'Forbidden'),
         ]
     )]
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy('id', 'desc')->paginate(10);
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $search = $request->string('search')->trim();
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->string('role'));
+        }
+
+        if ($request->has('is_active') && $request->is_active !== '') {
+            $query->where('is_active', $request->boolean('is_active'));
+        }
+
+        $allowedSorts = ['name', 'email', 'role', 'is_active', 'created_at'];
+        $sort = $request->string('sort')->toString();
+        $direction = strtolower($request->string('direction', 'desc')->toString());
+
+        if (! in_array($sort, $allowedSorts, true)) {
+            $sort = 'created_at';
+        }
+
+        if (! in_array($direction, ['asc', 'desc'], true)) {
+            $direction = 'desc';
+        }
+
+        $perPage = (int) $request->integer('per_page', 10);
+
+        $users = $query
+            ->orderBy($sort, $direction)
+            ->paginate($perPage)
+            ->withQueryString();
 
         return AdminUserResource::collection($users);
     }

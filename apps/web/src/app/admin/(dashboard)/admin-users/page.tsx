@@ -1,13 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Plus, ShieldAlert } from 'lucide-react';
 
-import { AdminUsersTable } from '@/modules/admin-users/components/admin-users-table';
-import { useAdminUsers } from '@/modules/admin-users/hooks/use-admin-users';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import {
+  AdminUsersTable,
+  useAdminUsers
+} from '@/modules/admin-users';
+import { SortOrder } from '@/types/api.types';
 
 export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
@@ -15,7 +19,7 @@ export default function AdminUsersPage() {
   const [role, setRole] = useState('');
   const [status, setStatus] = useState('');
   const [sortBy, setSortBy] = useState('created_at');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
   const { data, isLoading, isError } = useAdminUsers({
     page,
@@ -122,6 +126,7 @@ export default function AdminUsersPage() {
         </CardHeader>
 
         <CardContent>
+          Filtered: {role} {status}
           <AdminUsersTable
             data={data?.data ?? []}
             currentPage={data?.meta?.current_page ?? 1}
