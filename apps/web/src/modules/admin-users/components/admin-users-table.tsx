@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   CircleCheck,
@@ -138,7 +138,7 @@ export function AdminUsersTable({
 }: AdminUsersTableProps) {
   const [searchInput, setSearchInput] = useState(searchValue);
 
-  useMemo(() => {
+  useEffect(() => {
     setSearchInput(searchValue);
   }, [searchValue]);
 
