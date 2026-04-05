@@ -21,6 +21,10 @@ export type SortOrderParams<TSortField extends string = string> = {
 
 export type ValidationErrors = Record<string, string[]>;
 
+export type ApiSuccessResponse<T> = {
+  data: T;
+};
+
 export type ApiErrorResponse = {
   message?: string;
   errors?: ValidationErrors;

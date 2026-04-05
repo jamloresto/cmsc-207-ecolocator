@@ -29,7 +29,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     'hover:bg-muted active:scale-[0.98]',
 
   ghost:
-    'border border-transparent bg-transparent text-foreground ' +
+    'border-0 border-transparent bg-transparent text-foreground ' +
     'hover:bg-muted active:scale-[0.98]',
 
   danger:
@@ -38,13 +38,13 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'h-9 px-3 text-sm',
+  sm: 'h-8 px-3 text-xs!',
   md: 'h-11 px-4 text-sm',
   lg: 'h-12 px-5 text-base',
 };
 
 const iconSizeClasses: Record<ButtonSize, string> = {
-  sm: 'h-4 w-4',
+  sm: 'h-3 w-3',
   md: 'h-4 w-4',
   lg: 'h-5 w-5',
 };

@@ -23,7 +23,7 @@ export default function CreateAdminUserPage() {
           <CardTitle>Admin user details</CardTitle>
         </CardHeader>
         <CardContent>
-          <AdminUserForm />
+          <AdminUserForm mode="create" />
         </CardContent>
       </Card>
     </div>

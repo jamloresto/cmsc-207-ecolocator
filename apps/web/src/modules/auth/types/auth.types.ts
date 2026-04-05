@@ -1,23 +1,8 @@
-export type AdminLoginFormValues = {
-  email: string;
-  password: string;
-};
+import { AdminUser } from "@/modules/admin-users";
 
 export type AdminLoginPayload = {
   email: string;
   password: string;
-};
-
-export type AdminUserRole = 'super_admin' | 'editor';
-
-export type AdminUser = {
-  id: number;
-  name: string;
-  email: string;
-  role: AdminUserRole;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
 };
 
 export type AdminLoginResponse = {

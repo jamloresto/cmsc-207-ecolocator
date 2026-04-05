@@ -1,5 +1,16 @@
-import { AdminUser, AdminUserRole } from '@/modules/auth';
-import { PaginatedResponse } from '@/types/api.types';
+import { ApiSuccessResponse, PaginatedResponse } from '@/types/api.types';
+
+export type AdminUserRole = 'super_admin' | 'editor';
+
+export type AdminUser = {
+  id: number;
+  name: string;
+  email: string;
+  role: AdminUserRole;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
 
 export type AdminUsersQueryParams = {
   page?: number;
@@ -22,6 +33,13 @@ export type CreateAdminUserPayload = {
   is_active: boolean;
 };
 
-export type AdminUserApiResponse = {
-  data: AdminUser;
+export type UpdateAdminUserPayload = {
+  name: string;
+  email: string;
+  password?: string;
+  password_confirmation?: string;
+  role: AdminUserRole;
+  is_active: boolean;
 };
+
+export type AdminUserApiResponse = ApiSuccessResponse<AdminUser>;

@@ -4,6 +4,7 @@ import type {
   AdminUsersQueryParams,
   CreateAdminUserPayload,
   PaginatedAdminUsersResponse,
+  UpdateAdminUserPayload,
 } from '@/modules/admin-users';
 
 export async function getAdminUsers(
@@ -18,6 +19,26 @@ export async function createAdminUser(
 ): Promise<AdminUserApiResponse> {
   const response = await apiClient.post<AdminUserApiResponse>(
     '/api/v1/admin/users',
+    payload,
+  );
+
+  return response.data;
+}
+
+export async function getAdminUser(userId: number): Promise<AdminUserApiResponse> {
+  const response = await apiClient.get<AdminUserApiResponse>(
+    `/api/v1/admin/users/${userId}`,
+  );
+
+  return response.data;
+}
+
+export async function updateAdminUser(
+  userId: number,
+  payload: UpdateAdminUserPayload,
+): Promise<AdminUserApiResponse> {
+  const response = await apiClient.put<AdminUserApiResponse>(
+    `/api/v1/admin/users/${userId}`,
     payload,
   );
 
