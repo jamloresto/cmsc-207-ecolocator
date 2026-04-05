@@ -16,8 +16,8 @@ export type AdminUser = {
   email: string;
   role: AdminUserRole;
   is_active: boolean;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type AdminLoginResponse = {
