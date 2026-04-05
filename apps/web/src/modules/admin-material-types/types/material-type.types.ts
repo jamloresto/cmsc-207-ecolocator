@@ -1,3 +1,10 @@
+import {
+  PaginatedResponse,
+  PaginationParams,
+  SearchParams,
+  SortDirectionParams,
+} from '@/types/api.types';
+
 export type AdminMaterialType = {
   id: number;
   name: string;
@@ -8,41 +15,16 @@ export type AdminMaterialType = {
   updated_at: string;
 };
 
-export type AdminMaterialTypesListParams = {
-  page?: number;
-  per_page?: number;
-  search?: string;
-  is_active?: 'true' | 'false' | '';
-  sort?: 'name' | 'created_at' | 'updated_at';
-  direction?: 'asc' | 'desc';
-};
-
-export type LaravelPaginationLink = {
-  url: string | null;
-  label: string;
-  active: boolean;
-};
-
-export type LaravelPaginatedResponse<T> = {
-  current_page: number;
-  data: T[];
-  first_page_url: string;
-  from: number | null;
-  last_page: number;
-  last_page_url: string;
-  links: LaravelPaginationLink[];
-  next_page_url: string | null;
-  path: string;
-  per_page: number;
-  prev_page_url: string | null;
-  to: number | null;
-  total: number;
-};
+export type AdminMaterialTypesListParams = PaginationParams &
+  SearchParams &
+  SortDirectionParams<'name' | 'created_at' | 'updated_at'> & {
+    is_active?: 'true' | 'false' | '';
+  };
 
 export type AdminMaterialTypesListResponse = {
   success: boolean;
   message: string;
-  data: LaravelPaginatedResponse<AdminMaterialType>;
+  data: PaginatedResponse<AdminMaterialType>;
 };
 
 export type AdminMaterialTypeResponse = {

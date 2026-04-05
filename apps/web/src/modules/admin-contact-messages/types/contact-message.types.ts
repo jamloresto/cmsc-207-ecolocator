@@ -1,6 +1,11 @@
-export type ContactMessageStatus = 'new' | 'read' | 'replied' | 'archived';
+import {
+  PaginatedResponse,
+  PaginationParams,
+  SearchParams,
+  SortOrderParams,
+} from '@/types/api.types';
 
-export type SortOrder = 'asc' | 'desc';
+export type ContactMessageStatus = 'new' | 'read' | 'replied' | 'archived';
 
 export interface ContactMessage {
   id: number;
@@ -18,40 +23,13 @@ export interface ContactMessage {
   updated_at: string;
 }
 
-export interface ContactMessagesPagination {
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-}
+export type ContactMessagesListResponse = PaginatedResponse<ContactMessage>;
 
-export interface ContactMessagesListResponse {
-  data: ContactMessage[];
-  meta?: {
-    current_page: number;
-    from: number | null;
-    last_page: number;
-    path: string;
-    per_page: number;
-    to: number | null;
-    total: number;
+export type ContactMessagesParams = PaginationParams &
+  SearchParams &
+  SortOrderParams<'created_at' | 'updated_at' | 'status'> & {
+    status?: ContactMessageStatus | '';
   };
-  links?: {
-    first?: string | null;
-    last?: string | null;
-    prev?: string | null;
-    next?: string | null;
-  };
-}
-
-export interface ContactMessagesParams {
-  search?: string;
-  status?: '' | ContactMessageStatus;
-  page?: number;
-  per_page?: number;
-  sort_by?: string;
-  sort_order: SortOrder;
-}
 
 export interface ReplyContactMessagePayload {
   reply_message: string;
