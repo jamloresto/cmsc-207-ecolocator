@@ -1,17 +1,15 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { SubmitEvent, useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 
 import {
   getAdminMaterialType,
+  MaterialTypeForm,
   updateAdminMaterialType,
   type AdminMaterialType,
+  type MaterialTypeFormValues,
 } from '@/modules/admin-material-types';
 
 type EditMaterialTypeModalProps = {
@@ -21,10 +19,10 @@ type EditMaterialTypeModalProps = {
   onSaved: () => Promise<void> | void;
 };
 
-type FormValues = {
-  name: string;
-  description: string;
-  is_active: boolean;
+const initialValues: MaterialTypeFormValues = {
+  name: '',
+  description: '',
+  is_active: true,
 };
 
 export function EditMaterialTypeModal({
@@ -36,11 +34,7 @@ export function EditMaterialTypeModal({
   const [materialType, setMaterialType] = useState<AdminMaterialType | null>(
     null,
   );
-  const [values, setValues] = useState<FormValues>({
-    name: '',
-    description: '',
-    is_active: true,
-  });
+  const [values, setValues] = useState<MaterialTypeFormValues>(initialValues);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,11 +70,7 @@ export function EditMaterialTypeModal({
 
   function resetState() {
     setMaterialType(null);
-    setValues({
-      name: '',
-      description: '',
-      is_active: true,
-    });
+    setValues(initialValues);
     setIsLoading(false);
     setIsSaving(false);
     setError(null);
@@ -91,7 +81,7 @@ export function EditMaterialTypeModal({
     onClose();
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!materialTypeId) return;
@@ -134,86 +124,15 @@ export function EditMaterialTypeModal({
           Loading material type details...
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {error ? (
-            <div className="border-destructive/30 bg-destructive/5 text-destructive rounded-xl border p-3 text-sm">
-              {error}
-            </div>
-          ) : null}
-
-          <div className="space-y-2">
-            <label htmlFor="material-type-name" className="text-sm font-medium">
-              Name
-            </label>
-            <Input
-              id="material-type-name"
-              value={values.name}
-              onChange={(e) =>
-                setValues((prev) => ({
-                  ...prev,
-                  name: e.target.value,
-                }))
-              }
-              placeholder="Enter material type name"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="material-type-description"
-              className="text-sm font-medium"
-            >
-              Description
-            </label>
-            <Textarea
-              id="material-type-description"
-              value={values.description}
-              onChange={(e) =>
-                setValues((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }))
-              }
-              placeholder="Enter description"
-              rows={4}
-            />
-          </div>
-
-          <div className="border-border flex items-center justify-between rounded-xl border p-4">
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Status</p>
-              <p className="text-muted-foreground text-sm">
-                Set whether this material type is active or inactive.
-              </p>
-            </div>
-
-            <Switch
-              checked={values.is_active}
-              onChange={(e) =>
-                setValues((prev) => ({
-                  ...prev,
-                  is_active: e.target.checked,
-                }))
-              }
-            />
-          </div>
-
-          <div className="flex flex-col-reverse gap-3 pt-2 md:flex-row md:justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-
-            <Button type="submit" disabled={isSaving || !values.name.trim()}>
-              {isSaving ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </div>
-        </form>
+        <MaterialTypeForm
+          values={values}
+          isSaving={isSaving}
+          error={error}
+          submitLabel="Save Changes"
+          onChange={setValues}
+          onSubmit={handleSubmit}
+          onCancel={handleClose}
+        />
       )}
     </Modal>
   );

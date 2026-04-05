@@ -2,6 +2,7 @@ export * from './api/material-types.api';
 export * from './components/admin-material-types-table';
 export * from './components/create-material-type-modal';
 export * from './components/edit-material-type-modal';
+export * from './components/material-type-form';
 export * from './components/material-type-status-toggle';
 export * from './hooks/use-admin-material-types';
 export * from './types/material-type.types';
