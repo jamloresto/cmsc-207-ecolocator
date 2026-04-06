@@ -3,6 +3,7 @@
 import { LogOut } from 'lucide-react';
 
 import { AdminMobileDrawer } from './admin-mobile-drawer';
+import { useAdminLogout } from '@/modules/auth';
 
 type AdminHeaderProps = {
   title?: string;
@@ -15,8 +16,10 @@ export function AdminHeader({
   subtitle = 'Overview of admin activity and platform data.',
   role = 'super_admin',
 }: AdminHeaderProps) {
+  const logoutMutation = useAdminLogout();
+
   function handleLogout() {
-    console.log('logout clicked');
+    logoutMutation.mutate();
   }
 
   return (
@@ -34,6 +37,7 @@ export function AdminHeader({
         <button
           type="button"
           onClick={handleLogout}
+          disabled={logoutMutation.isPending}
           className="border-border bg-card text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-colors"
         >
           <LogOut className="h-4 w-4" />
