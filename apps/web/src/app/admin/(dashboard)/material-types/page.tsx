@@ -55,7 +55,7 @@ export default function AdminMaterialTypesPage() {
 
   return (
     <div className="space-y-6">
-      <div className='w-full flex justify-end'>
+      <div className="flex w-full justify-end">
         <Button
           onClick={() => setIsCreateModalOpen(true)}
           leftIcon={Plus}
@@ -113,8 +113,8 @@ export default function AdminMaterialTypesPage() {
 
       {pagination ? (
         <Pagination
-          currentPage={pagination.current_page}
-          totalPages={pagination.last_page}
+          currentPage={pagination.meta.current_page}
+          totalPages={pagination.meta.last_page}
           onPageChange={(page) =>
             setParams((prev) => ({
               ...prev,

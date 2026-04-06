@@ -27,7 +27,7 @@ export type ContactMessagesListResponse = PaginatedResponse<ContactMessage>;
 
 export type ContactMessagesParams = PaginationParams &
   SearchParams &
-  SortOrderParams<'created_at' | 'updated_at' | 'status'> & {
+  SortOrderParams & {
     status?: ContactMessageStatus | '';
   };
 

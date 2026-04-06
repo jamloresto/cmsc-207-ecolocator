@@ -108,7 +108,7 @@ export function AdminContactMessagesTable({
             <TableHeaderCell>
               <SortableHeader
                 label="Date"
-                field="create_at"
+                field="created_at"
                 sortBy={sortBy}
                 sortOrder={sortOrder}
                 onSort={onSort}
