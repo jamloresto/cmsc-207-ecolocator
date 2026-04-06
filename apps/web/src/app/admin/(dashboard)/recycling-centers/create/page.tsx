@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 
 import { useToast } from '@/hooks/use-toast';
-import { useMaterialTypes } from '@/modules/material-types/hooks/use-material-types';
+import { useActiveMaterialTypes } from '@/modules/admin-material-types';
 import {
   useCreateWasteCollectionLocation,
   WasteCollectionLocationForm,
@@ -21,7 +21,7 @@ export default function CreateWasteCollectionLocationPage() {
   const { toast } = useToast();
 
   const createMutation = useCreateWasteCollectionLocation();
-  const materialTypesQuery = useMaterialTypes();
+  const materialTypesQuery = useActiveMaterialTypes();
 
   function handleSubmit(values: WasteCollectionLocationPayload) {
     createMutation.mutate(values, {

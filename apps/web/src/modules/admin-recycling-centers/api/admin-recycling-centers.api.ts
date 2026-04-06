@@ -34,7 +34,6 @@ export async function getAdminWasteCollectionLocations(
   if (params.material_slug?.trim())
     cleanedParams.material_slug = params.material_slug.trim();
 
-  // keep consistent with your admin users
   if (params.sort) cleanedParams.sort = params.sort;
   if (params.direction) cleanedParams.direction = params.direction;
 

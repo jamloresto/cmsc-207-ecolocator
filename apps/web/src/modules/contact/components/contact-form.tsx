@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { ChangeEvent, SubmitEvent, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -40,23 +40,23 @@ export function ContactForm() {
   const successMessage = useAppSelector(selectContactSuccessMessage);
   const error = useAppSelector(selectContactError);
 
-  const [values, setValues] = React.useState<ContactFormValues>(initialValues);
-  const [errors, setErrors] = React.useState<ContactFormErrors>({});
+  const [values, setValues] = useState<ContactFormValues>(initialValues);
+  const [errors, setErrors] = useState<ContactFormErrors>({});
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       dispatch(clearContactState());
     };
   }, [dispatch]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isSuccess) {
       setValues(initialValues);
     }
   }, [isSuccess]);
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
     const { name, value } = e.target;
 
@@ -89,7 +89,7 @@ export function ContactForm() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setErrors((prev) => ({

@@ -52,6 +52,7 @@ Route::prefix('v1')->group(function () {
 
                 Route::prefix('material-types')->group(function () {
                     Route::get('/', [MaterialTypeController::class, 'index']);
+                    Route::get('/all', [MaterialTypeController::class, 'all']);
                     Route::get('/{materialType}', [MaterialTypeController::class, 'show']);
                     Route::post('/', [MaterialTypeController::class, 'store']);
                     Route::put('/{materialType}', [MaterialTypeController::class, 'update']);

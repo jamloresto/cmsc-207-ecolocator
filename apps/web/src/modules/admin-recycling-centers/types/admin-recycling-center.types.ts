@@ -1,10 +1,5 @@
+import { ActiveMaterialType } from '@/modules/admin-material-types';
 import type { PaginatedResponse } from '@/types/api.types';
-
-export type WasteCollectionLocationMaterialType = {
-  id: number;
-  name: string;
-  slug: string;
-};
 
 export type WasteCollectionLocation = {
   id: number;
@@ -25,7 +20,7 @@ export type WasteCollectionLocation = {
   operating_hours?: string | null;
   notes?: string | null;
   is_active: boolean;
-  material_types: WasteCollectionLocationMaterialType[];
+  material_types: ActiveMaterialType[];
   created_at?: string;
   updated_at?: string;
 };

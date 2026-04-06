@@ -19,6 +19,12 @@ export async function getAdminMaterialTypes(
   return response.data;
 }
 
+export async function getActiveMaterialTypes() {
+  const res = await apiClient.get('/api/v1/admin/material-types/all');
+
+  return res.data.data;
+}
+
 export async function getAdminMaterialType(
   id: number,
 ): Promise<AdminMaterialTypeResponse> {

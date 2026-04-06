@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { ChangeEvent, SubmitEvent, useEffect, useState } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -35,23 +35,23 @@ export function AdminLoginForm() {
   const error = useAppSelector(selectAuthError);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
-  const [values, setValues] = React.useState<AdminLoginPayload>(initialValues);
-  const [errors, setErrors] = React.useState<AdminLoginFormErrors>({});
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [values, setValues] = useState<AdminLoginPayload>(initialValues);
+  const [errors, setErrors] = useState<AdminLoginFormErrors>({});
+  const [showPassword, setShowPassword] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       dispatch(clearAuthError());
     };
   }, [dispatch]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
       router.push('/admin');
     }
   }, [isAuthenticated, router]);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
 
     setValues((prev) => ({
@@ -85,7 +85,7 @@ export function AdminLoginForm() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!validate()) return;

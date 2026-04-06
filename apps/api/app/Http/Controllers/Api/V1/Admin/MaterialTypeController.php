@@ -60,62 +60,90 @@ class MaterialTypeController extends Controller
         ]
     )]
     public function index(Request $request): JsonResponse
-{
-    $validated = $request->validate([
-        'search' => ['nullable', 'string', 'max:255'],
-        'is_active' => ['nullable', 'boolean'],
-        'sort' => ['nullable', Rule::in(['name', 'created_at', 'updated_at'])],
-        'direction' => ['nullable', Rule::in(['asc', 'desc'])],
-        'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-    ]);
+    {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['nullable', 'boolean'],
+            'sort' => ['nullable', Rule::in(['name', 'created_at', 'updated_at'])],
+            'direction' => ['nullable', Rule::in(['asc', 'desc'])],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
 
-    $query = MaterialType::query();
+        $query = MaterialType::query();
 
-    if (!empty($validated['search'])) {
-        $search = trim($validated['search']);
+        if (!empty($validated['search'])) {
+            $search = trim($validated['search']);
 
-        $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
-        });
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if (array_key_exists('is_active', $validated)) {
+            $query->where('is_active', $validated['is_active']);
+        }
+
+        $sort = $validated['sort'] ?? 'name';
+        $direction = $validated['direction'] ?? 'asc';
+        $perPage = $validated['per_page'] ?? 10;
+
+        $materialTypes = $query
+            ->orderBy($sort, $direction)
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Material types fetched successfully.',
+            'data' => [
+                'data' => $materialTypes->items(),
+                'links' => [
+                    'first' => $materialTypes->url(1),
+                    'last' => $materialTypes->url($materialTypes->lastPage()),
+                    'prev' => $materialTypes->previousPageUrl(),
+                    'next' => $materialTypes->nextPageUrl(),
+                ],
+                'meta' => [
+                    'current_page' => $materialTypes->currentPage(),
+                    'from' => $materialTypes->firstItem(),
+                    'last_page' => $materialTypes->lastPage(),
+                    'path' => $materialTypes->path(),
+                    'per_page' => $materialTypes->perPage(),
+                    'to' => $materialTypes->lastItem(),
+                    'total' => $materialTypes->total(),
+                ],
+            ],
+        ]);
     }
 
-    if (array_key_exists('is_active', $validated)) {
-        $query->where('is_active', $validated['is_active']);
+    #[OA\Get(
+        path: '/api/v1/admin/material-types/all',
+        summary: 'Get all active material types (id, name, slug only)',
+        tags: ['Admin Material Types'],
+        security: [['bearerAuth' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Material types fetched successfully'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function all(): JsonResponse
+    {
+        $materialTypes = MaterialType::query()
+            ->where('is_active', true)
+            ->orderBy('name', 'asc')
+            ->get([
+                'id',
+                'name',
+                'slug',
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Active material types fetched successfully.',
+            'data' => $materialTypes,
+        ]);
     }
-
-    $sort = $validated['sort'] ?? 'name';
-    $direction = $validated['direction'] ?? 'asc';
-    $perPage = $validated['per_page'] ?? 10;
-
-    $materialTypes = $query
-        ->orderBy($sort, $direction)
-        ->paginate($perPage)
-        ->withQueryString();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Material types fetched successfully.',
-        'data' => [
-            'data' => $materialTypes->items(),
-            'links' => [
-                'first' => $materialTypes->url(1),
-                'last' => $materialTypes->url($materialTypes->lastPage()),
-                'prev' => $materialTypes->previousPageUrl(),
-                'next' => $materialTypes->nextPageUrl(),
-            ],
-            'meta' => [
-                'current_page' => $materialTypes->currentPage(),
-                'from' => $materialTypes->firstItem(),
-                'last_page' => $materialTypes->lastPage(),
-                'path' => $materialTypes->path(),
-                'per_page' => $materialTypes->perPage(),
-                'to' => $materialTypes->lastItem(),
-                'total' => $materialTypes->total(),
-            ],
-        ],
-    ]);
-}
 
     #[OA\Get(
         path: '/api/v1/admin/material-types/{materialType}',

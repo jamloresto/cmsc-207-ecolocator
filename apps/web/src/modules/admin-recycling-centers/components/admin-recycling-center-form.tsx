@@ -1,20 +1,20 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, SubmitEvent } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-import type { MaterialType } from '@/modules/material-types';
+import { ActiveMaterialType } from '@/modules/admin-material-types';
 import {
   WasteCollectionLocationPayload,
 } from '@/modules/admin-recycling-centers';
 
 type Props = {
   initialValues?: Partial<WasteCollectionLocationPayload>;
-  materialOptions: MaterialType[];
+  materialOptions: ActiveMaterialType[];
   isSubmitting?: boolean;
   submitLabel?: string;
   onSubmit: (values: WasteCollectionLocationPayload) => void;
@@ -74,10 +74,12 @@ export function WasteCollectionLocationForm({
     });
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     onSubmit(values);
   }
+
+  console.log(values);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -204,7 +206,9 @@ export function WasteCollectionLocationForm({
                 checked={values.material_type_ids.includes(material.id)}
                 onChange={() => toggleMaterialType(material.id)}
               />
-              <span className="text-sm">{material.name}</span>
+              <span className="text-sm">
+                {material.name}
+              </span>
             </label>
           ))}
         </div>
