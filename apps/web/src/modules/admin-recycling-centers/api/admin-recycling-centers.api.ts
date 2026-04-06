@@ -4,7 +4,7 @@ import type {
   WasteCollectionLocationsResponse,
   WasteCollectionLocation,
   WasteCollectionLocationPayload,
-} from '../types/waste-collection-location.types';
+} from '../types/admin-recycling-center.types';
 
 export async function getAdminWasteCollectionLocations(
   params: WasteCollectionLocationsQueryParams = {},

@@ -14,14 +14,14 @@ import {
   useCreateWasteCollectionLocation,
   WasteCollectionLocationForm,
   type WasteCollectionLocationPayload,
-} from '@/modules/waste-collection-locations';
+} from '@/modules/admin-recycling-centers';
 
 export default function CreateWasteCollectionLocationPage() {
   const router = useRouter();
   const { toast } = useToast();
 
   const createMutation = useCreateWasteCollectionLocation();
-  const materialTypesQuery = useMaterialTypes({ page: 1 });
+  const materialTypesQuery = useMaterialTypes();
 
   function handleSubmit(values: WasteCollectionLocationPayload) {
     createMutation.mutate(values, {
@@ -52,7 +52,7 @@ export default function CreateWasteCollectionLocationPage() {
 
       <CardContent>
         <WasteCollectionLocationForm
-          materialOptions={materialTypesQuery.data?.data ?? []}
+          materialOptions={materialTypesQuery.materialTypes ?? []}
           isSubmitting={createMutation.isPending}
           submitLabel="Create Recycling Center"
           onSubmit={handleSubmit}

@@ -1,12 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MailCheck, MailMinus, MailOpen, MailPlus, Mails } from 'lucide-react';
 
 import { AdminHeading } from '@/components/shared/admin-heading';
-import { Pagination } from '@/components/shared/pagination';
-import { TableToolbar } from '@/components/shared/table-toolbar';
-import { SelectCustom } from '@/components/ui/select-custom';
 
 import {
   AdminContactMessagesTable,
@@ -91,56 +87,22 @@ export default function AdminContactMessagesPage() {
     );
   }
 
+  function handleSort(field: string) {
+    setPage(1);
+
+    if (sortBy === field) {
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  }
+
   return (
     <main className="space-y-6 p-4 md:p-6">
       <AdminHeading
         title="Admin Contact Messages"
         description="Monitor, review, and manage public inquiries."
-      />
-
-      <TableToolbar
-        searchValue={searchInput}
-        onSearchChange={(value) => setSearchInput(value)}
-        searchPlaceholder="Search name, email, subject..."
-        filters={
-          <SelectCustom
-            className="min-w-48 lg:min-w-72"
-            value={status}
-            onChange={(value) => {
-              setStatus(value as '' | ContactMessageStatus);
-              setPage(1);
-            }}
-            options={[
-              {
-                label: 'All statuses',
-                value: '',
-                icon: <Mails className="text-warning h-4 w-4" />,
-              },
-              {
-                label: 'New',
-                value: 'new',
-                icon: <MailCheck className="text-primary h-4 w-4" />,
-              },
-              {
-                label: 'Read',
-                value: 'read',
-                icon: <MailOpen className="text-muted-foreground h-4 w-4" />,
-              },
-              {
-                label: 'Replied',
-                value: 'replied',
-                icon: (
-                  <MailPlus className="text-secondary-foreground h-4 w-4" />
-                ),
-              },
-              {
-                label: 'Archived',
-                value: 'archived',
-                icon: <MailMinus className="text-muted-foreground h-4 w-4" />,
-              },
-            ]}
-          />
-        }
       />
 
       {error ? (
@@ -151,29 +113,23 @@ export default function AdminContactMessagesPage() {
 
       <AdminContactMessagesTable
         messages={messages}
+        currentPage={pagination?.current_page ?? 1}
+        totalPages={pagination?.last_page ?? 1}
+        totalItems={pagination?.total}
+        searchValue={searchInput}
+        statusFilter={status}
         loading={loading}
         sortBy={sortBy}
         sortOrder={sortOrder}
-        onSort={(field: string) => {
+        onSort={handleSort}
+        onSearchChange={setSearchInput}
+        onStatusFilterChange={(value) => {
+          setStatus(value as '' | ContactMessageStatus);
           setPage(1);
-
-          if (sortBy === field) {
-            setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-          } else {
-            setSortBy(field);
-            setSortOrder('asc');
-          }
         }}
+        onPageChange={setPage}
         onArchived={handleArchived}
       />
-
-      {!loading && pagination ? (
-        <Pagination
-          currentPage={pagination.current_page}
-          totalPages={pagination.last_page}
-          onPageChange={(page) => setPage(page)}
-        />
-      ) : null}
     </main>
   );
 }

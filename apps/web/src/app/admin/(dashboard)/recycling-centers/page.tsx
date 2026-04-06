@@ -16,8 +16,7 @@ import {
   useDeleteWasteCollectionLocation,
   useWasteCollectionLocations,
   WasteCollectionLocationsTable,
-  WasteCollectionLocationsToolbar,
-} from '@/modules/waste-collection-locations';
+} from '@/modules/admin-recycling-centers';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 
 export default function AdminLocationsPage() {
@@ -102,42 +101,29 @@ export default function AdminLocationsPage() {
         </Link>
       </div>
 
-      <WasteCollectionLocationsToolbar
-        searchValue={search}
-        onSearchChange={(value) => updateUrl({ search: value, page: '' })}
-        materialTypeSlug={materialSlug}
-        onMaterialTypeChange={(value) =>
-          updateUrl({ material_slug: value, page: '' })
-        }
-        materialTypes={materialTypesQuery.data?.data ?? []}
-      />
-
       {locationsQuery.isLoading ? (
         <TableSkeleton />
       ) : (
         <>
           <WasteCollectionLocationsTable
             data={locationsQuery.data?.data ?? []}
+            isLoading={locationsQuery.isLoading}
+            searchValue={search}
+            materialTypeSlug={materialSlug}
+            materialTypes={materialTypesQuery.materialTypes ?? []}
+            currentPage={locationsQuery.data?.meta?.current_page ?? 1}
+            totalPages={locationsQuery.data?.meta?.last_page ?? 1}
+            totalItems={
+              locationsQuery.data?.meta?.total ??
+              locationsQuery.data?.data?.length
+            }
+            onSearchChange={(value) => updateUrl({ search: value, page: '' })}
+            onMaterialTypeChange={(value) =>
+              updateUrl({ material_slug: value, page: '' })
+            }
+            onPageChange={(nextPage) => updateUrl({ page: String(nextPage) })}
             onDelete={handleDelete}
           />
-
-          {locationsQuery.data?.meta ? (
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-muted-foreground text-sm">
-                {typeof locationsQuery.data.meta.total === 'number'
-                  ? `${locationsQuery.data.meta.total} location${locationsQuery.data.meta.total === 1 ? '' : 's'} found`
-                  : null}
-              </p>
-
-              <Pagination
-                currentPage={locationsQuery.data.meta.current_page}
-                totalPages={locationsQuery.data.meta.last_page}
-                onPageChange={(nextPage) =>
-                  updateUrl({ page: String(nextPage) })
-                }
-              />
-            </div>
-          ) : null}
         </>
       )}
       <ConfirmationDialog
