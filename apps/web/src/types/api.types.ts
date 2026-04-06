@@ -19,6 +19,14 @@ export type SortOrderParams<TSortField extends string = string> = {
   sort_order?: SortOrder;
 };
 
+export type SortableHeaderProps<T extends string> = {
+  label: string;
+  field: T;
+  sortBy?: T;
+  sortOrder?: 'asc' | 'desc';
+  onSort?: (field: T) => void;
+};
+
 export type ValidationErrors = Record<string, string[]>;
 
 export type ApiSuccessResponse<T> = {

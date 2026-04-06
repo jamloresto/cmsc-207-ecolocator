@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
+import { SortableHeaderProps } from '@/types/api.types';
+import { ArrowDown, ArrowDownNarrowWide, ArrowUp, ArrowUpNarrowWide } from 'lucide-react';
 
 export function TableContainer({
   children,
@@ -73,31 +75,30 @@ export function TableCell({
   return <td className={cn('px-4 py-4 text-sm', className)}>{children}</td>;
 }
 
-export function SortableHeader({
+export function SortableHeader<T extends string>({
   label,
   field,
   sortBy,
   sortOrder,
   onSort,
-}: {
-  label: string;
-  field: string;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-  onSort?: (field: string) => void;
-}) {
+}: SortableHeaderProps<T>) {
   const isActive = sortBy === field;
 
   return (
     <button
       type="button"
       onClick={() => onSort?.(field)}
-      className="hover:text-primary flex items-center gap-1 transition"
+      className="hover:text-primary flex h-full w-full items-center whitespace-nowrap transition"
     >
-      {label}
-      {isActive ? (
-        <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-      ) : null}
+      <span className="flex items-center gap-1">
+        {label}
+        {isActive &&
+          (sortOrder === 'asc' ? (
+            <ArrowUpNarrowWide className="h-3 w-3" />
+          ) : (
+            <ArrowDownNarrowWide className="h-3 w-3" />
+          ))}
+      </span>
     </button>
   );
 }
