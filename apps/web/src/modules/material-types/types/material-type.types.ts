@@ -1,4 +1,5 @@
 export type MaterialType = {
+  id: number;
   name: string;
   slug: string;
   description: string;

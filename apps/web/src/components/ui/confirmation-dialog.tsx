@@ -17,6 +17,7 @@ type ConfirmationDialogProps = {
   cancelLabel?: string;
   variant?: 'default' | 'danger';
   icon?: ReactNode;
+  loading?: boolean;
 };
 
 export function ConfirmationDialog({
@@ -29,6 +30,7 @@ export function ConfirmationDialog({
   cancelLabel = 'Cancel',
   variant = 'default',
   icon,
+  loading
 }: ConfirmationDialogProps) {
   return (
     <Modal open={open} onClose={onClose}>
@@ -45,7 +47,7 @@ export function ConfirmationDialog({
             {icon ?? <AlertTriangle className="h-6 w-6" />}
           </div>
 
-          <div className="text-center md:text-left space-y-2">
+          <div className="space-y-2 text-center md:text-left">
             <h3 className="text-foreground text-lg font-semibold">{title}</h3>
             <p className="text-muted-foreground text-sm leading-6">
               {description}
@@ -54,15 +56,16 @@ export function ConfirmationDialog({
         </div>
 
         <div className="flex flex-col-reverse gap-3 md:flex-row md:justify-end">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={loading}>
             {cancelLabel}
           </Button>
 
           <Button
             variant={variant === 'danger' ? 'danger' : 'primary'}
             onClick={onConfirm}
+            disabled={loading}
           >
-            {confirmLabel}
+            {loading ? 'Processing...' : confirmLabel}
           </Button>
         </div>
       </div>

@@ -52,7 +52,7 @@ export async function getAdminContactMessages(
 }
 
 export async function getAdminContactMessageById(
-  id: number | string,
+  id: number,
 ): Promise<{ data: ContactMessage }> {
   const response = await apiClient.get(`/api/v1/admin/contact-messages/${id}`);
 
@@ -60,7 +60,7 @@ export async function getAdminContactMessageById(
 }
 
 export async function archiveAdminContactMessage(
-  id: number | string,
+  id: number,
 ): Promise<{ message: string; data?: ContactMessage }> {
   const response = await apiClient.patch(
     `/api/v1/admin/contact-messages/${id}/archive`,
@@ -70,7 +70,7 @@ export async function archiveAdminContactMessage(
 }
 
 export async function replyToAdminContactMessage(
-  id: number | string,
+  id: number,
   payload: ReplyContactMessagePayload,
 ): Promise<ReplyContactMessageResponse> {
   const response = await apiClient.post(
