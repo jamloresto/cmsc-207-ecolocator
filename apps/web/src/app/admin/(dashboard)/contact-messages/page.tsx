@@ -3,18 +3,17 @@
 import { useEffect, useState } from 'react';
 import { MailCheck, MailMinus, MailOpen, MailPlus, Mails } from 'lucide-react';
 
-import { SelectCustom } from '@/components/ui/select-custom';
+import { AdminHeading } from '@/components/shared/admin-heading';
 import { Pagination } from '@/components/shared/pagination';
 import { TableToolbar } from '@/components/shared/table-toolbar';
+import { SelectCustom } from '@/components/ui/select-custom';
 
 import {
   AdminContactMessagesTable,
   getAdminContactMessages,
-} from '@/modules/admin-contact-messages';
-import type {
-  ContactMessage,
-  ContactMessageStatus,
-  ContactMessagesListResponse,
+  type ContactMessage,
+  type ContactMessageStatus,
+  type ContactMessagesListResponse,
 } from '@/modules/admin-contact-messages';
 
 export default function AdminContactMessagesPage() {
@@ -94,14 +93,10 @@ export default function AdminContactMessagesPage() {
 
   return (
     <main className="space-y-6 p-4 md:p-6">
-      <div className="space-y-1">
-        <h1 className="text-foreground text-2xl font-bold tracking-tight">
-          Admin Contact Messages
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Monitor, review, and manage public inquiries.
-        </p>
-      </div>
+      <AdminHeading
+        title="Admin Contact Messages"
+        description="Monitor, review, and manage public inquiries."
+      />
 
       <TableToolbar
         searchValue={searchInput}

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CircleCheck, CircleX, List, Plus } from 'lucide-react';
 
+import { AdminHeading } from '@/components/shared/admin-heading';
 import { Pagination } from '@/components/shared/pagination';
 import { TableToolbar } from '@/components/shared/table-toolbar';
 import { Button } from '@/components/ui/button';
@@ -55,6 +56,10 @@ export default function AdminMaterialTypesPage() {
 
   return (
     <div className="space-y-6">
+      <AdminHeading
+        title="Material Types"
+        description="View and manage material types."
+      />
       <div className="flex w-full justify-end">
         <Button
           onClick={() => setIsCreateModalOpen(true)}
