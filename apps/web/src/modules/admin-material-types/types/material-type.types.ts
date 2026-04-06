@@ -5,6 +5,12 @@ import {
   SortDirectionParams,
 } from '@/types/api.types';
 
+export type ActiveMaterialType = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export type AdminMaterialType = {
   id: number;
   name: string;

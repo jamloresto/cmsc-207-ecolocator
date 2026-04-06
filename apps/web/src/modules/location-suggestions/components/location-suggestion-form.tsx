@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { ChangeEvent, SubmitEvent, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { SectionSubheading } from '@/components/shared/section-subheading';
@@ -64,23 +64,23 @@ export function LocationSuggestionForm() {
   const { materialTypes } = useMaterialTypes();
 
   const [values, setValues] =
-    React.useState<LocationSuggestionFormValues>(initialValues);
-  const [errors, setErrors] = React.useState<LocationSuggestionFormErrors>({});
+    useState<LocationSuggestionFormValues>(initialValues);
+  const [errors, setErrors] = useState<LocationSuggestionFormErrors>({});
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       dispatch(clearLocationSuggestionState());
     };
   }, [dispatch]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isSuccess) {
       setValues(initialValues);
     }
   }, [isSuccess]);
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
     const { name, value } = e.target;
 
@@ -144,7 +144,7 @@ export function LocationSuggestionForm() {
     return selected.join(', ');
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setErrors((prev) => ({

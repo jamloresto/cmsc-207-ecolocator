@@ -99,7 +99,7 @@ export default function AdminContactMessagesPage() {
   }
 
   return (
-    <main className="space-y-6 p-4 md:p-6">
+    <main className="space-y-6">
       <AdminHeading
         title="Admin Contact Messages"
         description="Monitor, review, and manage public inquiries."

@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 
 import { useToast } from '@/hooks/use-toast';
-import { useMaterialTypes } from '@/modules/material-types/hooks/use-material-types';
+import { useActiveMaterialTypes } from '@/modules/admin-material-types';
 import {
   useUpdateWasteCollectionLocation,
   useWasteCollectionLocation,
@@ -25,7 +25,7 @@ export default function EditWasteCollectionLocationPage() {
 
   const locationQuery = useWasteCollectionLocation(params.id);
   const updateMutation = useUpdateWasteCollectionLocation(Number(params.id));
-  const materialTypesQuery = useMaterialTypes();
+  const materialTypesQuery = useActiveMaterialTypes();
 
   function handleSubmit(values: WasteCollectionLocationPayload) {
     updateMutation.mutate(values, {

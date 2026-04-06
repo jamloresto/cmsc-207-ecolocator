@@ -5,10 +5,10 @@ import { SubmitEvent, useEffect, useState } from 'react';
 import { Modal } from '@/components/ui/modal';
 
 import {
+  ActiveMaterialType,
   getAdminMaterialType,
   MaterialTypeForm,
   updateAdminMaterialType,
-  type AdminMaterialType,
   type MaterialTypeFormValues,
 } from '@/modules/admin-material-types';
 
@@ -31,7 +31,7 @@ export function EditMaterialTypeModal({
   onClose,
   onSaved,
 }: EditMaterialTypeModalProps) {
-  const [materialType, setMaterialType] = useState<AdminMaterialType | null>(
+  const [materialType, setMaterialType] = useState<ActiveMaterialType | null>(
     null,
   );
   const [values, setValues] = useState<MaterialTypeFormValues>(initialValues);
