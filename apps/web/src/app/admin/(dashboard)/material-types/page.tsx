@@ -66,7 +66,7 @@ export default function AdminMaterialTypesPage() {
           leftIcon={Plus}
           size="sm"
         >
-          New Material Type
+          <span className="text-sm">New Material Type</span>
         </Button>
       </div>
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
