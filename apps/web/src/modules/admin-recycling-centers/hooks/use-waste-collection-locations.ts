@@ -5,25 +5,25 @@ import {
   getAdminWasteCollectionLocation,
   getAdminWasteCollectionLocations,
   updateAdminWasteCollectionLocation,
-} from '../api/waste-collection-locations.api';
+} from '../api/admin-recycling-centers.api';
 import type {
   WasteCollectionLocationPayload,
   WasteCollectionLocationsQueryParams,
-} from '../types/waste-collection-location.types';
+} from '../types/admin-recycling-center.types';
 
 export function useWasteCollectionLocations(
   params: WasteCollectionLocationsQueryParams,
 ) {
   return useQuery({
-    queryKey: ['admin-waste-collection-locations', params],
+    queryKey: ['admin-recycling-centers', params],
     queryFn: () => getAdminWasteCollectionLocations(params),
   });
 }
 
 export function useWasteCollectionLocation(id?: string | number) {
   return useQuery({
-    queryKey: ['admin-waste-collection-location', id],
-    queryFn: () => getAdminWasteCollectionLocation(id as string | number),
+    queryKey: ['admin-recycling-center', id],
+    queryFn: () => getAdminWasteCollectionLocation(id as number),
     enabled: !!id,
   });
 }
@@ -36,13 +36,13 @@ export function useCreateWasteCollectionLocation() {
       createAdminWasteCollectionLocation(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['admin-waste-collection-locations'],
+        queryKey: ['admin-recycling-centers'],
       });
     },
   });
 }
 
-export function useUpdateWasteCollectionLocation(id: string | number) {
+export function useUpdateWasteCollectionLocation(id: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -50,10 +50,10 @@ export function useUpdateWasteCollectionLocation(id: string | number) {
       updateAdminWasteCollectionLocation(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['admin-waste-collection-locations'],
+        queryKey: ['admin-recycling-centers'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['admin-waste-collection-location', id],
+        queryKey: ['admin-recycling-center', id],
       });
     },
   });
@@ -66,7 +66,7 @@ export function useDeleteWasteCollectionLocation() {
     mutationFn: (id: number) => deleteAdminWasteCollectionLocation(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['admin-waste-collection-locations'],
+        queryKey: ['admin-recycling-centers'],
       });
     },
   });

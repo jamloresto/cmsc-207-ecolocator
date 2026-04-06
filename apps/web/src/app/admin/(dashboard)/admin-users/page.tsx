@@ -7,10 +7,7 @@ import { Plus, ShieldAlert } from 'lucide-react';
 import { AdminHeading } from '@/components/shared/admin-heading';
 import { Button } from '@/components/ui/button';
 
-import {
-  AdminUsersTable,
-  useAdminUsers
-} from '@/modules/admin-users';
+import { AdminUsersTable, useAdminUsers } from '@/modules/admin-users';
 import { SortOrder } from '@/types/api.types';
 
 export default function AdminUsersPage() {
@@ -97,8 +94,8 @@ export default function AdminUsersPage() {
 
       <div className="flex w-full">
         <Link
-          href={`/admin/admin-users/create`}
-          title="View message"
+          href="/admin/admin-users/create"
+          title="Create new admin user"
           className="ml-auto"
         >
           <Button size="sm" leftIcon={Plus}>
@@ -106,11 +103,12 @@ export default function AdminUsersPage() {
           </Button>
         </Link>
       </div>
+
       <AdminUsersTable
         data={data?.data ?? []}
         currentPage={data?.meta?.current_page ?? 1}
         totalPages={data?.meta?.last_page ?? 1}
-        totalItems={data?.meta?.total}
+        totalItems={data?.meta?.total ?? data?.data?.length}
         searchValue={search}
         roleFilter={role}
         statusFilter={status}

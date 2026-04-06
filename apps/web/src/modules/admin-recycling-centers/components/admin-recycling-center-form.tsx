@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { MaterialType } from '@/modules/material-types';
 import {
   WasteCollectionLocationPayload,
-} from '@/modules/waste-collection-locations';
+} from '@/modules/admin-recycling-centers';
 
 type Props = {
   initialValues?: Partial<WasteCollectionLocationPayload>;
@@ -197,7 +197,7 @@ export function WasteCollectionLocationForm({
         <div className="grid gap-3 md:grid-cols-2">
           {materialOptions.map((material) => (
             <label
-              key={material.id}
+              key={material.slug}
               className="border-border flex items-center gap-2 rounded-xl border px-3 py-2"
             >
               <Checkbox

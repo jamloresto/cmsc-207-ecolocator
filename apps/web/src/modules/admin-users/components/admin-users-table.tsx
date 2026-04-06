@@ -12,10 +12,8 @@ import {
   Users,
 } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { SelectCustom } from '@/components/ui/select-custom';
-import { Pagination } from '@/components/shared/pagination';
+import { TableSkeleton } from '@/components/common/loading/table-skeleton';
+import { TableFooterMeta } from '@/components/shared/table-footer-meta';
 import {
   SortableHeader,
   Table,
@@ -27,6 +25,9 @@ import {
 } from '@/components/shared/table';
 import { TableEmptyState } from '@/components/shared/table-empty-state';
 import { TableToolbar } from '@/components/shared/table-toolbar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { SelectCustom } from '@/components/ui/select-custom';
 
 import { cn } from '@/lib/utils';
 import { AdminUser, AdminUserRole } from '@/modules/admin-users';
@@ -169,152 +170,131 @@ export function AdminUsersTable({
         }
       />
 
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow className="border-t-0">
-              <TableHeaderCell>
-                <SortableHeader
-                  label="Name"
-                  field="name"
-                  sortBy={sortBy}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                />
-              </TableHeaderCell>
+      {isLoading ? (
+        <TableSkeleton columns={6} rows={5} />
+      ) : (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow className="border-t-0">
+                <TableHeaderCell>
+                  <SortableHeader
+                    label="Name"
+                    field="name"
+                    sortBy={sortBy}
+                    sortOrder={sortOrder}
+                    onSort={onSort}
+                  />
+                </TableHeaderCell>
 
-              <TableHeaderCell>
-                <SortableHeader
-                  label="Email"
-                  field="email"
-                  sortBy={sortBy}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                />
-              </TableHeaderCell>
+                <TableHeaderCell>
+                  <SortableHeader
+                    label="Email"
+                    field="email"
+                    sortBy={sortBy}
+                    sortOrder={sortOrder}
+                    onSort={onSort}
+                  />
+                </TableHeaderCell>
 
-              <TableHeaderCell>
-                <SortableHeader
-                  label="Role"
-                  field="role"
-                  sortBy={sortBy}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                />
-              </TableHeaderCell>
+                <TableHeaderCell>
+                  <SortableHeader
+                    label="Role"
+                    field="role"
+                    sortBy={sortBy}
+                    sortOrder={sortOrder}
+                    onSort={onSort}
+                  />
+                </TableHeaderCell>
 
-              <TableHeaderCell>
-                <SortableHeader
-                  label="Status"
-                  field="is_active"
-                  sortBy={sortBy}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                />
-              </TableHeaderCell>
+                <TableHeaderCell>
+                  <SortableHeader
+                    label="Status"
+                    field="is_active"
+                    sortBy={sortBy}
+                    sortOrder={sortOrder}
+                    onSort={onSort}
+                  />
+                </TableHeaderCell>
 
-              <TableHeaderCell>
-                <SortableHeader
-                  label="Created At"
-                  field="created_at"
-                  sortBy={sortBy}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                />
-              </TableHeaderCell>
-              <TableHeaderCell>Actions</TableHeaderCell>
-            </TableRow>
-          </TableHead>
+                <TableHeaderCell>
+                  <SortableHeader
+                    label="Created At"
+                    field="created_at"
+                    sortBy={sortBy}
+                    sortOrder={sortOrder}
+                    onSort={onSort}
+                  />
+                </TableHeaderCell>
 
-          <tbody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <div className="bg-muted h-4 w-32 animate-pulse rounded" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="bg-muted h-4 w-44 animate-pulse rounded" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="bg-muted h-6 w-24 animate-pulse rounded-full" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="bg-muted h-6 w-20 animate-pulse rounded-full" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="bg-muted h-4 w-28 animate-pulse rounded" />
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : data.length === 0 ? (
-              <TableEmptyState
-                colSpan={5}
-                icon={<Users className="h-5 w-5" />}
-                title="No admin users found"
-                description="Try adjusting your search, filters, or sorting to find matching admin users."
-              />
-            ) : (
-              data.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-start gap-3">
-                      <div className="min-w-0">
-                        <p className="text-foreground font-medium">
-                          {user.name}
-                        </p>
-                        <p className="text-muted-foreground text-xs md:text-sm">
-                          ID: {user.id}
-                        </p>
+                <TableHeaderCell>Actions</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+
+            <tbody>
+              {data.length === 0 ? (
+                <TableEmptyState
+                  colSpan={6}
+                  icon={<Users className="h-5 w-5" />}
+                  title="No admin users found"
+                  description="Try adjusting your search, filters, or sorting to find matching admin users."
+                />
+              ) : (
+                data.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div className="flex items-start gap-3">
+                        <div className="min-w-0">
+                          <p className="text-foreground font-medium">
+                            {user.name}
+                          </p>
+                          <p className="text-muted-foreground text-xs md:text-sm">
+                            ID: {user.id}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
+                    </TableCell>
 
-                  <TableCell>
-                    <p className="text-foreground break-all">{user.email}</p>
-                  </TableCell>
+                    <TableCell>
+                      <p className="text-foreground break-all">{user.email}</p>
+                    </TableCell>
 
-                  <TableCell>
-                    <RoleBadge role={user.role} />
-                  </TableCell>
+                    <TableCell>
+                      <RoleBadge role={user.role} />
+                    </TableCell>
 
-                  <TableCell>
-                    <StatusBadge isActive={user.is_active} />
-                  </TableCell>
+                    <TableCell>
+                      <StatusBadge isActive={user.is_active} />
+                    </TableCell>
 
-                  <TableCell>
-                    <p className="text-muted-foreground">
-                      {formatDate(user.created_at)}
-                    </p>
-                  </TableCell>
+                    <TableCell>
+                      <p className="text-muted-foreground">
+                        {formatDate(user.created_at)}
+                      </p>
+                    </TableCell>
 
-                  <TableCell>
-                    <Link href={`/admin/admin-users/${user.id}/edit`}>
-                      <Button variant="outline" size="sm" leftIcon={Pencil}>
-                        Edit
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </tbody>
-        </Table>
-      </TableContainer>
+                    <TableCell>
+                      <Link href={`/admin/admin-users/${user.id}/edit`}>
+                        <Button variant="outline" size="sm" leftIcon={Pencil}>
+                          Edit
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </tbody>
+          </Table>
+        </TableContainer>
+      )}
 
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <p className="text-muted-foreground text-sm">
-          {typeof totalItems === 'number'
-            ? `${totalItems} admin user${totalItems === 1 ? '' : 's'} found`
-            : null}
-        </p>
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-        />
-      </div>
+      <TableFooterMeta
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems ?? data.length}
+        singularLabel="admin user"
+        onPageChange={onPageChange}
+      />
     </div>
   );
 }

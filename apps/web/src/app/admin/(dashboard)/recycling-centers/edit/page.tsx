@@ -16,7 +16,7 @@ import {
   useWasteCollectionLocation,
   WasteCollectionLocationForm,
   type WasteCollectionLocationPayload,
-} from '@/modules/waste-collection-locations';
+} from '@/modules/admin-recycling-centers';
 
 export default function EditWasteCollectionLocationPage() {
   const params = useParams<{ id: string }>();
@@ -24,9 +24,8 @@ export default function EditWasteCollectionLocationPage() {
   const { toast } = useToast();
 
   const locationQuery = useWasteCollectionLocation(params.id);
-  console.log(locationQuery)
-  const updateMutation = useUpdateWasteCollectionLocation(params.id);
-  const materialTypesQuery = useMaterialTypes({ page: 1 });
+  const updateMutation = useUpdateWasteCollectionLocation(Number(params.id));
+  const materialTypesQuery = useMaterialTypes();
 
   function handleSubmit(values: WasteCollectionLocationPayload) {
     updateMutation.mutate(values, {
@@ -60,7 +59,7 @@ export default function EditWasteCollectionLocationPage() {
       <CardContent>
         {location ? (
           <WasteCollectionLocationForm
-            materialOptions={materialTypesQuery.data?.data ?? []}
+            materialOptions={materialTypesQuery.materialTypes ?? []}
             isSubmitting={updateMutation.isPending}
             submitLabel="Save Changes"
             initialValues={{
