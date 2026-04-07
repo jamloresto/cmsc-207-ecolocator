@@ -7,17 +7,16 @@ import { Plus } from 'lucide-react';
 
 import { TableSkeleton } from '@/components/common/loading/table-skeleton';
 import { AdminHeading } from '@/components/shared/admin-heading';
-import { Pagination } from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 
 import { useToast } from '@/hooks/use-toast';
-import { useMaterialTypes } from '@/modules/material-types';
+import { useAdminMaterialTypes } from '@/modules/admin-material-types';
 import {
   useDeleteWasteCollectionLocation,
   useWasteCollectionLocations,
   WasteCollectionLocationsTable,
 } from '@/modules/admin-recycling-centers';
-import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 
 export default function AdminLocationsPage() {
   const searchParams = useSearchParams();
@@ -42,7 +41,7 @@ export default function AdminLocationsPage() {
   );
 
   const locationsQuery = useWasteCollectionLocations(queryParams);
-  const materialTypesQuery = useMaterialTypes();
+  const materialTypesQuery = useAdminMaterialTypes();
   const deleteMutation = useDeleteWasteCollectionLocation();
 
   function updateUrl(next: Record<string, string>) {
@@ -93,6 +92,7 @@ export default function AdminLocationsPage() {
         title="Recycling Centers"
         description="View and manage waste collection locations."
       />
+      
       <div className="flex w-full justify-end">
         <Link href="/admin/recycling-centers/create">
           <Button size="sm" leftIcon={Plus}>
