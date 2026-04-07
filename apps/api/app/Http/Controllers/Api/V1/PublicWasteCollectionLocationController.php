@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MapWasteCollectionLocationResource;
 use App\Http\Resources\WasteCollectionLocationResource;
 use App\Models\WasteCollectionLocation;
 use Illuminate\Http\Request;
@@ -62,6 +63,68 @@ class PublicWasteCollectionLocationController extends Controller
             );
 
         return WasteCollectionLocationResource::collection($query->latest()->paginate(10));
+    }
+
+    #[OA\Get(
+        path: '/api/v1/locations/map',
+        summary: 'List active waste collection locations within map bounds',
+        tags: ['Public Locations'],
+        parameters: [
+            new OA\Parameter(name: 'north', in: 'query', required: true, schema: new OA\Schema(type: 'number', format: 'float', example: 14.75)),
+            new OA\Parameter(name: 'south', in: 'query', required: true, schema: new OA\Schema(type: 'number', format: 'float', example: 14.52)),
+            new OA\Parameter(name: 'east', in: 'query', required: true, schema: new OA\Schema(type: 'number', format: 'float', example: 121.12)),
+            new OA\Parameter(name: 'west', in: 'query', required: true, schema: new OA\Schema(type: 'number', format: 'float', example: 120.96)),
+            new OA\Parameter(name: 'material_slug', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'List of active locations within map bounds'),
+            new OA\Response(response: 422, description: 'Validation error')
+        ]
+    )]
+    public function map(Request $request)
+    {
+        $validated = $request->validate([
+            'north' => ['required', 'numeric', 'between:-90,90'],
+            'south' => ['required', 'numeric', 'between:-90,90'],
+            'east' => ['required', 'numeric', 'between:-180,180'],
+            'west' => ['required', 'numeric', 'between:-180,180'],
+            'material_slug' => ['nullable', 'string'],
+        ]);
+
+        $north = max((float) $validated['north'], (float) $validated['south']);
+        $south = min((float) $validated['north'], (float) $validated['south']);
+        $east = max((float) $validated['east'], (float) $validated['west']);
+        $west = min((float) $validated['east'], (float) $validated['west']);
+
+        $query = WasteCollectionLocation::query()
+            ->where('is_active', true)
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->whereBetween('latitude', [$south, $north])
+            ->whereBetween('longitude', [$west, $east])
+            ->with([
+                'materialTypes:id,name,slug',
+            ]);
+
+        $query->when(
+            $request->filled('material_slug'),
+            fn ($q) => $q->whereHas(
+                'materialTypes',
+                fn ($subQ) => $subQ->where('slug', $request->string('material_slug')->toString())
+            )
+        );
+
+        $locations = $query
+            ->select([
+                'id',
+                'name',
+                'latitude',
+                'longitude',
+            ])
+            ->orderBy('name')
+            ->get();
+
+        return MapWasteCollectionLocationResource::collection($locations);
     }
 
     #[OA\Get(
