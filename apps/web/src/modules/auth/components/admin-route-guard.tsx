@@ -2,43 +2,51 @@
 
 import { ReactNode, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 
 import { useAdminMe } from '@/modules/auth';
+import { AdminUserRole } from '@/modules/admin-users';
 
-type Props = {
+type AdminRouteGuardProps = {
   children: ReactNode;
+  allowedRoles?: AdminUserRole;
 };
 
-export function AdminRouteGuard({ children }: Props) {
-  const pathname = usePathname();
+export function AdminRouteGuard({
+  children,
+  allowedRoles,
+}: AdminRouteGuardProps) {
   const router = useRouter();
+  const pathname = usePathname();
 
-  const isLoginPage = pathname === '/admin/login';
-
-  const { data, isLoading, isError } = useAdminMe();
+  const { data, isLoading, isError } = useAdminMe(true);
 
   useEffect(() => {
-    if (isLoginPage) {
-      if (!isLoading && data?.user) {
-        router.replace('/admin');
-      }
+    if (isLoading) return;
+
+    if (isError || !data?.user) {
+      router.replace(`/admin/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
 
-    if (!isLoading && (isError || !data?.user)) {
-      router.replace('/admin/login');
+    if (allowedRoles?.length && !allowedRoles.includes(data.user.role)) {
+      router.replace('/admin');
     }
-  }, [data, isError, isLoading, isLoginPage, router]);
+  }, [allowedRoles, data?.user, isError, isLoading, pathname, router]);
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground text-sm">Loading admin panel...</p>
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
       </div>
     );
   }
 
-  if (!data?.user && !isLoginPage) {
+  if (isError || !data?.user) {
+    return null;
+  }
+
+  if (allowedRoles?.length && !allowedRoles.includes(data.user.role)) {
     return null;
   }
 

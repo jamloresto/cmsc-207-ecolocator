@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, SubmitEvent, useEffect, useState } from 'react';
+import { ChangeEvent, SubmitEvent, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { SectionSubheading } from '@/components/shared/section-subheading';
@@ -9,18 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { MaterialCheckboxGroup } from './material-checkbox-group';
 
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
-  clearLocationSuggestionState,
-  selectLocationSuggestionError,
-  selectLocationSuggestionSubmitting,
-  selectLocationSuggestionSuccess,
-  selectLocationSuggestionSuccessMessage,
-  submitLocationSuggestionRequest,
+  getLocationSuggestionSubmitError,
+  MaterialCheckboxGroup,
+  useSubmitLocationSuggestion,
+  type LocationSuggestionFormValues,
 } from '@/modules/location-suggestions';
-import type { LocationSuggestionFormValues } from '@/modules/location-suggestions';
 import { useMaterialTypes } from '@/modules/material-types';
 
 type LocationSuggestionFormErrors = Partial<
@@ -54,30 +49,21 @@ const initialValues: LocationSuggestionFormValues = {
 };
 
 export function LocationSuggestionForm() {
-  const dispatch = useAppDispatch();
-
-  const isSubmitting = useAppSelector(selectLocationSuggestionSubmitting);
-  const isSuccess = useAppSelector(selectLocationSuggestionSuccess);
-  const successMessage = useAppSelector(selectLocationSuggestionSuccessMessage);
-  const error = useAppSelector(selectLocationSuggestionError);
-
   const { materialTypes } = useMaterialTypes();
+  const submitMutation = useSubmitLocationSuggestion();
 
   const [values, setValues] =
     useState<LocationSuggestionFormValues>(initialValues);
   const [errors, setErrors] = useState<LocationSuggestionFormErrors>({});
 
-  useEffect(() => {
-    return () => {
-      dispatch(clearLocationSuggestionState());
-    };
-  }, [dispatch]);
+  const parsedError = useMemo(() => {
+    if (!submitMutation.error) return null;
+    return getLocationSuggestionSubmitError(submitMutation.error);
+  }, [submitMutation.error]);
 
-  useEffect(() => {
-    if (isSuccess) {
-      setValues(initialValues);
-    }
-  }, [isSuccess]);
+  const isSubmitting = submitMutation.isPending;
+  const isSuccess = submitMutation.isSuccess;
+  const successMessage = submitMutation.data?.message;
 
   function handleChange(
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -95,8 +81,8 @@ export function LocationSuggestionForm() {
       general: '',
     }));
 
-    if (error || isSuccess) {
-      dispatch(clearLocationSuggestionState());
+    if (submitMutation.isError || submitMutation.isSuccess) {
+      submitMutation.reset();
     }
   }
 
@@ -140,7 +126,6 @@ export function LocationSuggestionForm() {
       selected.push(values.materials_other.trim());
     }
 
-    // Convert array to string
     return selected.join(', ');
   }
 
@@ -154,8 +139,8 @@ export function LocationSuggestionForm() {
 
     if (!validate()) return;
 
-    dispatch(
-      submitLocationSuggestionRequest({
+    submitMutation.mutate(
+      {
         name: values.name.trim(),
         email: values.email.trim(),
         location_name: values.location_name.trim(),
@@ -166,7 +151,22 @@ export function LocationSuggestionForm() {
         city_municipality: values.city_municipality.trim(),
         materials_accepted: buildMaterialsAccepted(),
         notes: values.notes.trim(),
-      }),
+      },
+      {
+        onSuccess: () => {
+          setValues(initialValues);
+          setErrors({});
+        },
+        onError: (error) => {
+          const parsed = getLocationSuggestionSubmitError(error);
+
+          setErrors((prev) => ({
+            ...prev,
+            ...parsed.fieldErrors,
+            general: parsed.message,
+          }));
+        },
+      },
     );
   }
 
@@ -311,10 +311,11 @@ export function LocationSuggestionForm() {
                 setErrors((prev) => ({
                   ...prev,
                   materials_accepted: '',
+                  general: '',
                 }));
 
-                if (error || isSuccess) {
-                  dispatch(clearLocationSuggestionState());
+                if (submitMutation.isError || submitMutation.isSuccess) {
+                  submitMutation.reset();
                 }
               }}
               onOtherValueChange={(nextValue) => {
@@ -326,10 +327,11 @@ export function LocationSuggestionForm() {
                 setErrors((prev) => ({
                   ...prev,
                   materials_accepted: '',
+                  general: '',
                 }));
 
-                if (error || isSuccess) {
-                  dispatch(clearLocationSuggestionState());
+                if (submitMutation.isError || submitMutation.isSuccess) {
+                  submitMutation.reset();
                 }
               }}
               disabled={isSubmitting}
@@ -349,9 +351,9 @@ export function LocationSuggestionForm() {
             />
           </FormField>
 
-          {error ? (
+          {errors.general ? (
             <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border px-4 py-3 text-sm">
-              {error}
+              {errors.general}
             </div>
           ) : null}
 

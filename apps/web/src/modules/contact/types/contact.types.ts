@@ -1,3 +1,5 @@
+import { ContactMessage } from "@/modules/admin-contact-messages";
+
 export type ContactFormValues = {
   name: string;
   email: string;
@@ -16,6 +18,7 @@ export type SubmitContactPayload = {
 
 export type SubmitContactResponse = {
   message: string;
+  data: ContactMessage;
 };
 
 export type ContactState = {

@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, SubmitEvent, useEffect, useState } from 'react';
+import { ChangeEvent, SubmitEvent, useMemo, useState } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -9,15 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
-  clearAuthError,
-  loginRequest,
-  selectAuthError,
-  selectAuthLoading,
-  selectIsAuthenticated,
+  getAdminLoginErrorMessage,
+  useAdminLogin,
+  type AdminLoginPayload,
 } from '@/modules/auth';
-import type { AdminLoginPayload } from '@/modules/auth';
 
 type AdminLoginFormErrors = Partial<Record<keyof AdminLoginPayload, string>>;
 
@@ -28,28 +24,16 @@ const initialValues: AdminLoginPayload = {
 
 export function AdminLoginForm() {
   const router = useRouter();
-  
-  const dispatch = useAppDispatch();
-
-  const isLoading = useAppSelector(selectAuthLoading);
-  const error = useAppSelector(selectAuthError);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const loginMutation = useAdminLogin();
 
   const [values, setValues] = useState<AdminLoginPayload>(initialValues);
   const [errors, setErrors] = useState<AdminLoginFormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    return () => {
-      dispatch(clearAuthError());
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/admin');
-    }
-  }, [isAuthenticated, router]);
+  const serverError = useMemo(() => {
+    if (!loginMutation.error) return '';
+    return getAdminLoginErrorMessage(loginMutation.error);
+  }, [loginMutation.error]);
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -64,8 +48,8 @@ export function AdminLoginForm() {
       [name]: '',
     }));
 
-    if (error) {
-      dispatch(clearAuthError());
+    if (loginMutation.isError) {
+      loginMutation.reset();
     }
   }
 
@@ -90,20 +74,30 @@ export function AdminLoginForm() {
 
     if (!validate()) return;
 
-    dispatch(
-      loginRequest({
+    loginMutation.mutate(
+      {
         email: values.email.trim(),
         password: values.password,
-      }),
+      },
+      {
+        onSuccess: () => {
+          router.replace('/admin');
+        },
+      },
     );
   }
 
+  const isLoading = loginMutation.isPending;
+
   return (
     <Card className="border-border shadow-sm">
-      <CardHeader>
+      <CardHeader className="space-y-1">
         <CardTitle className="text-foreground text-xl font-semibold">
           Admin Login
         </CardTitle>
+        <p className="text-muted-foreground text-sm">
+          Sign in using your admin credentials.
+        </p>
       </CardHeader>
 
       <CardContent>
@@ -159,9 +153,9 @@ export function AdminLoginForm() {
             </div>
           </FormField>
 
-          {error ? (
+          {serverError ? (
             <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border px-4 py-3 text-sm">
-              {error}
+              {serverError}
             </div>
           ) : null}
 

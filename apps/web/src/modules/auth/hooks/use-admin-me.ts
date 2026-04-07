@@ -2,12 +2,15 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getAdminMe } from '@/modules/auth';
+import { authQueryKeys } from '@/lib/auth-query-keys';
 
-export function useAdminMe() {
+export function useAdminMe(enabled = true) {
   return useQuery({
-    queryKey: ['admin', 'me'],
+    queryKey: authQueryKeys.me,
     queryFn: getAdminMe,
+    enabled,
     retry: false,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
+    gcTime: 1000 * 60 * 10,
   });
 }

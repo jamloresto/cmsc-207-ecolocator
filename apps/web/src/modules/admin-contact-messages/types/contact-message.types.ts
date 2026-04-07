@@ -7,7 +7,7 @@ import {
 
 export type ContactMessageStatus = 'new' | 'read' | 'replied' | 'archived';
 
-export interface ContactMessage {
+export type ContactMessage = {
   id: number;
   name: string;
   email: string;
@@ -31,11 +31,11 @@ export type ContactMessagesParams = PaginationParams &
     status?: ContactMessageStatus | '';
   };
 
-export interface ReplyContactMessagePayload {
+export type ReplyContactMessagePayload = {
   reply_message: string;
 }
 
-export interface ReplyContactMessageResponse {
+export type ReplyContactMessageResponse = {
   message: string;
   data?: ContactMessage;
 }

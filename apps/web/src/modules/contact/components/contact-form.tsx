@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, SubmitEvent, useEffect, useState } from 'react';
+import { ChangeEvent, SubmitEvent, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -9,16 +9,11 @@ import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
-  clearContactState,
-  selectContactError,
-  selectContactSubmitting,
-  selectContactSuccess,
-  selectContactSuccessMessage,
-  submitContactRequest,
+  getContactSubmitError,
+  useSubmitContactMessage,
+  type ContactFormValues,
 } from '@/modules/contact';
-import type { ContactFormValues } from '@/modules/contact';
 
 type ContactFormErrors = Partial<Record<keyof ContactFormValues, string>> & {
   general?: string;
@@ -33,27 +28,19 @@ const initialValues: ContactFormValues = {
 };
 
 export function ContactForm() {
-  const dispatch = useAppDispatch();
-
-  const isSubmitting = useAppSelector(selectContactSubmitting);
-  const isSuccess = useAppSelector(selectContactSuccess);
-  const successMessage = useAppSelector(selectContactSuccessMessage);
-  const error = useAppSelector(selectContactError);
+  const submitMutation = useSubmitContactMessage();
 
   const [values, setValues] = useState<ContactFormValues>(initialValues);
   const [errors, setErrors] = useState<ContactFormErrors>({});
 
-  useEffect(() => {
-    return () => {
-      dispatch(clearContactState());
-    };
-  }, [dispatch]);
+  const parsedError = useMemo(() => {
+    if (!submitMutation.error) return null;
+    return getContactSubmitError(submitMutation.error);
+  }, [submitMutation.error]);
 
-  useEffect(() => {
-    if (isSuccess) {
-      setValues(initialValues);
-    }
-  }, [isSuccess]);
+  const isSubmitting = submitMutation.isPending;
+  const isSuccess = submitMutation.isSuccess;
+  const successMessage = submitMutation.data?.message;
 
   function handleChange(
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -71,8 +58,8 @@ export function ContactForm() {
       general: '',
     }));
 
-    if (error || isSuccess) {
-      dispatch(clearContactState());
+    if (submitMutation.isError || submitMutation.isSuccess) {
+      submitMutation.reset();
     }
   }
 
@@ -99,14 +86,29 @@ export function ContactForm() {
 
     if (!validate()) return;
 
-    dispatch(
-      submitContactRequest({
+    submitMutation.mutate(
+      {
         name: values.name.trim(),
         email: values.email.trim(),
         contact_info: values.contact_info.trim() || null,
         subject: values.subject.trim(),
         message: values.message.trim(),
-      }),
+      },
+      {
+        onSuccess: () => {
+          setValues(initialValues);
+          setErrors({});
+        },
+        onError: (error) => {
+          const parsed = getContactSubmitError(error);
+
+          setErrors((prev) => ({
+            ...prev,
+            ...parsed.fieldErrors,
+            general: parsed.message,
+          }));
+        },
+      },
     );
   }
 
@@ -181,9 +183,9 @@ export function ContactForm() {
             />
           </FormField>
 
-          {error ? (
+          {errors.general ? (
             <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border px-4 py-3 text-sm">
-              {error}
+              {errors.general}
             </div>
           ) : null}
 

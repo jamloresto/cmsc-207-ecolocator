@@ -8,8 +8,16 @@ export type AdminLoginPayload = {
 export type AdminLoginResponse = {
   message: string;
   user: AdminUser;
-  token?: string;
 };
+
+export type AdminLogoutResponse = {
+  message: string;
+};
+
+export type AdminMeResponse = {
+  user: AdminUser;
+};
+
 
 export type AuthState = {
   user: AdminUser | null;
