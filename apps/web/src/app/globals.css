@@ -112,6 +112,8 @@
   --color-brand-300: var(--brand-300);
 
   --radius-default: var(--radius);
+
+  --text-tiny: 0.625rem; 
 }
 
 * {

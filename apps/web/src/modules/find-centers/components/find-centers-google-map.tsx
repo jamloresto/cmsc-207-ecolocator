@@ -32,6 +32,8 @@ const options = {
   gestureHandling: 'greedy',
   zoomControl: true,
   zoomControlOptions: {},
+  minZoom: 13,
+  maxZoom: 20,
 };
 
 export function FindCentersGoogleMap({
@@ -78,9 +80,9 @@ export function FindCentersGoogleMap({
 
   return (
     <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
-      <div className="border-border overflow-hidden rounded-2xl border">
+      <div className="border-border w-full h-full max-h-80vh overflow-hidden rounded-2xl border">
         <Map
-          style={{ width: '70vw', height: '55vh', maxWidth: '900px' }}
+          style={{ width: `100%`, height: '100%', minHeight: '55vh', minWidth: '70vw' }}
           defaultCenter={DEFAULT_CENTER}
           defaultZoom={DEFAULT_ZOOM}
           onCameraChanged={handleCameraChanged}
