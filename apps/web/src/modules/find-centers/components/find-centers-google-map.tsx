@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import {
   APIProvider,
@@ -25,7 +25,7 @@ const DEFAULT_CENTER = {
   lng: 120.9842,
 };
 
-const DEFAULT_ZOOM = 18;
+const DEFAULT_ZOOM = 15;
 
 const options = {
   disableDefaultUI: true,
@@ -43,12 +43,41 @@ export function FindCentersGoogleMap({
   onBoundsChange,
 }: FindCentersGoogleMapProps) {
   const { resolvedTheme } = useTheme();
-
   const isDark = resolvedTheme === 'dark';
 
+  const [center, setCenter] = useState(DEFAULT_CENTER);
+  const [hasResolvedLocation, setHasResolvedLocation] = useState(false);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setHasResolvedLocation(true);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCenter({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        setHasResolvedLocation(true);
+      },
+      () => {
+        setHasResolvedLocation(true);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      },
+    );
+  }, []);
 
   const handleCameraChanged = useCallback(
     (event: MapCameraChangedEvent) => {
+      const nextCenter = event.detail.center;
+      setCenter(nextCenter);
+
       const bounds = event.detail.bounds;
 
       if (!bounds) return;
@@ -83,7 +112,7 @@ export function FindCentersGoogleMap({
       <div className="border-border w-full h-full max-h-80vh overflow-hidden rounded-2xl border">
         <Map
           style={{ width: `100%`, height: '100%', minHeight: '55vh', minWidth: '70vw' }}
-          defaultCenter={DEFAULT_CENTER}
+          center={center}
           defaultZoom={DEFAULT_ZOOM}
           onCameraChanged={handleCameraChanged}
           mapId="find-centers-map"
