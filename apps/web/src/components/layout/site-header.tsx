@@ -11,7 +11,6 @@ const navLinks = [
   { href: '/find-centers', label: 'Find Centers' },
   { href: '/suggest-location', label: 'Suggest a Location' },
   { href: '/contact', label: 'Contact' },
-  { href: '/admin/login', label: 'Admin' },
 ];
 
 export function SiteHeader() {

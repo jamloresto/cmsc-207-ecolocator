@@ -5,16 +5,14 @@ import { Container } from '@/components/shared/container';
 
 const quickLinks = [
   { href: '/', label: 'Home' },
-  { href: '/find-centers', label: 'Find Centers' },
   { href: '/suggest-location', label: 'Suggest a Location' },
   { href: '/contact', label: 'Contact Us' },
   { href: '/admin/login', label: 'Admin Portal' },
 ];
 
 const resources = [
-  { href: '#', label: 'Recycling Guide' },
-  { href: '#', label: 'What Can Be Recycled' },
-  { href: '#', label: 'FAQs' },
+  { href: '/find-centers', label: 'Find Centers' },
+  { href: '/what-can-be-recycled', label: 'What Can Be Recycled' },
 ];
 
 export function SiteFooter() {
