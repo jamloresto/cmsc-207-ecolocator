@@ -6,8 +6,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 
 import { cn } from '@/lib/utils';
-import { MaterialType, withOtherMaterialOption } from '@/modules/material-types';
-
+import {
+  MaterialType,
+  withOtherMaterialOption,
+} from '@/modules/material-types';
 
 type MaterialCheckboxGroupProps = {
   options?: MaterialType[];

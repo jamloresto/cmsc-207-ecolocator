@@ -1,3 +1,5 @@
+import { AdminLocationSuggestion } from "@/modules/admin-location-suggestions";
+
 export type LocationSuggestionFormValues = {
   name: string;
   email: string;
@@ -27,9 +29,7 @@ export type SubmitLocationSuggestionPayload = {
 
 export type SubmitLocationSuggestionResponse = {
   message: string;
-  data?: {
-    id: number;
-  };
+  data: AdminLocationSuggestion;
 };
 
 export type LocationSuggestionsState = {

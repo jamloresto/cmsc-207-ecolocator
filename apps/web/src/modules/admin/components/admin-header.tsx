@@ -1,9 +1,7 @@
 'use client';
 
-import { LogOut } from 'lucide-react';
-
 import { AdminMobileDrawer } from '@/modules/admin';
-import { useAdminLogout } from '@/modules/auth';
+import { AdminLogoutButton, useAdminLogout } from '@/modules/auth';
 
 type AdminHeaderProps = {
   title?: string;
@@ -34,15 +32,7 @@ export function AdminHeader({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleLogout}
-          disabled={logoutMutation.isPending}
-          className="border-border bg-card text-foreground hover:bg-muted inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-colors"
-        >
-          <LogOut className="h-4 w-4" />
-          <span>Logout</span>
-        </button>
+        <AdminLogoutButton />
       </div>
     </header>
   );

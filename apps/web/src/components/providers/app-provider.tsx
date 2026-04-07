@@ -1,9 +1,8 @@
 'use client';
 
-import { QueryProvider } from "./query-provider";
-import { StoreProvider } from "./store-provider";
-import { ThemeProvider } from "./theme-provider";
-import { ToastProvider } from "./toast-provider";
+import { QueryProvider } from './query-provider';
+import { ThemeProvider } from './theme-provider';
+import { ToastProvider } from './toast-provider';
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
@@ -14,9 +13,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       storageKey="ecolocator-theme"
     >
       <QueryProvider>
-        <StoreProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </StoreProvider>
+        <ToastProvider>{children}</ToastProvider>
       </QueryProvider>
     </ThemeProvider>
   );
