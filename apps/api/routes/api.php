@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::get('/locations', [PublicWasteCollectionLocationController::class, 'index']);
+    Route::get('/locations/map', [PublicWasteCollectionLocationController::class, 'map']);
     Route::get('/locations/{location}', [PublicWasteCollectionLocationController::class, 'show']);
 
     Route::get('/material-types', [PublicMaterialTypeController::class, 'index']);
