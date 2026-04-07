@@ -10,6 +10,7 @@ import {
   getAdminContactMessageById,
 } from '@/modules/admin-contact-messages';
 import type { ContactMessage } from '@/modules/admin-contact-messages';
+import { Loader } from '@/components/common/loading/loader';
 
 function formatDateTime(dateString?: string | null) {
   if (!dateString) return '—';
@@ -26,7 +27,7 @@ function formatDateTime(dateString?: string | null) {
 export default function AdminContactMessageDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = Number(params.id);
 
   const [message, setMessage] = useState<ContactMessage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,11 +61,9 @@ export default function AdminContactMessageDetailPage() {
 
   if (loading) {
     return (
-      <main className="p-4 md:p-6">
-        <div className="border-border bg-card rounded-2xl border p-6">
-          <p className="text-muted-foreground text-sm">Loading message...</p>
-        </div>
-      </main>
+      <div className='mt-24 justify-items-center items-center'>
+        <Loader text="Loading message..." />
+      </div>
     );
   }
 
