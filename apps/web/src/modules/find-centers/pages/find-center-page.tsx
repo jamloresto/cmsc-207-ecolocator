@@ -84,8 +84,8 @@ export function FindCentersPage() {
         />
       </div>
 
-      <div className="flex gap-4 h-full w-full">
-        <div className="flex max-h-[calc(100vh-220px)] flex-col">
+      <div className="hidden w-full gap-4 md:flex max-h-[60vh]">
+        <div className="flex flex-col">
           <div className="mb-3 flex items-center justify-between">
             <p className="text-foreground text-sm font-semibold">Centers</p>
             <p className="text-muted-foreground text-xs">
@@ -93,7 +93,7 @@ export function FindCentersPage() {
             </p>
           </div>
 
-          <div className="flex-1 space-y-3 overflow-y-auto pr-1 min-w-100">
+          <div className="max-w-64 flex-1 space-y-3 overflow-y-auto pr-1">
             {isLoading ? (
               <div className="bg-background border-border rounded-2xl border p-6 text-center shadow-sm">
                 <p className="text-foreground text-sm font-semibold">
@@ -122,7 +122,7 @@ export function FindCentersPage() {
           </div>
         </div>
 
-        <div className="h-[calc(100vh-220px)] min-h-155">
+        <div className="w-full">
           <FindCentersGoogleMap
             locations={locations}
             activeLocationId={activeLocation?.id ?? null}
@@ -132,7 +132,7 @@ export function FindCentersPage() {
         </div>
       </div>
 
-      {/* <div className="md:hidden">
+      <div className="md:hidden">
         <div className="relative">
           <FindCentersGoogleMap
             locations={locations}
@@ -141,7 +141,7 @@ export function FindCentersPage() {
             onBoundsChange={setBounds}
           />
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 rounded-b-2xl bg-gradient-to-t from-black/25 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 rounded-b-2xl bg-linear-to-t from-black/25 to-transparent" />
 
           <div className="absolute right-3 bottom-3 left-3">
             <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
@@ -164,7 +164,7 @@ export function FindCentersPage() {
               ) : (
                 <div className="bg-background border-border w-full rounded-2xl border p-5 shadow-sm">
                   <p className="text-foreground text-sm font-semibold">
-                    No centers found in this area
+                    No centers found in this areaasd
                   </p>
                   <p className="text-muted-foreground mt-1 text-sm">
                     Move the map or change the material filter.
@@ -174,7 +174,7 @@ export function FindCentersPage() {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
     </section>
   );
 }
