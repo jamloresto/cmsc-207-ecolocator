@@ -13,6 +13,7 @@ import {
   usePublicLocationDetail,
   type MapBounds,
 } from '@/modules/find-centers';
+import { Loader } from '@/components/common/loading/loader';
 
 export function FindCentersPage() {
   const [selectedMaterialSlug, setSelectedMaterialSlug] = useState('');
@@ -95,11 +96,7 @@ export function FindCentersPage() {
 
           <div className="max-w-64 flex-1 space-y-3 overflow-y-auto pr-1">
             {isLoading ? (
-              <div className="bg-background border-border rounded-2xl border p-6 text-center shadow-sm">
-                <p className="text-foreground text-sm font-semibold">
-                  Loading centers...
-                </p>
-              </div>
+              <Loader text="Loading centers..." />
             ) : mapListLocations.length > 0 ? (
               mapListLocations.map((location: any) => (
                 <FindCenterCard
@@ -128,6 +125,7 @@ export function FindCentersPage() {
             activeLocationId={activeLocation?.id ?? null}
             onLocationSelect={setActiveLocationId}
             onBoundsChange={setBounds}
+            isLoading={isLoading || isFetching}
           />
         </div>
       </div>
@@ -139,21 +137,21 @@ export function FindCentersPage() {
             activeLocationId={activeLocation?.id ?? null}
             onLocationSelect={setActiveLocationId}
             onBoundsChange={setBounds}
+            isLoading={isLoading || isFetching}
           />
 
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 rounded-b-2xl bg-linear-to-t from-black/25 to-transparent" />
 
           <div className="absolute right-3 bottom-3 left-3">
-            <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
+            <div className="scrollbar-hide flex h-full snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
               {isLoading ? (
-                <div className="bg-background border-border w-full rounded-2xl border p-5 shadow-sm">
-                  <p className="text-foreground text-sm font-semibold">
-                    Loading centers...
-                  </p>
-                </div>
+                <Loader text="Loading centers..." />
               ) : mapListLocations.length > 0 ? (
                 mapListLocations.map((location: any) => (
-                  <div key={location.id} className="min-w-[88%] snap-center">
+                  <div
+                    key={location.name}
+                    className="flex min-w-48 snap-center items-stretch"
+                  >
                     <FindCenterCard
                       location={location}
                       isActive={activeLocation?.id === location.id}

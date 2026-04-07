@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import {
   APIProvider,
@@ -13,10 +14,12 @@ import {
 
 import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
 import type { MapBounds, MapFindCenterLocation } from '@/modules/find-centers';
+import { Loader } from '@/components/common/loading/loader';
 
 type FindCentersGoogleMapProps = {
   locations: MapFindCenterLocation[];
   activeLocationId: number | null;
+  isLoading?: boolean;
   onLocationSelect: (locationId: number) => void;
   onBoundsChange: (bounds: MapBounds) => void;
 };
@@ -41,6 +44,7 @@ const options = {
 export function FindCentersGoogleMap({
   locations,
   activeLocationId,
+  isLoading = false,
   onLocationSelect,
   onBoundsChange,
 }: FindCentersGoogleMapProps) {
@@ -125,7 +129,7 @@ export function FindCentersGoogleMap({
 
   return (
     <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
-      <div className="border-border max-h-80vh h-full w-full overflow-hidden rounded-2xl border">
+      <div className="border-border max-h-80vh relative h-full w-full overflow-hidden rounded-2xl border">
         <Map
           style={{
             width: '100%',
@@ -163,6 +167,12 @@ export function FindCentersGoogleMap({
             </AdvancedMarker>
           ))}
         </Map>
+
+        {isLoading ? (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+            <Loader text="Loading locations..." />
+          </div>
+        ) : null}
       </div>
     </APIProvider>
   );

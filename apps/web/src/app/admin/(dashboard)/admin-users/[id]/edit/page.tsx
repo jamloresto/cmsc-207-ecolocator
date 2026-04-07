@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { AdminUserForm, useAdminUser } from '@/modules/admin-users';
+import { Loader } from '@/components/common/loading/loader';
 
 export default function EditAdminUserPage() {
   const params = useParams();
@@ -22,7 +23,9 @@ export default function EditAdminUserPage() {
 
   if (isLoading) {
     return (
-      <div className="text-muted-foreground text-sm">Loading admin user...</div>
+      <div className='mt-24 justify-items-center items-center'>
+        <Loader text="Loading admin user..." />
+      </div>
     );
   }
 
