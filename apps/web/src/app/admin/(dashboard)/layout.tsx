@@ -2,20 +2,23 @@ import type { ReactNode } from 'react';
 
 import { AdminSidebar } from '@/modules/admin/components/admin-sidebar';
 import { AdminHeader } from '@/modules/admin/components/admin-header';
+import { AdminRouteGuard } from '@/modules/auth';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const role: 'super_admin' | 'editor' = 'super_admin';
 
   return (
-    <div className="bg-muted/40 min-h-screen">
-      <div className="flex min-h-screen">
-        <AdminSidebar role={role} />
+    <AdminRouteGuard>
+      <div className="bg-muted/40 min-h-screen">
+        <div className="flex min-h-screen">
+          <AdminSidebar role={role} />
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <AdminHeader role={role} />
-          <main className="flex-1 p-4 md:p-6">{children}</main>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <AdminHeader role={role} />
+            <main className="flex-1 p-4 md:p-6">{children}</main>
+          </div>
         </div>
       </div>
-    </div>
+    </AdminRouteGuard>
   );
 }
