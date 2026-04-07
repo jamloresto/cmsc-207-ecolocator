@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\MaterialType;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class PublicMaterialTypeController extends Controller
@@ -30,6 +31,26 @@ class PublicMaterialTypeController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Material types retrieved successfully.',
+            'data' => $materialTypes,
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/api/v1/material-types/active',
+        summary: 'List active material types for public filters',
+        tags: ['Public Material Types'],
+        responses: [
+            new OA\Response(response: 200, description: 'List of active material types')
+        ]
+    )]
+    public function active(Request $request)
+    {
+        $materialTypes = MaterialType::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['name', 'slug']);
+
+        return response()->json([
             'data' => $materialTypes,
         ]);
     }
