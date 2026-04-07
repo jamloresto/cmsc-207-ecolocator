@@ -84,8 +84,7 @@ export function FindCentersPage() {
         />
       </div>
 
-      <div className="hidden md:grid md:grid-cols-[360px_minmax(0,1fr)] md:gap-6 bg-red-600">
-        testasasdad
+      <div className="flex gap-4 h-full w-full">
         <div className="flex max-h-[calc(100vh-220px)] flex-col">
           <div className="mb-3 flex items-center justify-between">
             <p className="text-foreground text-sm font-semibold">Centers</p>
@@ -94,7 +93,7 @@ export function FindCentersPage() {
             </p>
           </div>
 
-          <div className="flex-1 space-y-3 overflow-y-auto pr-1">
+          <div className="flex-1 space-y-3 overflow-y-auto pr-1 min-w-100">
             {isLoading ? (
               <div className="bg-background border-border rounded-2xl border p-6 text-center shadow-sm">
                 <p className="text-foreground text-sm font-semibold">
@@ -104,7 +103,7 @@ export function FindCentersPage() {
             ) : mapListLocations.length > 0 ? (
               mapListLocations.map((location: any) => (
                 <FindCenterCard
-                  key={location.id}
+                  key={location.name}
                   location={location}
                   isActive={activeLocation?.id === location.id}
                   onClick={() => setActiveLocationId(location.id)}
