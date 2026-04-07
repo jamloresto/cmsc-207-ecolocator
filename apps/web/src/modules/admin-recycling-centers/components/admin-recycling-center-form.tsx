@@ -79,8 +79,6 @@ export function WasteCollectionLocationForm({
     onSubmit(values);
   }
 
-  console.log(values);
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">

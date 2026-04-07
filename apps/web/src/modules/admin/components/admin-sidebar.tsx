@@ -6,12 +6,13 @@ import { Recycle } from 'lucide-react';
 import clsx from 'clsx';
 
 import { ADMIN_NAV_ITEMS } from '@/modules/admin';
+import { AdminUserRole } from '@/modules/admin-users';
 
 type AdminSidebarProps = {
-  role?: 'super_admin' | 'editor';
+  role?: AdminUserRole;
 };
 
-export function AdminSidebar({ role = 'super_admin' }: AdminSidebarProps) {
+export function AdminSidebar({ role }: AdminSidebarProps) {
   const pathname = usePathname();
 
   const items = ADMIN_NAV_ITEMS.filter((item) => {

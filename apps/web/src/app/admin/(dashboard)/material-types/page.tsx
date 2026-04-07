@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 
+import { ErrorState } from '@/components/common/states/error-state';
 import { AdminHeading } from '@/components/shared/admin-heading';
 import { Button } from '@/components/ui/button';
 
@@ -43,46 +44,45 @@ export default function AdminMaterialTypesPage() {
         description="View and manage material types."
       />
 
-      <div className="flex w-full justify-end">
-        <Button
-          onClick={() => setIsCreateModalOpen(true)}
-          leftIcon={Plus}
-          size="sm"
-        >
-          <span className="text-sm">New Material Type</span>
-        </Button>
-      </div>
-
       {error ? (
-        <div className="border-destructive/30 bg-destructive/5 text-destructive rounded-xl border p-4 text-sm">
-          {error}
-        </div>
-      ) : null}
+        <ErrorState title="Failed to load material types." />
+      ) : (
+        <>
+          <div className="flex w-full justify-end">
+            <Button
+              onClick={() => setIsCreateModalOpen(true)}
+              leftIcon={Plus}
+              size="sm"
+            >
+              <span className="text-sm">New Material Type</span>
+            </Button>
+          </div>
+          <AdminMaterialTypesTable
+            materialTypes={materialTypes}
+            isLoading={isLoading}
+            params={params}
+            setParams={setParams}
+            onToggleStatus={handleStatusToggle}
+            onEdit={handleEdit}
+            currentPage={pagination?.meta.current_page ?? 1}
+            totalPages={pagination?.meta.last_page ?? 1}
+            totalItems={pagination?.meta.total ?? materialTypes.length}
+          />
 
-      <AdminMaterialTypesTable
-        materialTypes={materialTypes}
-        isLoading={isLoading}
-        params={params}
-        setParams={setParams}
-        onToggleStatus={handleStatusToggle}
-        onEdit={handleEdit}
-        currentPage={pagination?.meta.current_page ?? 1}
-        totalPages={pagination?.meta.last_page ?? 1}
-        totalItems={pagination?.meta.total ?? materialTypes.length}
-      />
+          <CreateMaterialTypeModal
+            open={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSaved={refetch}
+          />
 
-      <CreateMaterialTypeModal
-        open={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSaved={refetch}
-      />
-
-      <EditMaterialTypeModal
-        materialTypeId={selectedMaterialTypeId}
-        open={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSaved={refetch}
-      />
+          <EditMaterialTypeModal
+            materialTypeId={selectedMaterialTypeId}
+            open={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onSaved={refetch}
+          />
+        </>
+      )}
     </div>
   );
 }

@@ -59,8 +59,6 @@ export function LocationSuggestionsTable({
   const items = suggestions.data;
   const meta = suggestions.meta;
 
-  console.log(items);
-
   return (
     <div className='space-y-4'>
       <TableContainer>
