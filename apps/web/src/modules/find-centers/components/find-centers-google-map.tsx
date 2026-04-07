@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import {
   APIProvider,
@@ -27,6 +27,7 @@ const DEFAULT_CENTER = {
 };
 
 const DEFAULT_ZOOM = 15;
+const BOUNDS_DEBOUNCE_MS = 400;
 
 const options = {
   disableDefaultUI: true,
@@ -35,16 +36,6 @@ const options = {
   zoomControlOptions: {},
   minZoom: 13,
   maxZoom: 20,
-  styles: [
-    {
-      featureType: 'poi',
-      stylers: [{ visibility: 'off' }],
-    },
-    {
-      featureType: 'transit',
-      stylers: [{ visibility: 'off' }],
-    },
-  ],
 };
 
 export function FindCentersGoogleMap({
@@ -57,7 +48,8 @@ export function FindCentersGoogleMap({
   const isDark = resolvedTheme === 'dark';
 
   const [center, setCenter] = useState(DEFAULT_CENTER);
-  const [hasResolvedLocation, setHasResolvedLocation] = useState(false);
+  const [, setHasResolvedLocation] = useState(false);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -84,21 +76,34 @@ export function FindCentersGoogleMap({
     );
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleCameraChanged = useCallback(
     (event: MapCameraChangedEvent) => {
       const nextCenter = event.detail.center;
       setCenter(nextCenter);
 
       const bounds = event.detail.bounds;
-
       if (!bounds) return;
 
-      onBoundsChange({
-        north: bounds.north,
-        south: bounds.south,
-        east: bounds.east,
-        west: bounds.west,
-      });
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      debounceTimerRef.current = setTimeout(() => {
+        onBoundsChange({
+          north: bounds.north,
+          south: bounds.south,
+          east: bounds.east,
+          west: bounds.west,
+        });
+      }, BOUNDS_DEBOUNCE_MS);
     },
     [onBoundsChange],
   );
@@ -123,7 +128,7 @@ export function FindCentersGoogleMap({
       <div className="border-border max-h-80vh h-full w-full overflow-hidden rounded-2xl border">
         <Map
           style={{
-            width: `100%`,
+            width: '100%',
             height: '100%',
             minHeight: '55vh',
             minWidth: '70vw',
@@ -145,7 +150,13 @@ export function FindCentersGoogleMap({
               onClick={() => onLocationSelect(location.id)}
             >
               <Pin
-                background={isDark ? '#facc15' : '#16a34a'}
+                background={
+                  activeLocationId === location.id
+                    ? '#eab308'
+                    : isDark
+                      ? '#facc15'
+                      : '#16a34a'
+                }
                 glyphColor={isDark ? '#163328' : '#0f172a'}
                 borderColor={isDark ? '#163328' : '#0f172a'}
               />
