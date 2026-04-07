@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ApproveLocationSuggestionRequest;
 use App\Http\Requests\RejectLocationSuggestionRequest;
 use App\Http\Requests\UpdateLocationSuggestionRequest;
+use App\Http\Resources\AdminLocationSuggestionResource;
 use App\Models\LocationSuggestion;
 use App\Models\MaterialType;
 use App\Models\WasteCollectionLocation;
@@ -86,9 +87,7 @@ class LocationSuggestionController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = LocationSuggestion::query();
-        $query = LocationSuggestion::query();
 
-        // FILTERS
         if ($request->filled('status')) {
             $query->where('status', $request->string('status'));
         }
@@ -106,9 +105,9 @@ class LocationSuggestionController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('location_name', 'like', "%{$search}%")
-                ->orWhere('address', 'like', "%{$search}%")
-                ->orWhere('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -131,9 +130,9 @@ class LocationSuggestionController extends Controller
 
         $query->orderBy($sortBy, $sortOrder);
 
-        return response()->json(
-            $query->paginate($request->integer('per_page', 10))
-        );
+        $suggestions = $query->paginate($request->integer('per_page', 10));
+
+        return AdminLocationSuggestionResource::collection($suggestions)->response();
     }
 
     #[OA\Get(
