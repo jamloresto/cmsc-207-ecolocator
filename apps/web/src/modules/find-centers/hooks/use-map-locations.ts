@@ -13,13 +13,14 @@ export function useMapLocations({
 }: UseMapLocationsParams) {
   return useQuery({
     queryKey: ['map-locations', bounds, materialSlug],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       getMapLocations({
         north: bounds!.north,
         south: bounds!.south,
         east: bounds!.east,
         west: bounds!.west,
         material_slug: materialSlug || undefined,
+        signal,
       }),
     enabled: Boolean(bounds),
     staleTime: 1000 * 30,
