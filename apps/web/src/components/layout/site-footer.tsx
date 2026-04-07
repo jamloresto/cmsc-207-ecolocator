@@ -6,6 +6,7 @@ import { Container } from '@/components/shared/container';
 const quickLinks = [
   { href: '/', label: 'Home' },
   { href: '/find-centers', label: 'Find Centers' },
+  { href: '/suggest-location', label: 'Suggest a Location' },
   { href: '/contact', label: 'Contact Us' },
   { href: '/admin/login', label: 'Admin Portal' },
 ];
