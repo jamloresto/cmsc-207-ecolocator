@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { AdminSidebar } from '@/modules/admin/components/admin-sidebar';
-import { AdminHeader } from '@/modules/admin/components/admin-header';
+import { AdminHeader, AdminSidebar } from '@/modules/admin';
 import { AdminRouteGuard } from '@/modules/auth';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
