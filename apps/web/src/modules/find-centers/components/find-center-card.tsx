@@ -24,38 +24,38 @@ export function FindCenterCard({
       type="button"
       onClick={onClick}
       className={clsx(
-        'bg-background border-border hover:border-primary/50 w-full rounded-2xl border p-4 text-left shadow-sm transition',
+        'bg-background border-border hover:border-primary/50 w-full rounded-2xl border p-4 text-left shadow-sm transition flex',
         isActive && 'border-primary ring-primary/15 ring-2',
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-foreground text-sm font-semibold">
+          <p className="text-foreground text-sm font-semibold line-clamp-1">
             {location.name}
-          </h3>
+          </p>
+          {location.material_types.length > 0 ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {location.material_types
+                .slice(0, 3)
+                .map((material: FindCenterMaterialType) => (
+                  <Badge
+                    key={material.slug}
+                    className="text-tiny max-w-32 truncate"
+                  >
+                    {material.name}
+                  </Badge>
+                ))}
+
+              {location.material_types.length > 3 && (
+                <span className="text-muted-foreground text-xs">
+                  +{location.material_types.length - 3} more
+                </span>
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
 
-      {location.material_types.length > 0 ? (
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {location.material_types
-            .slice(0, 3)
-            .map((material: FindCenterMaterialType) => (
-              <Badge
-                key={material.slug}
-                className="text-tiny max-w-32 truncate"
-              >
-                {material.name}
-              </Badge>
-            ))}
-
-          {location.material_types.length > 3 && (
-            <span className="text-muted-foreground text-xs">
-              +{location.material_types.length - 3} more
-            </span>
-          )}
-        </div>
-      ) : null}
     </button>
   );
 }
