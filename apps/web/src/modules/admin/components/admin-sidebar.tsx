@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { Recycle } from 'lucide-react';
 import clsx from 'clsx';
 
+import { ThemeToggle } from '@/components/theme/theme-toggle';
+
 import { ADMIN_NAV_ITEMS } from '@/modules/admin';
 import { AdminUserRole } from '@/modules/admin-users';
 
@@ -58,6 +60,9 @@ export function AdminSidebar({ role }: AdminSidebarProps) {
           );
         })}
       </nav>
+      <div className='fixed bottom-8 left-8'>
+        <ThemeToggle />
+      </div>
     </aside>
   );
 }
