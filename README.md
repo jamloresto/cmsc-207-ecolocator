@@ -1,4 +1,4 @@
-# 🌱 EcoLocator
+# ♻️ EcoLocator
 
 ### by Jessa Mae Hernandez
 

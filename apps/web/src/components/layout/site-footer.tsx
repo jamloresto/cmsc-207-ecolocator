@@ -32,19 +32,31 @@ export function SiteFooter() {
               </div>
             </div>
 
-            <div className="space-y-3 text-sm text-white/80">
+            <div className="hidden space-y-3 text-sm text-white/80 md:flex flex-col">
               <p className="text-balance">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Fuga,
-                quam vero impedit cum nulla, pariatur enim eius recusandae
-                facilis quas veniam voluptates beatae libero, natus soluta fugit
-                maxime! Earum, numquam.
+                EcoLocator makes your search for recyclers and waste management
+                facilities easy. No matter whether you are searching for
+                recycling plastic, electronic wastes, or paper and glass, we
+                will provide you with the right information.
               </p>
               <p className="text-balance">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Veritatis voluptate dicta quo deserunt, distinctio quasi
-                accusantium? Voluptatibus nemo, dolores labore reprehenderit
-                quas architecto ratione ullam consequuntur ipsum tempore
-                accusantium consequatur!
+                Our goal is to encourage people to manage their waste
+                responsibly and properly. We do that by making recycling easily
+                accessible and encouraging people to segregate and recycle.
+              </p>
+              <p className="text-balance">
+                Join us in making a difference by reducing wastage and
+                protecting the environment.
+              </p>
+            </div>
+            <div className="space-y-3 text-sm text-white/80 md:hidden">
+              <p className="text-balance">
+                Find your nearest recycling facility and dispose of waste
+                effectively and efficiently. Whether it's plastics or electronic
+                waste, we'll help you find the best spot.
+              </p>
+              <p className="text-balance">
+                Choose the better path toward sustainability.
               </p>
             </div>
           </div>
