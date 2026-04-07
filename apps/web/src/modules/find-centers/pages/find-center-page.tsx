@@ -133,7 +133,7 @@ export function FindCentersPage() {
       </div>
 
       <div className="md:hidden">
-        <div className="relative">
+        <div className="relative h-[70vh] w-full">
           <FindCentersGoogleMap
             locations={locations}
             activeLocationId={activeLocation?.id ?? null}
@@ -164,7 +164,7 @@ export function FindCentersPage() {
               ) : (
                 <div className="bg-background border-border w-full rounded-2xl border p-5 shadow-sm">
                   <p className="text-foreground text-sm font-semibold">
-                    No centers found in this areaasd
+                    No centers found in this area
                   </p>
                   <p className="text-muted-foreground mt-1 text-sm">
                     Move the map or change the material filter.
