@@ -30,6 +30,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/locations/{location}', [PublicWasteCollectionLocationController::class, 'show']);
 
     Route::get('/material-types', [PublicMaterialTypeController::class, 'index']);
+    Route::get('/material-types/active', [PublicMaterialTypeController::class, 'active']);
     Route::get('/material-types/{id}', [PublicMaterialTypeController::class, 'show']);
 
     Route::post('/contact-messages', [PublicContactMessageController::class, 'store'])

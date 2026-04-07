@@ -47,7 +47,7 @@ export function FindCentersToolbar({
           >
             <option value="">All materials</option>
             {materials.map((material) => (
-              <option key={material.id} value={material.slug}>
+              <option key={material.slug} value={material.slug}>
                 {material.name}
               </option>
             ))}
