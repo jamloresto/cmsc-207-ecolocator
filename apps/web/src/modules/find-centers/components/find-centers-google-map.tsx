@@ -1,13 +1,16 @@
 'use client';
 
 import { useCallback } from 'react';
+import { useTheme } from 'next-themes';
 import {
   APIProvider,
   AdvancedMarker,
+  ColorScheme,
   Map,
   MapCameraChangedEvent,
 } from '@vis.gl/react-google-maps';
 
+import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
 import type { MapBounds, MapFindCenterLocation } from '@/modules/find-centers';
 
 type FindCentersGoogleMapProps = {
@@ -22,7 +25,14 @@ const DEFAULT_CENTER = {
   lng: 120.9842,
 };
 
-const DEFAULT_ZOOM = 11;
+const DEFAULT_ZOOM = 18;
+
+const options = {
+  disableDefaultUI: true,
+  gestureHandling: 'greedy',
+  zoomControl: true,
+  zoomControlOptions: {},
+};
 
 export function FindCentersGoogleMap({
   locations,
@@ -30,7 +40,10 @@ export function FindCentersGoogleMap({
   onLocationSelect,
   onBoundsChange,
 }: FindCentersGoogleMapProps) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const { resolvedTheme } = useTheme();
+
+  const isDark = resolvedTheme === 'dark';
+
 
   const handleCameraChanged = useCallback(
     (event: MapCameraChangedEvent) => {
@@ -48,7 +61,7 @@ export function FindCentersGoogleMap({
     [onBoundsChange],
   );
 
-  if (!apiKey) {
+  if (!GOOGLE_MAPS_API_KEY) {
     return (
       <div className="bg-muted/40 border-border flex h-full min-h-80 items-center justify-center rounded-2xl border p-6 text-center">
         <div>
@@ -64,15 +77,16 @@ export function FindCentersGoogleMap({
   }
 
   return (
-    <APIProvider apiKey={apiKey}>
-      <div className="border-border h-full min-h-80 overflow-hidden rounded-2xl border">
+    <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
+      <div className="border-border overflow-hidden rounded-2xl border">
         <Map
+          style={{ width: '70vw', height: '55vh', maxWidth: '900px' }}
           defaultCenter={DEFAULT_CENTER}
           defaultZoom={DEFAULT_ZOOM}
-          gestureHandling="greedy"
-          disableDefaultUI={false}
-          mapId="find-centers-map"
           onCameraChanged={handleCameraChanged}
+          mapId="find-centers-map"
+          options={options}
+          colorScheme={isDark ? ColorScheme.DARK : ColorScheme.LIGHT}
         >
           {locations.map((location) => (
             <AdvancedMarker
