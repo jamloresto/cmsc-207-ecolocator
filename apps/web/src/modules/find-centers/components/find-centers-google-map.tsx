@@ -8,6 +8,7 @@ import {
   ColorScheme,
   Map,
   MapCameraChangedEvent,
+  Pin,
 } from '@vis.gl/react-google-maps';
 
 import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
@@ -34,6 +35,16 @@ const options = {
   zoomControlOptions: {},
   minZoom: 13,
   maxZoom: 20,
+  styles: [
+    {
+      featureType: 'poi',
+      stylers: [{ visibility: 'off' }],
+    },
+    {
+      featureType: 'transit',
+      stylers: [{ visibility: 'off' }],
+    },
+  ],
 };
 
 export function FindCentersGoogleMap({
@@ -109,9 +120,14 @@ export function FindCentersGoogleMap({
 
   return (
     <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
-      <div className="border-border w-full h-full max-h-80vh overflow-hidden rounded-2xl border">
+      <div className="border-border max-h-80vh h-full w-full overflow-hidden rounded-2xl border">
         <Map
-          style={{ width: `100%`, height: '100%', minHeight: '55vh', minWidth: '70vw' }}
+          style={{
+            width: `100%`,
+            height: '100%',
+            minHeight: '55vh',
+            minWidth: '70vw',
+          }}
           center={center}
           defaultZoom={DEFAULT_ZOOM}
           onCameraChanged={handleCameraChanged}
@@ -128,16 +144,11 @@ export function FindCentersGoogleMap({
               }}
               onClick={() => onLocationSelect(location.id)}
             >
-              <div
-                className={[
-                  'bg-background rounded-full border px-3 py-1 text-xs font-semibold shadow-sm',
-                  activeLocationId === location.id
-                    ? 'border-primary text-primary'
-                    : 'border-border text-foreground',
-                ].join(' ')}
-              >
-                {location.name}
-              </div>
+              <Pin
+                background={isDark ? '#facc15' : '#16a34a'}
+                glyphColor={isDark ? '#163328' : '#0f172a'}
+                borderColor={isDark ? '#163328' : '#0f172a'}
+              />
             </AdvancedMarker>
           ))}
         </Map>

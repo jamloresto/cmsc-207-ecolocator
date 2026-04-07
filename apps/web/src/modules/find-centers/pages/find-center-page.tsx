@@ -5,10 +5,12 @@ import { MapPin } from 'lucide-react';
 
 import {
   FindCenterCard,
+  FindCenterLocationModal,
   FindCentersGoogleMap,
   FindCentersToolbar,
   useFindCenterMaterialTypes,
   useMapLocations,
+  usePublicLocationDetail,
   type MapBounds,
 } from '@/modules/find-centers';
 
@@ -27,10 +29,8 @@ export function FindCentersPage() {
 
   const locations = useMemo(() => data?.data ?? [], [data]);
 
-  const activeLocation =
-    locations.find((location: any) => location.id === activeLocationId) ??
-    locations[0] ??
-    null;
+  const { data: activeLocation, isLoading: isActiveLocationLoading } =
+    usePublicLocationDetail(activeLocationId);
 
   const mapListLocations = useMemo(
     () =>
@@ -84,7 +84,7 @@ export function FindCentersPage() {
         />
       </div>
 
-      <div className="hidden w-full gap-4 md:flex max-h-[60vh]">
+      <div className="hidden max-h-[60vh] w-full gap-4 md:flex">
         <div className="flex flex-col">
           <div className="mb-3 flex items-center justify-between">
             <p className="text-foreground text-sm font-semibold">Centers</p>
@@ -175,6 +175,13 @@ export function FindCentersPage() {
           </div>
         </div>
       </div>
+
+      <FindCenterLocationModal
+        open={!!activeLocationId}
+        onClose={() => setActiveLocationId(null)}
+        location={activeLocation ?? null}
+        isLoading={isActiveLocationLoading}
+      />
     </section>
   );
 }
