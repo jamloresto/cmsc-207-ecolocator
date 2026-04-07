@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Recycle } from 'lucide-react';
 import clsx from 'clsx';
 
-import { ADMIN_NAV_ITEMS } from './admin-nav';
-import { Recycle } from 'lucide-react';
+import { ADMIN_NAV_ITEMS } from '@/modules/admin';
 
 type AdminSidebarProps = {
   role?: 'super_admin' | 'editor';
@@ -32,8 +32,12 @@ export function AdminSidebar({ role = 'super_admin' }: AdminSidebarProps) {
 
       <nav className="flex-1 space-y-1 p-4">
         {items.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const isActive = (() => {
+            if (item.href === '/admin') return pathname === '/admin';
+            return (
+              pathname === item.href || pathname.startsWith(`${item.href}/`)
+            );
+          })();
           const Icon = item.icon;
 
           return (

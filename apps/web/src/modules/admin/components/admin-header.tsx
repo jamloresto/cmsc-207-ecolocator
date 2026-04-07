@@ -2,7 +2,7 @@
 
 import { LogOut } from 'lucide-react';
 
-import { AdminMobileDrawer } from './admin-mobile-drawer';
+import { AdminMobileDrawer } from '@/modules/admin';
 import { useAdminLogout } from '@/modules/auth';
 
 type AdminHeaderProps = {

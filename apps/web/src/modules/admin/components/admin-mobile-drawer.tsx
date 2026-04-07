@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Menu, Recycle, X } from 'lucide-react';
 import clsx from 'clsx';
 
-import { ADMIN_NAV_ITEMS } from './admin-nav';
+import { ADMIN_NAV_ITEMS } from '@/modules/admin';
 
 type AdminMobileDrawerProps = {
   role?: 'super_admin' | 'editor';

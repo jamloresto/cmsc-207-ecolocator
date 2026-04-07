@@ -2,31 +2,21 @@
 
 import { ClipboardList, Mail, MapPinned, Recycle } from 'lucide-react';
 
-import { AdminStatCard } from '../admin-stat-card';
+import { CardSkeleton } from '@/components/common/loading/card-skeleton';
+import { ErrorState } from '@/components/common/states/error-state';
 
-import { useDashboardStats } from '@/modules/admin';
+import { AdminStatCard, useDashboardStats } from '@/modules/admin';
 
 export function DashboardStats() {
   const { stats, isLoading, error } = useDashboardStats();
 
   if (isLoading) {
-    return (
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <div
-            key={index}
-            className="border-border bg-card h-33 animate-pulse rounded-2xl border"
-          />
-        ))}
-      </section>
-    );
+    return <CardSkeleton count={4} content={false} button={false} />;
   }
 
   if (error || !stats) {
     return (
-      <div className="border-destructive/20 bg-card text-destructive rounded-2xl border p-4 text-sm">
-        Failed to load dashboard statistics.
-      </div>
+      <ErrorState title="Failed to load dashboard statistics." />
     );
   }
 

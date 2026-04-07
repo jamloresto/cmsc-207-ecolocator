@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 import { SortableHeaderProps } from '@/types/api.types';
-import { ArrowDown, ArrowDownNarrowWide, ArrowUp, ArrowUpNarrowWide } from 'lucide-react';
+import { ArrowDownNarrowWide, ArrowUpNarrowWide } from 'lucide-react';
 
 export function TableContainer({
   children,
