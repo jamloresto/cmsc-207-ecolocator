@@ -1,10 +1,13 @@
+'use client';
+
 import type { ReactNode } from 'react';
 
 import { AdminHeader, AdminSidebar } from '@/modules/admin';
-import { AdminRouteGuard } from '@/modules/auth';
+import { AdminRouteGuard, useAdminMe } from '@/modules/auth';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  const role: 'super_admin' | 'editor' = 'super_admin';
+  const adminUser = useAdminMe();
+  const role = adminUser.data?.user.role || 'editor';
 
   return (
     <AdminRouteGuard>

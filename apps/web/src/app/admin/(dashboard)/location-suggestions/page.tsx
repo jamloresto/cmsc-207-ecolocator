@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { TableSkeleton } from '@/components/common/loading/table-skeleton';
+import { ErrorState } from '@/components/common/states/error-state';
 import { AdminHeading } from '@/components/shared/admin-heading';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 
@@ -41,8 +42,6 @@ export default function AdminLocationSuggestionsPage() {
   );
 
   const { data: suggestions, isLoading } = useAdminLocationSuggestions(params);
-
-  console.log("suggestions: ", suggestions)
 
   const approveMutation = useApproveLocationSuggestion();
   const rejectMutation = useRejectLocationSuggestion();
@@ -143,9 +142,7 @@ export default function AdminLocationSuggestionsPage() {
           isRejecting={rejectMutation.isPending}
         />
       ) : (
-        <div className="border-border bg-card text-muted-foreground rounded-2xl border px-6 py-10 text-center">
-          Failed to load location suggestions.
-        </div>
+        <ErrorState title="Failed to load location suggestions." />
       )}
 
       <ConfirmationDialog

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
+import { ErrorState } from '@/components/common/states/error-state';
 import { AdminHeading } from '@/components/shared/admin-heading';
 
 import {
@@ -106,30 +107,28 @@ export default function AdminContactMessagesPage() {
       />
 
       {error ? (
-        <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-2xl border p-4 text-sm">
-          {error}
-        </div>
-      ) : null}
-
-      <AdminContactMessagesTable
-        messages={messages}
-        currentPage={pagination?.current_page ?? 1}
-        totalPages={pagination?.last_page ?? 1}
-        totalItems={pagination?.total}
-        searchValue={searchInput}
-        statusFilter={status}
-        loading={loading}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        onSort={handleSort}
-        onSearchChange={setSearchInput}
-        onStatusFilterChange={(value) => {
-          setStatus(value as '' | ContactMessageStatus);
-          setPage(1);
-        }}
-        onPageChange={setPage}
-        onArchived={handleArchived}
-      />
+        <ErrorState title="Failed to load Contact Messages." />
+      ) : (
+        <AdminContactMessagesTable
+          messages={messages}
+          currentPage={pagination?.current_page ?? 1}
+          totalPages={pagination?.last_page ?? 1}
+          totalItems={pagination?.total}
+          searchValue={searchInput}
+          statusFilter={status}
+          loading={loading}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSort={handleSort}
+          onSearchChange={setSearchInput}
+          onStatusFilterChange={(value) => {
+            setStatus(value as '' | ContactMessageStatus);
+            setPage(1);
+          }}
+          onPageChange={setPage}
+          onArchived={handleArchived}
+        />
+      )}
     </main>
   );
 }
