@@ -17,6 +17,8 @@ export async function getMapLocations(
       east: params.east,
       west: params.west,
       material_slug: params.material_slug,
+      latitude: params.latitude,
+      longitude: params.longitude,
     },
     signal: params.signal,
   });

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, MapPinX } from 'lucide-react';
 
 import {
   FindCenterCard,
@@ -14,6 +14,7 @@ import {
   type MapBounds,
 } from '@/modules/find-centers';
 import { Loader } from '@/components/common/loading/loader';
+import { EmptyState } from '@/components/common/states/empty-state';
 
 export function FindCentersPage() {
   const [selectedMaterialSlug, setSelectedMaterialSlug] = useState('');
@@ -85,48 +86,51 @@ export function FindCentersPage() {
         />
       </div>
 
-      <div className="hidden max-h-[60vh] w-full gap-4 md:flex">
-        <div className="shrink-0 flex w-64 flex-col">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-foreground text-sm font-semibold">Centers</p>
-            <p className="text-muted-foreground text-xs">
-              {isFetching ? 'Updating...' : `${locations.length} visible`}
-            </p>
-          </div>
+      <div className="hidden w-full md:flex md:h-[70vh]">
+        <div className="w-64 max-w-64 min-w-64 shrink-0 pr-4 h-[70vh] max-h-[70vh] min-h-[70vh]">
+          <div className="flex h-full flex-col">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-foreground text-sm font-semibold">Centers</p>
+              <p className="text-muted-foreground text-xs">
+                {isFetching ? 'Updating...' : `${locations.length} visible`}
+              </p>
+            </div>
 
-          <div className="max-w-64 flex-1 space-y-3 overflow-y-auto pr-1">
-            {isLoading ? (
-              <Loader text="Loading centers..." />
-            ) : mapListLocations.length > 0 ? (
-              mapListLocations.map((location: any) => (
-                <FindCenterCard
-                  key={location.name}
-                  location={location}
-                  isActive={activeLocation?.id === location.id}
-                  onClick={() => setActiveLocationId(location.id)}
+            <div className="flex-1 space-y-3 overflow-y-auto pr-1 [scrollbar-gutter:stable]">
+              {isLoading || isFetching ? (
+                <div className="bg-background border-border h-full rounded-2xl border p-6 text-center shadow-sm">
+                  <Loader text="Loading centers..." />
+                </div>
+              ) : mapListLocations.length > 0 ? (
+                mapListLocations.map((location: any) => (
+                  <FindCenterCard
+                    key={location.id}
+                    location={location}
+                    isActive={activeLocation?.id === location.id}
+                    onClick={() => setActiveLocationId(location.id)}
+                  />
+                ))
+              ) : (
+                <EmptyState
+                  title="No centers found in this area"
+                  description="Move the map or change the material filter."
+                  icon={<MapPinX />}
                 />
-              ))
-            ) : (
-              <div className="bg-background border-border rounded-2xl border p-6 text-center shadow-sm">
-                <p className="text-foreground text-sm font-semibold">
-                  No centers found in this area
-                </p>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  Move the map or change the material filter.
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="flex-1">
-          <FindCentersGoogleMap
-            locations={locations}
-            activeLocationId={activeLocation?.id ?? null}
-            onLocationSelect={setActiveLocationId}
-            onBoundsChange={setBounds}
-            isLoading={isLoading || isFetching}
-          />
+        <div className="min-w-0 flex-1">
+          <div className="h-full w-full">
+            <FindCentersGoogleMap
+              locations={locations}
+              activeLocationId={activeLocation?.id ?? null}
+              onLocationSelect={setActiveLocationId}
+              onBoundsChange={setBounds}
+              isLoading={isLoading || isFetching}
+            />
+          </div>
         </div>
       </div>
 
@@ -160,14 +164,11 @@ export function FindCentersPage() {
                   </div>
                 ))
               ) : (
-                <div className="bg-background border-border w-full rounded-2xl border p-5 shadow-sm">
-                  <p className="text-foreground text-sm font-semibold">
-                    No centers found in this area
-                  </p>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    Move the map or change the material filter.
-                  </p>
-                </div>
+                <EmptyState
+                  title="No centers found in this area"
+                  description="Move the map or change the material filter."
+                  icon={<MapPinX />}
+                />
               )}
             </div>
           </div>

@@ -97,6 +97,8 @@ class PublicWasteCollectionLocationController extends Controller
             new OA\Parameter(name: 'east', in: 'query', required: true, schema: new OA\Schema(type: 'number', format: 'float', example: 121.12)),
             new OA\Parameter(name: 'west', in: 'query', required: true, schema: new OA\Schema(type: 'number', format: 'float', example: 120.96)),
             new OA\Parameter(name: 'material_slug', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'latitude', in: 'query', required: false, schema: new OA\Schema(type: 'number', format: 'float', example: 14.5995)),
+            new OA\Parameter(name: 'longitude', in: 'query', required: false, schema: new OA\Schema(type: 'number', format: 'float', example: 120.9842)),
         ],
         responses: [
             new OA\Response(response: 200, description: 'List of active locations within map bounds'),
@@ -104,50 +106,76 @@ class PublicWasteCollectionLocationController extends Controller
         ]
     )]
     public function map(Request $request)
-    {
-        $validated = $request->validate([
-            'north' => ['required', 'numeric', 'between:-90,90'],
-            'south' => ['required', 'numeric', 'between:-90,90'],
-            'east' => ['required', 'numeric', 'between:-180,180'],
-            'west' => ['required', 'numeric', 'between:-180,180'],
-            'material_slug' => ['nullable', 'string'],
+{
+    $validated = $request->validate([
+        'north' => ['required', 'numeric', 'between:-90,90'],
+        'south' => ['required', 'numeric', 'between:-90,90'],
+        'east' => ['required', 'numeric', 'between:-180,180'],
+        'west' => ['required', 'numeric', 'between:-180,180'],
+        'material_slug' => ['nullable', 'string'],
+        'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+        'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+    ]);
+
+    $north = max((float) $validated['north'], (float) $validated['south']);
+    $south = min((float) $validated['north'], (float) $validated['south']);
+    $east = max((float) $validated['east'], (float) $validated['west']);
+    $west = min((float) $validated['east'], (float) $validated['west']);
+
+    $userLatitude = $request->filled('latitude') ? (float) $validated['latitude'] : null;
+    $userLongitude = $request->filled('longitude') ? (float) $validated['longitude'] : null;
+    $hasUserCoordinates = $userLatitude !== null && $userLongitude !== null;
+
+    $query = WasteCollectionLocation::query()
+        ->where('is_active', true)
+        ->whereNotNull('latitude')
+        ->whereNotNull('longitude')
+        ->whereBetween('latitude', [$south, $north])
+        ->whereBetween('longitude', [$west, $east])
+        ->with([
+            'materialTypes:id,name,slug',
         ]);
 
-        $north = max((float) $validated['north'], (float) $validated['south']);
-        $south = min((float) $validated['north'], (float) $validated['south']);
-        $east = max((float) $validated['east'], (float) $validated['west']);
-        $west = min((float) $validated['east'], (float) $validated['west']);
+    $query->when(
+        $request->filled('material_slug'),
+        fn ($q) => $q->whereHas(
+            'materialTypes',
+            fn ($subQ) => $subQ->where('slug', $request->string('material_slug')->toString())
+        )
+    );
 
-        $query = WasteCollectionLocation::query()
-            ->where('is_active', true)
-            ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->whereBetween('latitude', [$south, $north])
-            ->whereBetween('longitude', [$west, $east])
-            ->with([
-                'materialTypes:id,name,slug',
-            ]);
-
-        $query->when(
-            $request->filled('material_slug'),
-            fn ($q) => $q->whereHas(
-                'materialTypes',
-                fn ($subQ) => $subQ->where('slug', $request->string('material_slug')->toString())
-            )
-        );
-
-        $locations = $query
-            ->select([
-                'id',
-                'name',
-                'latitude',
-                'longitude',
-            ])
-            ->orderBy('name')
-            ->get();
-
-        return MapWasteCollectionLocationResource::collection($locations);
+    if ($hasUserCoordinates) {
+        $query->selectRaw(
+            '
+            id,
+            name,
+            latitude,
+            longitude,
+            (
+                6371 * acos(
+                    cos(radians(?)) *
+                    cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(?)) +
+                    sin(radians(?)) *
+                    sin(radians(latitude))
+                )
+            ) as distance
+            ',
+            [$userLatitude, $userLongitude, $userLatitude]
+        )->orderBy('distance');
+    } else {
+        $query->select([
+            'id',
+            'name',
+            'latitude',
+            'longitude',
+        ])->orderBy('name');
     }
+
+    $locations = $query->get();
+
+    return MapWasteCollectionLocationResource::collection($locations);
+}
 
     #[OA\Get(
         path: '/api/v1/locations/{location}',
