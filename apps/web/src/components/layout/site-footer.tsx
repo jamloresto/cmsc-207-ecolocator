@@ -11,7 +11,8 @@ const quickLinks = [
 ];
 
 const resources = [
-  { href: '/find-centers', label: 'Find Centers' },
+  { href: '/find-centers', label: 'Find Centers by Map' },
+  { href: '/recycling-centers', label: 'Find Centers by Material Type' },
   { href: '/what-can-be-recycled', label: 'What Can Be Recycled' },
 ];
 
@@ -57,7 +58,7 @@ export function SiteFooter() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block text-sm text-white/80 transition hover:text-white"
+                    className="block text-sm text-white/80 transition hover:text-white whitespace-nowrap"
                   >
                     {link.label}
                   </Link>
@@ -72,7 +73,7 @@ export function SiteFooter() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className="block text-sm text-white/80 transition hover:text-white"
+                    className="block text-sm text-white/80 transition hover:text-white whitespace-nowrap"
                   >
                     {link.label}
                   </Link>

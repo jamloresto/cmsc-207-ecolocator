@@ -9,10 +9,11 @@ type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   label?: string;
   description?: string;
   error?: string;
+  nowrap?: boolean;
 };
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, id, label, description, error, disabled, ...props }, ref) => {
+  ({ className, id, label, description, error, disabled, nowrap = false, ...props }, ref) => {
     const generatedId =
       id ??
       label
@@ -54,7 +55,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         {(label || description || error) && (
           <span className="flex flex-col gap-1">
             {label ? (
-              <span className="text-foreground text-sm font-medium">
+              <span className={cn("text-foreground text-sm font-medium", nowrap && "whitespace-nowrap")}>
                 {label}
               </span>
             ) : null}
