@@ -25,6 +25,15 @@ class PublicWasteCollectionLocationController extends Controller
             new OA\Parameter(name: 'region', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
             new OA\Parameter(name: 'material_type_id', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
             new OA\Parameter(name: 'material_slug', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(
+                name: 'material_slugs[]',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'array',
+                    items: new OA\Items(type: 'string')
+                )
+            ),
         ],
         responses: [
             new OA\Response(response: 200, description: 'List of active locations')
@@ -47,6 +56,12 @@ class PublicWasteCollectionLocationController extends Controller
             });
         }
 
+        $materialSlugs = collect($request->input('material_slugs', []))
+            ->filter(fn ($slug) => filled($slug))
+            ->map(fn ($slug) => (string) $slug)
+            ->values()
+            ->all();
+
         $query->when($request->country_code, fn ($q, $value) => $q->where('country_code', strtoupper($value)))
             ->when($request->state_province, fn ($q, $value) => $q->where('state_province', $value))
             ->when($request->state_code, fn ($q, $value) => $q->where('state_code', strtoupper($value)))
@@ -58,7 +73,14 @@ class PublicWasteCollectionLocationController extends Controller
                 fn ($q, $value) => $q->whereHas('materialTypes', fn ($subQ) => $subQ->where('material_types.id', $value))
             )
             ->when(
-                $request->material_slug,
+                !empty($materialSlugs),
+                fn ($q) => $q->whereHas(
+                    'materialTypes',
+                    fn ($subQ) => $subQ->whereIn('material_types.slug', $materialSlugs)
+                )
+            )
+            ->when(
+                empty($materialSlugs) && $request->material_slug,
                 fn ($q, $value) => $q->whereHas('materialTypes', fn ($subQ) => $subQ->where('material_types.slug', $value))
             );
 
