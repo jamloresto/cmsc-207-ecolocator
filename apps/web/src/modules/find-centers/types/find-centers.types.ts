@@ -9,6 +9,7 @@ export type MapFindCenterLocation = {
   latitude: number;
   longitude: number;
   material_types: FindCenterMaterialType[];
+  distance: number;
 };
 
 export type MapBounds = {
@@ -16,6 +17,8 @@ export type MapBounds = {
   south: number;
   east: number;
   west: number;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type FindCenterLocationDetail = {

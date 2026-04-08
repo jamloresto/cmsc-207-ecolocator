@@ -23,7 +23,7 @@ export function EmptyState({
         className,
       )}
     >
-      {icon ? <div className="text-muted-foreground mb-4">{icon}</div> : null}
+      {icon ? <div className="text-primary mb-4">{icon}</div> : null}
 
       <h3 className="text-foreground text-lg font-semibold">{title}</h3>
 

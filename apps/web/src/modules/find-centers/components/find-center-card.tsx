@@ -6,6 +6,7 @@ import type {
   MapFindCenterLocation,
   FindCenterMaterialType,
 } from '@/modules/find-centers';
+import { Route } from 'lucide-react';
 
 type FindCenterCardProps = {
   location: MapFindCenterLocation;
@@ -24,14 +25,17 @@ export function FindCenterCard({
       type="button"
       onClick={onClick}
       className={clsx(
-        'bg-background border-border hover:border-primary/50 w-full rounded-2xl border p-4 text-left shadow-sm transition flex',
+        'bg-background border-border hover:border-primary/50 flex w-full rounded-2xl border p-4 text-left shadow-sm transition',
         isActive && 'border-primary ring-primary/15 ring-2',
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-foreground text-sm font-semibold line-clamp-1">
+          <p className="text-foreground line-clamp-1 text-sm font-semibold">
             {location.name}
+          </p>
+          <p className="text-muted-foreground flex items-center gap-1 text-xs">
+            <Route className="text-primary w-4" /> {location.distance} km
           </p>
           {location.material_types.length > 0 ? (
             <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -55,7 +59,6 @@ export function FindCenterCard({
           ) : null}
         </div>
       </div>
-
     </button>
   );
 }

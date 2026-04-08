@@ -21,6 +21,8 @@ export function useMapLocations({
         west: bounds!.west,
         material_slug: materialSlug || undefined,
         signal,
+        latitude: bounds?.latitude,
+        longitude: bounds?.longitude
       }),
     enabled: Boolean(bounds),
     staleTime: 1000 * 30,
