@@ -3,22 +3,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import {
-  APIProvider,
   AdvancedMarker,
   ColorScheme,
   Map,
   MapCameraChangedEvent,
 } from '@vis.gl/react-google-maps';
 
-import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
 import type { MapBounds, MapFindCenterLocation } from '@/modules/find-centers';
 import { Loader } from '@/components/common/loading/loader';
-import { ErrorState } from '@/components/common/states/error-state';
 
 type FindCentersGoogleMapProps = {
   locations: MapFindCenterLocation[];
   activeLocationId: number | null;
   isLoading?: boolean;
+  centerOverride?: {
+    lat: number;
+    lng: number;
+  } | null;
   onLocationSelect: (locationId: number) => void;
   onBoundsChange: (bounds: MapBounds) => void;
 };
@@ -44,6 +45,7 @@ export function FindCentersGoogleMap({
   locations,
   activeLocationId,
   isLoading = false,
+  centerOverride = null,
   onLocationSelect,
   onBoundsChange,
 }: FindCentersGoogleMapProps) {
@@ -88,6 +90,11 @@ export function FindCentersGoogleMap({
   }, []);
 
   useEffect(() => {
+    if (!centerOverride) return;
+    setCenter(centerOverride);
+  }, [centerOverride]);
+
+  useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
@@ -107,12 +114,6 @@ export function FindCentersGoogleMap({
         clearTimeout(debounceTimerRef.current);
       }
 
-      console.log('map bounds params', {
-        bounds,
-        latitude: userCoords?.lat,
-        longitude: userCoords?.lng,
-      });
-
       debounceTimerRef.current = setTimeout(() => {
         onBoundsChange({
           north: bounds.north,
@@ -131,74 +132,66 @@ export function FindCentersGoogleMap({
     [onBoundsChange, userCoords],
   );
 
-  if (!GOOGLE_MAPS_API_KEY) {
-    return (
-      <ErrorState
-        title="Google Maps API key missing"
-        description="Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables."
-      />
-    );
-  }
-
   if (!hasResolvedLocation) {
     return (
-      <div className="border-border flex h-full w-full justify-center items-center rounded-2xl border">
+      <div className="border-border flex h-full w-full items-center justify-center rounded-2xl border">
         <Loader text="Getting coordinates..." />
       </div>
     );
   }
 
   return (
-    <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
-      <div className="border-border max-h-80vh relative h-full w-full overflow-hidden rounded-2xl border">
-        <Map
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-          center={center}
-          defaultZoom={DEFAULT_ZOOM}
-          onCameraChanged={handleCameraChanged}
-          mapId="find-centers-map"
-          options={options}
-          colorScheme={isDark ? ColorScheme.DARK : ColorScheme.LIGHT}
-        >
-          {locations.map((location) => {
-            const isActive = activeLocationId === location.id;
+    <div className="border-border max-h-80vh relative h-full w-full overflow-hidden rounded-2xl border">
+      <Map
+        style={{
+          width: '100%',
+          height: '100%',
+        }}
+        center={center}
+        defaultZoom={DEFAULT_ZOOM}
+        onCameraChanged={handleCameraChanged}
+        mapId="find-centers-map"
+        
+        disableDefaultUI={true}
+        gestureHandling='greedy'
+        zoomControl= {true}
+        minZoom={13}
+        maxZoom={20}
+        colorScheme={isDark ? ColorScheme.DARK : ColorScheme.LIGHT}
+      >
+        {locations.map((location) => {
+          const isActive = activeLocationId === location.id;
 
-            return (
-              <AdvancedMarker
-                key={location.id}
-                position={{
-                  lat: location.latitude,
-                  lng: location.longitude,
-                }}
-                onClick={() => onLocationSelect(location.id)}
-              >
-                {isDark ? (
-                  <img
-                    src={isActive ? './svg/dark-pin.svg' : './svg/dark-pin.svg'}
-                    alt={location.name}
-                  />
-                ) : (
-                  <img
-                    src={
-                      isActive ? './svg/light-pin.svg' : './svg/light-pin.svg'
-                    }
-                    alt={location.name}
-                  />
-                )}
-              </AdvancedMarker>
-            );
-          })}
-        </Map>
+          return (
+            <AdvancedMarker
+              key={location.id}
+              position={{
+                lat: location.latitude,
+                lng: location.longitude,
+              }}
+              onClick={() => onLocationSelect(location.id)}
+            >
+              {isDark ? (
+                <img
+                  src={isActive ? './svg/dark-pin.svg' : './svg/dark-pin.svg'}
+                  alt={location.name}
+                />
+              ) : (
+                <img
+                  src={isActive ? './svg/light-pin.svg' : './svg/light-pin.svg'}
+                  alt={location.name}
+                />
+              )}
+            </AdvancedMarker>
+          );
+        })}
+      </Map>
 
-        {isLoading ? (
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-            <Loader text="Loading locations..." />
-          </div>
-        ) : null}
-      </div>
-    </APIProvider>
+      {isLoading ? (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          <Loader text="Loading locations..." />
+        </div>
+      ) : null}
+    </div>
   );
 }

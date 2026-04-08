@@ -1,6 +1,9 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
+import { useMapsLibrary } from '@vis.gl/react-google-maps';
+
 import type { FindCenterMaterialType } from '@/modules/find-centers';
 
 type FindCentersToolbarProps = {
@@ -9,6 +12,7 @@ type FindCentersToolbarProps = {
   materials: FindCenterMaterialType[];
   onSearchChange: (value: string) => void;
   onMaterialChange: (value: string) => void;
+  onPlaceSelect: (coords: { lat: number; lng: number }, label: string) => void;
 };
 
 export function FindCentersToolbar({
@@ -17,7 +21,43 @@ export function FindCentersToolbar({
   materials,
   onSearchChange,
   onMaterialChange,
+  onPlaceSelect,
 }: FindCentersToolbarProps) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const places = useMapsLibrary('places');
+
+  useEffect(() => {
+    if (!places || !inputRef.current) return;
+
+    const autocomplete = new places.Autocomplete(inputRef.current, {
+      fields: ['formatted_address', 'geometry', 'name'],
+    });
+
+    const listener = autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      const location = place.geometry?.location;
+
+      if (!location) return;
+
+      const label = place.formatted_address || place.name || '';
+
+      onSearchChange(label);
+      onPlaceSelect(
+        {
+          lat: location.lat(),
+          lng: location.lng(),
+        },
+        label,
+      );
+    });
+
+    return () => {
+      if (listener) {
+        listener.remove();
+      }
+    };
+  }, [places, onPlaceSelect, onSearchChange]);
+
   return (
     <div className="bg-background border-border flex flex-col gap-3 rounded-2xl border p-4 shadow-sm">
       <div className="flex items-center gap-2">
@@ -31,6 +71,7 @@ export function FindCentersToolbar({
         <div className="relative w-full md:max-w-md">
           <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <input
+            ref={inputRef}
             type="text"
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
