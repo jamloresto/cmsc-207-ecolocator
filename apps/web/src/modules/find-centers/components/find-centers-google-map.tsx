@@ -153,16 +153,10 @@ export function FindCentersGoogleMap({
               }}
               onClick={() => onLocationSelect(location.id)}
             >
-              <Pin
-                background={
-                  activeLocationId === location.id
-                    ? '#eab308'
-                    : isDark
-                      ? '#facc15'
-                      : '#16a34a'
-                }
-                glyphColor={isDark ? '#163328' : '#0f172a'}
-                borderColor={isDark ? '#163328' : '#0f172a'}
+              <img
+                src="./svg/map-pin.svg"
+                alt={location.name}
+                className=""
               />
             </AdvancedMarker>
           ))}
