@@ -1,10 +1,10 @@
-# 🌱 EcoLocator
+# ♻️ EcoLocator
 
 ### by Jessa Mae Hernandez
 
 ## 📌 Description
 
-EcoLocator is a web-based application designed to help users easily locate nearby recycling centers and waste collection facilities. It provides essential information such as location, materials accepted, and contact details.
+EcoLocator is a web-based application designed to help users easily locate nearby recycling centers and waste collection facilities. It provides essential information such as location, materials accepted, and contact details. Enhanced with real-time map interactions and smarter filtering.
 
 ---
 
@@ -16,17 +16,62 @@ To promote sustainable waste management by making recycling locations accessible
 
 ## ✨ Features
 
-- 📍 Database of recycling centers with detailed location information  
-- 🔍 Search by location or material type (e.g., batteries, plastic, papers)
-- 📬 Contact form for inquiries
-- 📝 Public location suggestion system (users can suggest new recycling locations)
-- 🛠️ Admin review workflow for location suggestions:
-  - Review and edit submitted data
-  - Approve → automatically creates a verified location
-  - Reject with review notes
-- 🔐 Role-based admin dashboard (Super Admin & Editor) 
-
+### 🌍 Public Features
+- 📍 Interactive Map-Based Search
+  -  Displays recycling centers directly on a map
+  -  Automatically updates results based on map movement (viewport-based filtering)
+- 📡 Location Detection (Geolocation)
+  -  Detects user’s location on first load
+  -  Sets map center automatically for nearby results
+- 🧭 Dynamic Map Filtering API
+  -  Fetches only locations within the current map bounds
+  -  Improves performance and scalability
+- 🏷️ Material-Based Filtering
+  -  Filter recycling centers by material types (e.g., plastic, batteries, e-waste)
+  -  Supports multi-select filtering
+  -  Includes:
+     - Select All
+     - Clear All
+- 🧾 Compact Location Cards
+  -  Displays key info (name + materials)
+  -  Limits visible materials (e.g., first 3 + “See more”)
+- 🔍 Search + Map Integration
+  -  Searching updates map position instead of filtering list only
+- 📬 Contact Form
+  -  Users can send inquiries to admins
+- 📝 Location Suggestion System
+  -  Users can suggest new recycling centers
+  -  Supports material selection + custom input (“Others”)
 ---
+### 🛠️ Admin Features
+- 🔐 Role-Based Access
+  -  Super Admin
+  -  Editor
+- 📊 Admin Dashboard
+  -  Overview statistics:
+  -  Total recycling centers
+  -  Material types
+  -  Pending suggestions
+  -  Contact messages
+- 🏢 Waste Collection Location Management
+  -  CRUD operations
+  -  Active/inactive status
+- 🧾 Material Types Management
+  -  Manage recyclable categories
+  -  Only active types exposed to public API
+- 📥 Contact Message Management
+  -  Status tracking:
+     -  new, read, replied, archived
+  -  Pagination + filtering
+- 🧠 Location Suggestion Moderation
+  -  Review submitted suggestions
+  -  Edit and enrich data
+  -  Approve → becomes official location
+  -  Reject → with review notes
+- 📑 Standardized Table System
+  -  Pagination
+  -  Meta (total items, pages)
+  -  Reusable table components (FE + BE aligned)
 
 ## 🧠 Location Suggestion Workflow
 
@@ -103,6 +148,31 @@ Make sure you have the following installed:
 - MySQL (or MySQL Workbench or MariaDB)
 - Git
 - Docker (optional)
+
+---
+
+## 🗺️ Google Maps API Key (Required)
+
+EcoLocator uses Google Maps for the interactive map and location-based features.
+
+To run the project locally, you need a Google Maps API Key.
+
+### 🔑 Get a Demo API Key
+
+You can quickly get a demo key here:
+https://mapsplatform.google.com/maps-demo-key/
+
+### ⚙️ Setup
+
+Add your API key to your frontend .env file:
+
+`NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here`
+### 📌 Notes
+- Required for:
+  - Map rendering
+  - Location detection
+  - Map-based filtering
+- Without this key, the map will not load properly
 
 ---
 
