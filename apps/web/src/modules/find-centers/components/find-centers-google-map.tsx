@@ -15,6 +15,7 @@ import {
 import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
 import type { MapBounds, MapFindCenterLocation } from '@/modules/find-centers';
 import { Loader } from '@/components/common/loading/loader';
+import { ErrorState } from '@/components/common/states/error-state';
 
 type FindCentersGoogleMapProps = {
   locations: MapFindCenterLocation[];
@@ -114,16 +115,7 @@ export function FindCentersGoogleMap({
 
   if (!GOOGLE_MAPS_API_KEY) {
     return (
-      <div className="bg-muted/40 border-border flex h-full min-h-80 items-center justify-center rounded-2xl border p-6 text-center">
-        <div>
-          <p className="text-foreground text-sm font-semibold">
-            Google Maps API key missing
-          </p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.
-          </p>
-        </div>
-      </div>
+      <ErrorState title='Google Maps API key missing' description=' Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.' />
     );
   }
 
@@ -135,7 +127,6 @@ export function FindCentersGoogleMap({
             width: '100%',
             height: '100%',
             minHeight: '55vh',
-            minWidth: '70vw',
           }}
           center={center}
           defaultZoom={DEFAULT_ZOOM}
@@ -153,11 +144,19 @@ export function FindCentersGoogleMap({
               }}
               onClick={() => onLocationSelect(location.id)}
             >
-              <img
-                src="./svg/map-pin.svg"
-                alt={location.name}
-                className=""
-              />
+              {isDark ? (
+                <img
+                  src="./svg/dark-pin.svg"
+                  alt={location.name}
+                  className=""
+                />
+              ) : (
+                <img
+                  src="./svg/light-pin.svg"
+                  alt={location.name}
+                  className=""
+                />
+              )}
             </AdvancedMarker>
           ))}
         </Map>

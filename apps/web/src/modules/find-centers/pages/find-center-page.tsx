@@ -86,7 +86,7 @@ export function FindCentersPage() {
       </div>
 
       <div className="hidden max-h-[60vh] w-full gap-4 md:flex">
-        <div className="flex flex-col">
+        <div className="shrink-0 flex w-64 flex-col">
           <div className="mb-3 flex items-center justify-between">
             <p className="text-foreground text-sm font-semibold">Centers</p>
             <p className="text-muted-foreground text-xs">
@@ -119,7 +119,7 @@ export function FindCentersPage() {
           </div>
         </div>
 
-        <div className="w-full">
+        <div className="flex-1">
           <FindCentersGoogleMap
             locations={locations}
             activeLocationId={activeLocation?.id ?? null}
