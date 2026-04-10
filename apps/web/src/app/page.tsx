@@ -6,6 +6,7 @@ import { PublicLayout } from '@/components/layout/public-layout';
 import { initScrollAnimations } from '@/lib/animations/init-scroll-animations';
 import Hero from '@/modules/home/components/hero';
 import ProblemSection from '@/modules/home/components/problem-section';
+import HowEcoLocatorWorksSection from '@/modules/home/components/how-ecolocator-works-section';
 
 export default function HomePage() {
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function HomePage() {
       <main className="bg-background text-foreground">
         <Hero />
         <ProblemSection />
+        <HowEcoLocatorWorksSection />
       </main>
     </PublicLayout>
   );
