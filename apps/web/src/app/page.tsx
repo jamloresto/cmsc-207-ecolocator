@@ -7,6 +7,7 @@ import { initScrollAnimations } from '@/lib/animations/init-scroll-animations';
 import Hero from '@/modules/home/components/hero';
 import ProblemSection from '@/modules/home/components/problem-section';
 import HowEcoLocatorWorksSection from '@/modules/home/components/how-ecolocator-works-section';
+import WhatCanBeRecycledSection from '@/modules/home/components/what-can-be-recycled-section';
 
 export default function HomePage() {
   useEffect(() => {
@@ -19,6 +20,7 @@ export default function HomePage() {
         <Hero />
         <ProblemSection />
         <HowEcoLocatorWorksSection />
+        <WhatCanBeRecycledSection />
       </main>
     </PublicLayout>
   );
