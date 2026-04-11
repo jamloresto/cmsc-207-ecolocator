@@ -25,7 +25,7 @@ const problems = [
 
 export default function ProblemSection() {
   return (
-    <section className="relative overflow-hidden px-5 py-20 md:px-10 md:py-28">
+    <section id="problem" className="relative overflow-hidden px-5 py-20 md:px-10 md:py-28">
       <div className="absolute inset-0 -z-10">
         <div className="bg-brand-600/10 absolute top-0 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full blur-3xl" />
         <div className="bg-brand-300/10 absolute right-0 bottom-0 h-60 w-60 rounded-full blur-3xl" />

@@ -2,6 +2,7 @@
 
 import {
   ArrowRight,
+  MapPin,
   Navigation,
   Search,
   SlidersHorizontal,
@@ -53,17 +54,23 @@ export default function FindCentersNearYouSection() {
               />
             </div>
 
-            <div className="stagger-up mt-8 flex flex-col gap-3 md:flex-row md:items-center">
-              <Link href="/find-centers" className="block">
-                <Button variant="primary" className="cursor-pointer">
-                  Find centers now
-                  <ArrowRight className="ml-2 h-4 w-4" />
+            <div className="stagger-up mt-8 flex flex-col items-center gap-4 lg:flex-row">
+              <Link href="/find-centers">
+                <Button
+                  variant="primary"
+                  className="cursor-pointer whitespace-nowrap"
+                >
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Find centers by Map
                 </Button>
               </Link>
 
-              <Link href="/recycling-centers" className="block cursor-pointer">
-                <Button variant="secondary" className="cursor-pointer">
-                  Browse materials first
+              <Link href="/recycling-centers">
+                <Button
+                  variant="secondary"
+                  className="cursor-pointer whitespace-nowrap"
+                >
+                  Find centers by Material Type
                 </Button>
               </Link>
             </div>
@@ -73,11 +80,6 @@ export default function FindCentersNearYouSection() {
             <div className="bg-card/90 overflow-hidden">
               <FindCentersPage view="home" />
             </div>
-
-            <p className="reveal-fade text-muted-foreground mt-5 text-sm leading-7 md:text-base">
-              This section can later connect directly to your real map search
-              and nearby centers API.
-            </p>
           </div>
         </div>
       </div>

@@ -10,6 +10,7 @@ import HowEcoLocatorWorksSection from '@/modules/home/components/how-ecolocator-
 import WhatCanBeRecycledSection from '@/modules/home/components/what-can-be-recycled-section';
 import FindCentersNearYouSection from '@/modules/home/components/find-centers-near-you';
 import WhyItMattersSection from '@/modules/home/components/why-it-matters-section';
+import CtaSection from '@/modules/home/components/cta-section';
 
 export default function HomePage() {
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function HomePage() {
         <WhatCanBeRecycledSection />
         <FindCentersNearYouSection />
         <WhyItMattersSection />
+        <CtaSection />
       </main>
     </PublicLayout>
   );
