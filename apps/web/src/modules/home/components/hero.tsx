@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import type { ComponentType } from 'react';
 import {
+  ArrowRight,
   Battery,
   GlassWater,
   Laptop,
@@ -13,6 +14,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { initHeroAnimations } from '@/lib/animations';
+import Link from 'next/link';
 
 const chips = [
   { label: 'Plastic', icon: Recycle },
@@ -55,27 +57,42 @@ export default function Hero() {
               </div>
 
               <div className="max-w-2xl">
-                <h1 className="reveal-up text-background max-w-xl text-4xl leading-tight font-bold md:text-7xl">
+                <h1 className="reveal-up text-background max-w-xl text-4xl leading-tight font-bold text-pretty md:text-6xl">
                   Find where waste <span className="text-accent">goes.</span>
                 </h1>
 
-                <p className="reveal-fade text-background/85 mt-5 max-w-xl text-base leading-7 md:mt-6 md:text-lg md:leading-8">
+                <p className="reveal-fade text-background/85 mt-5 max-w-xl text-base leading-7 text-pretty md:mt-6 md:text-lg md:leading-8">
                   Discover nearby recycling and waste collection centers, filter
                   by material, and make proper disposal part of your everyday
                   routine.
                 </p>
 
                 <div className="stagger-up mt-8 flex flex-col gap-3 md:mt-10 md:flex-row md:items-center">
-                  <Button
-                    variant="secondary"
-                    className="shadow-lg shadow-black/10"
+                  <Link
+                    href="/find-centers"
+                    className="flex w-full md:block md:w-fit"
                   >
-                    <MapPin className="mr-2 h-4 w-4" />
-                    Find centers
-                  </Button>
+                    <Button
+                      variant="secondary"
+                      className="w-full cursor-pointer"
+                    >
+                      <MapPin className="mr-2 h-4 w-4" />
+                      Find centers
+                    </Button>
+                  </Link>
 
-                  <Button variant="primary" className="border border-white/10">
+                  <Button
+                    variant="primary"
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const el = document.getElementById('problem');
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                  >
                     Learn more
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -83,10 +100,10 @@ export default function Hero() {
 
             <div className="reveal-scale relative hidden min-h-130 md:block">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="relative h-105 w-105 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
-                  <div className="absolute inset-8 rounded-full border border-white/10" />
-                  <div className="absolute inset-16 rounded-full border border-white/10" />
-                  <div className="absolute inset-24 rounded-full border border-white/8" />
+                <div className="relative aspect-square h-[40vw] rounded-full border border-white/10 bg-white/5 backdrop-blur-sm lg:h-[35vw]">
+                  <div className="absolute inset-[8vw] rounded-full border border-white/10" />
+                  <div className="absolute inset-[4vw] rounded-full border border-white/10" />
+                  <div className="absolute inset-[20vw] rounded-full border border-white/8" />
 
                   <div className="hero-pin-pulse bg-primary/20 absolute top-1/2 left-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl" />
 
@@ -112,27 +129,6 @@ export default function Hero() {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="stagger-fade mt-10 flex flex-wrap gap-3 md:hidden">
-            {chips.map((chip, index) => {
-              const Icon = chip.icon;
-              const floatClass =
-                index % 3 === 0
-                  ? 'hero-chip-a'
-                  : index % 3 === 1
-                    ? 'hero-chip-b'
-                    : 'hero-chip-c';
-
-              return (
-                <div key={chip.label} className={floatClass}>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
-                    <Icon className="text-accent h-4 w-4" />
-                    <span>{chip.label}</span>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>
