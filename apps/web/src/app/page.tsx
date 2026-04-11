@@ -9,6 +9,7 @@ import ProblemSection from '@/modules/home/components/problem-section';
 import HowEcoLocatorWorksSection from '@/modules/home/components/how-ecolocator-works-section';
 import WhatCanBeRecycledSection from '@/modules/home/components/what-can-be-recycled-section';
 import FindCentersNearYouSection from '@/modules/home/components/find-centers-near-you';
+import WhyItMattersSection from '@/modules/home/components/why-it-matters-section';
 
 export default function HomePage() {
   useEffect(() => {
@@ -23,6 +24,7 @@ export default function HomePage() {
         <HowEcoLocatorWorksSection />
         <WhatCanBeRecycledSection />
         <FindCentersNearYouSection />
+        <WhyItMattersSection />
       </main>
     </PublicLayout>
   );
