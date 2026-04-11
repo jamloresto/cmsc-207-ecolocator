@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { MapPin, MapPinX } from 'lucide-react';
+import { MapPinX } from 'lucide-react';
 import { APIProvider } from '@vis.gl/react-google-maps';
 
 import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
@@ -19,7 +19,13 @@ import { Loader } from '@/components/common/loading/loader';
 import { EmptyState } from '@/components/common/states/empty-state';
 import { ErrorState } from '@/components/common/states/error-state';
 
-export function FindCentersPage() {
+type FindCentersPageProps = {
+  view?: 'home' | 'default';
+};
+
+export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
+  const isHomeView = view === 'home';
+
   const [selectedMaterialSlug, setSelectedMaterialSlug] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [activeLocationId, setActiveLocationId] = useState<number | null>(null);
@@ -76,22 +82,7 @@ export function FindCentersPage() {
 
   return (
     <APIProvider apiKey={GOOGLE_MAPS_API_KEY} libraries={['places']}>
-      <section className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
-        <div className="mb-6">
-          <div className="flex items-center gap-2">
-            <MapPin className="text-primary h-5 w-5" />
-            <p className="text-primary text-sm font-semibold">Find Centers</p>
-          </div>
-
-          <h1 className="text-foreground mt-2 text-2xl font-bold md:text-3xl">
-            Find recycling and waste collection centers
-          </h1>
-
-          <p className="text-muted-foreground mt-2 max-w-2xl text-sm md:text-base">
-            Move the map to load nearby recycling and waste collection centers.
-          </p>
-        </div>
-
+      {!isHomeView && (
         <div className="mb-4">
           <FindCentersToolbar
             searchValue={searchValue}
@@ -108,7 +99,9 @@ export function FindCentersPage() {
             }}
           />
         </div>
+      )}
 
+      {!isHomeView && (
         <div className="hidden w-full md:flex md:h-[70vh]">
           <div className="h-[70vh] max-h-[70vh] min-h-[70vh] w-64 max-w-64 min-w-64 shrink-0 pr-4">
             <div className="flex h-full flex-col">
@@ -157,56 +150,56 @@ export function FindCentersPage() {
             </div>
           </div>
         </div>
+      )}
 
-        <div className="md:hidden">
-          <div className="relative h-[70vh] w-full">
-            <FindCentersGoogleMap
-              locations={locations}
-              activeLocationId={activeLocation?.id ?? null}
-              centerOverride={mapCenterOverride}
-              onLocationSelect={setActiveLocationId}
-              onBoundsChange={setBounds}
-              isLoading={isLoading || isFetching}
-            />
+      <div className={isHomeView ? '' : 'md:hidden'}>
+        <div className="relative h-[70vh] w-full">
+          <FindCentersGoogleMap
+            locations={locations}
+            activeLocationId={activeLocation?.id ?? null}
+            centerOverride={mapCenterOverride}
+            onLocationSelect={setActiveLocationId}
+            onBoundsChange={setBounds}
+            isLoading={isLoading || isFetching}
+          />
 
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 rounded-b-2xl bg-linear-to-t from-black/25 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 rounded-b-2xl bg-linear-to-t from-black/25 to-transparent" />
 
-            <div className="absolute right-3 bottom-3 left-3">
-              <div className="scrollbar-hide flex h-full snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
-                {isLoading ? (
-                  <Loader text="Loading centers..." />
-                ) : mapListLocations.length > 0 ? (
-                  mapListLocations.map((location: any) => (
-                    <div
-                      key={location.name}
-                      className="flex min-w-48 snap-center items-stretch"
-                    >
-                      <FindCenterCard
-                        location={location}
-                        isActive={activeLocation?.id === location.id}
-                        onClick={() => setActiveLocationId(location.id)}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <EmptyState
-                    title="No centers found in this area"
-                    description="Move the map or change the material filter."
-                    icon={<MapPinX />}
-                  />
-                )}
-              </div>
+          <div className="absolute right-3 bottom-3 left-3">
+            <div className="scrollbar-hide flex h-full snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
+              {isLoading ? (
+                null
+              ) : mapListLocations.length > 0 ? (
+                mapListLocations.map((location: any) => (
+                  <div
+                    key={location.name}
+                    className="flex min-w-48 snap-center items-stretch"
+                  >
+                    <FindCenterCard
+                      location={location}
+                      isActive={activeLocation?.id === location.id}
+                      onClick={() => setActiveLocationId(location.id)}
+                    />
+                  </div>
+                ))
+              ) : (
+                <EmptyState
+                  title="No centers found in this area"
+                  description="Move the map or change the material filter."
+                  icon={<MapPinX />}
+                />
+              )}
             </div>
           </div>
         </div>
+      </div>
 
-        <FindCenterLocationModal
-          open={!!activeLocationId}
-          onClose={() => setActiveLocationId(null)}
-          location={activeLocation ?? null}
-          isLoading={isActiveLocationLoading}
-        />
-      </section>
+      <FindCenterLocationModal
+        open={!!activeLocationId}
+        onClose={() => setActiveLocationId(null)}
+        location={activeLocation ?? null}
+        isLoading={isActiveLocationLoading}
+      />
     </APIProvider>
   );
 }
