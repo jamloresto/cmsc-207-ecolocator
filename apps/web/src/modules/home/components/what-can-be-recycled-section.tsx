@@ -72,7 +72,7 @@ export default function WhatCanBeRecycledSection() {
           <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-linear-to-r to-transparent md:w-24" />
           <div className="from-background pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-linear-to-l to-transparent md:w-24" />
 
-          <div className="animate-marquee flex w-max gap-4 group-hover:[animation-play-state:paused]">
+          <div className="animate-marquee flex w-max gap-4">
             {materialTypes.map((material, index) => (
               <MaterialCard
                 key={`${material.name}-a-${index}`}

@@ -127,6 +127,12 @@ html {
   scroll-behavior: smooth;
 }
 
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   min-height: 100vh;
   margin: 0;
@@ -190,9 +196,5 @@ select {
 }
 
 .animate-marquee {
-  animation: marquee 40s linear infinite;
-}
-
-.animate-marquee-reverse {
-  animation: marquee-reverse 48s linear infinite;
+  animation: marquee 60s linear infinite;
 }

@@ -36,7 +36,7 @@ export default function Hero() {
 
   return (
     <section ref={heroRef} className="relative overflow-hidden">
-      <div className="from-brand-950 via-brand-800 to-primary relative min-h-screen bg-linear-to-br">
+      <div className="from-foreground to-primary relative min-h-screen bg-linear-to-br">
         <div className="absolute inset-0">
           <div className="hero-orb-a bg-brand-300/15 absolute top-[10%] left-[8%] h-56 w-56 rounded-full blur-3xl md:h-72 md:w-72" />
           <div className="hero-orb-b bg-primary/20 absolute right-[6%] bottom-[8%] h-64 w-64 rounded-full blur-3xl md:h-80 md:w-80" />
@@ -47,7 +47,7 @@ export default function Hero() {
         <div className="relative mx-auto flex min-h-screen max-w-7xl items-center px-5 py-16 md:px-10">
           <div className="grid w-full items-center gap-12 md:grid-cols-2">
             <div className="flex flex-col items-start">
-              <div className="reveal-fade mb-6 inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-white/90 backdrop-blur-md">
+              <div className="reveal-fade text-background mb-6 inline-flex items-center gap-3 rounded-full border px-4 py-2 backdrop-blur-md">
                 <span className="bg-background inline-flex h-9 w-9 items-center justify-center rounded-full md:h-10 md:w-10">
                   <Recycle className="text-primary h-4 w-4 md:h-5 md:w-5" />
                 </span>
@@ -107,7 +107,8 @@ export default function Hero() {
 
                   <div className="hero-pin-pulse bg-primary/20 absolute top-1/2 left-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl" />
 
-                  <div className="bg-background/95 absolute top-1/2 left-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 shadow-2xl">
+                  <div className="bg-background/95 absolute top-1/2 left-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-primary shadow-2xl">
+                    <div className="bg-background/30 absolute -z-100 h-full w-full animate-ping rounded-full"></div>
                     <MapPin className="text-primary h-10 w-10" />
                   </div>
 
@@ -143,8 +144,8 @@ type ChipProps = {
 
 function Chip({ icon: Icon, label }: ChipProps) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur-md">
-      <Icon className="text-accent h-4 w-4" />
+    <div className="inline-flex items-center gap-2 rounded-full border border-accent bg-accent/15 px-4 py-2 text-sm font-medium text-accent shadow-lg backdrop-blur-md">
+      <Icon className="text-background h-4 w-4" />
       <span>{label}</span>
     </div>
   );
