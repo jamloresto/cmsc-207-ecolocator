@@ -105,14 +105,14 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
         <div className="hidden w-full md:flex md:h-[70vh]">
           <div className="h-[70vh] max-h-[70vh] min-h-[70vh] w-64 max-w-64 min-w-64 shrink-0 pr-4">
             <div className="flex h-full flex-col">
-              <div className="mb-3 flex items-center justify-between">
-                <p className="text-foreground text-sm font-semibold">Centers</p>
-                <p className="text-muted-foreground text-xs">
-                  {isFetching ? 'Updating...' : `${locations.length} visible`}
-                </p>
-              </div>
 
               <div className="flex-1 space-y-3 overflow-y-auto pr-1 [scrollbar-gutter:stable]">
+                <div className="mb-3 flex items-center justify-between">
+                  <p className="text-foreground text-sm font-semibold">Centers</p>
+                  <p className="text-muted-foreground text-xs">
+                    {isFetching ? 'Updating...' : `${locations.length} visible`}
+                  </p>
+                </div>
                 {isLoading || isFetching ? (
                   <div className="bg-background border-border h-full rounded-2xl border p-6 text-center shadow-sm">
                     <Loader text="Loading centers..." />

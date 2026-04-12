@@ -141,7 +141,7 @@ export function FindCentersGoogleMap({
   }
 
   return (
-    <div className="border-border max-h-80vh relative h-full w-full overflow-hidden rounded-2xl border">
+    <div data-lenis-prevent className="border-border max-h-80vh relative h-full w-full overflow-hidden rounded-2xl border">
       <Map
         style={{
           width: '100%',
@@ -151,10 +151,9 @@ export function FindCentersGoogleMap({
         defaultZoom={DEFAULT_ZOOM}
         onCameraChanged={handleCameraChanged}
         mapId="find-centers-map"
-        
         disableDefaultUI={true}
-        gestureHandling='greedy'
-        zoomControl= {true}
+        gestureHandling="greedy"
+        zoomControl={true}
         minZoom={13}
         maxZoom={20}
         colorScheme={isDark ? ColorScheme.DARK : ColorScheme.LIGHT}

@@ -14,14 +14,19 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       smoothWheel: true,
       touchMultiplier: 1.2,
       wheelMultiplier: 0.9,
+      prevent: (node) => {
+        return !!node?.closest('[data-lenis-prevent]');
+      },
     });
+
+    let rafId = 0;
 
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    const rafId = requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
       cancelAnimationFrame(rafId);
