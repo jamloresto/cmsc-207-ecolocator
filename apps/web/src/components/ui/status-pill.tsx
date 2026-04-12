@@ -60,7 +60,7 @@ export function StatusPill({
       )}
       {...props}
     >
-      <span className="h-2 w-2 rounded-full bg-current opacity-70" />
+      <span className="h-2 w-2 aspect-square rounded-full bg-current opacity-70" />
       <span>{children ?? statusLabels[status]}</span>
     </span>
   );

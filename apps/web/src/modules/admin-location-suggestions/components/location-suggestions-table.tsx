@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { StatusPill } from '@/components/ui/status-pill';
@@ -18,9 +20,7 @@ import type { AdminLocationSuggestionsResponse } from '@/modules/admin-location-
 
 type LocationSuggestionsTableProps = {
   suggestions: AdminLocationSuggestionsResponse;
-  isApproving?: boolean;
   isRejecting?: boolean;
-  onApprove: (id: number) => void;
   onReject: (id: number) => void;
   onPageChange: (page: number) => void;
 };
@@ -50,9 +50,7 @@ function parseMaterialsAccepted(
 
 export function LocationSuggestionsTable({
   suggestions,
-  isApproving,
   isRejecting,
-  onApprove,
   onReject,
   onPageChange,
 }: LocationSuggestionsTableProps) {
@@ -60,7 +58,7 @@ export function LocationSuggestionsTable({
   const meta = suggestions.meta;
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
       <TableContainer>
         <Table>
           <TableHead>
@@ -80,7 +78,7 @@ export function LocationSuggestionsTable({
           <tbody>
             {items.length === 0 ? (
               <TableEmptyState
-                colSpan={6}
+                colSpan={7}
                 title="No suggestions found."
                 description="No suggested locations yet. New suggestions will appear here."
               />
@@ -89,9 +87,15 @@ export function LocationSuggestionsTable({
                 const materials = parseMaterialsAccepted(
                   item.materials_accepted,
                 );
-                const isPending = item.status === 'pending';
-                const isActionDisabled =
-                  !isPending || isApproving || isRejecting;
+
+                const isReviewable =
+                  item.status === 'pending' || item.status === 'under_review';
+
+                const reviewLabel =
+                  item.status === 'under_review' ? 'Continue Review' : 'Review';
+
+                const canReject =
+                  item.status !== 'approved' && item.status !== 'rejected';
 
                 return (
                   <TableRow key={item.id}>
@@ -150,22 +154,40 @@ export function LocationSuggestionsTable({
                     </TableCell>
 
                     <TableCell>
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="primary"
-                          disabled={isActionDisabled}
-                          onClick={() => onApprove(item.id)}
-                        >
-                          Approve
-                        </Button>
+                      <div className="flex flex-col justify-end gap-2">
+                        {isReviewable ? (
+                          <Link href={`/admin/location-suggestions/${item.id}`}>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="primary"
+                              className="w-full"
+                            >
+                              {reviewLabel}
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                            disabled
+                          >
+                            {item.status === 'approved'
+                              ? 'Approved'
+                              : item.status === 'rejected'
+                                ? 'Rejected'
+                                : 'Unavailable'}
+                          </Button>
+                        )}
 
                         <Button
                           type="button"
                           size="sm"
                           variant="danger"
-                          disabled={isActionDisabled}
+                          className="w-full"
+                          disabled={!canReject || isRejecting}
                           onClick={() => onReject(item.id)}
                         >
                           Reject
@@ -179,6 +201,7 @@ export function LocationSuggestionsTable({
           </tbody>
         </Table>
       </TableContainer>
+
       <TableFooterMeta
         currentPage={meta.current_page}
         totalPages={meta.last_page}

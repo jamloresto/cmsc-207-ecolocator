@@ -23,7 +23,12 @@ export default function EditWasteCollectionLocationPage() {
   const updateMutation = useUpdateWasteCollectionLocation(Number(params.id));
   const materialTypesQuery = useActiveMaterialTypes();
 
-  function handleSubmit(values: WasteCollectionLocationPayload) {
+  function handleSubmit(
+    values: WasteCollectionLocationPayload,
+    action: 'draft' | 'approve' | 'save',
+  ) {
+    if (action !== 'save') return;
+
     updateMutation.mutate(values, {
       onSuccess: () => {
         toast({
@@ -69,8 +74,8 @@ export default function EditWasteCollectionLocationPage() {
                 region: location.region ?? '',
                 street_address: location.street_address,
                 postal_code: location.postal_code ?? '',
-                latitude: location.latitude,
-                longitude: location.longitude,
+                latitude: String(location.latitude ?? ''),
+                longitude: String(location.longitude ?? ''),
                 contact_number: location.contact_number ?? '',
                 email: location.email ?? '',
                 operating_hours: location.operating_hours ?? '',

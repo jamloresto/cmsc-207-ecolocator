@@ -12,7 +12,6 @@ import {
   LocationSuggestionsFilters,
   LocationSuggestionsTable,
   useAdminLocationSuggestions,
-  useApproveLocationSuggestion,
   useRejectLocationSuggestion,
 } from '@/modules/admin-location-suggestions';
 
@@ -42,8 +41,6 @@ export default function AdminLocationSuggestionsPage() {
   );
 
   const { data: suggestions, isLoading } = useAdminLocationSuggestions(params);
-
-  const approveMutation = useApproveLocationSuggestion();
   const rejectMutation = useRejectLocationSuggestion();
 
   function handleSearchChange(value: string) {
@@ -54,28 +51,6 @@ export default function AdminLocationSuggestionsPage() {
   function handleStatusChange(value: string) {
     setPage(1);
     setStatus(value);
-  }
-
-  function handleApprove(id: number) {
-    approveMutation.mutate(id, {
-      onSuccess: () => {
-        toast({
-          title: 'Suggestion approved',
-          description:
-            'The location suggestion has been approved successfully.',
-          variant: 'success',
-        });
-      },
-      onError: (error: any) => {
-        toast({
-          title: 'Approval failed',
-          description:
-            error?.response?.data?.message ||
-            'Something went wrong while approving the suggestion.',
-          variant: 'danger',
-        });
-      },
-    });
   }
 
   function handleReject(id: number, name: string) {
@@ -130,7 +105,6 @@ export default function AdminLocationSuggestionsPage() {
       ) : suggestions ? (
         <LocationSuggestionsTable
           suggestions={suggestions}
-          onApprove={handleApprove}
           onReject={(id) => {
             const selected = suggestions.data.find((item) => item.id === id);
             if (!selected) return;
@@ -138,7 +112,6 @@ export default function AdminLocationSuggestionsPage() {
             handleReject(id, selected.location_name);
           }}
           onPageChange={setPage}
-          isApproving={approveMutation.isPending}
           isRejecting={rejectMutation.isPending}
         />
       ) : (

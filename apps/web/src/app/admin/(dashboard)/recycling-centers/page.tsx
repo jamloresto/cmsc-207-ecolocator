@@ -101,31 +101,25 @@ export default function AdminLocationsPage() {
         </Link>
       </div>
 
-      {locationsQuery.isLoading ? (
-        <TableSkeleton />
-      ) : (
-        <>
-          <WasteCollectionLocationsTable
-            data={locationsQuery.data?.data ?? []}
-            isLoading={locationsQuery.isLoading}
-            searchValue={search}
-            materialTypeSlug={materialSlug}
-            materialTypes={materialTypesQuery.materialTypes ?? []}
-            currentPage={locationsQuery.data?.meta?.current_page ?? 1}
-            totalPages={locationsQuery.data?.meta?.last_page ?? 1}
-            totalItems={
-              locationsQuery.data?.meta?.total ??
-              locationsQuery.data?.data?.length
-            }
-            onSearchChange={(value) => updateUrl({ search: value, page: '' })}
-            onMaterialTypeChange={(value) =>
-              updateUrl({ material_slug: value, page: '' })
-            }
-            onPageChange={(nextPage) => updateUrl({ page: String(nextPage) })}
-            onDelete={handleDelete}
-          />
-        </>
-      )}
+      <WasteCollectionLocationsTable
+        data={locationsQuery.data?.data ?? []}
+        isLoading={locationsQuery.isLoading}
+        searchValue={search}
+        materialTypeSlug={materialSlug}
+        materialTypes={materialTypesQuery.materialTypes ?? []}
+        currentPage={locationsQuery.data?.meta?.current_page ?? 1}
+        totalPages={locationsQuery.data?.meta?.last_page ?? 1}
+        totalItems={
+          locationsQuery.data?.meta?.total ??
+          locationsQuery.data?.data?.length
+        }
+        onSearchChange={(value) => updateUrl({ search: value, page: '' })}
+        onMaterialTypeChange={(value) =>
+          updateUrl({ material_slug: value, page: '' })
+        }
+        onPageChange={(nextPage) => updateUrl({ page: String(nextPage) })}
+        onDelete={handleDelete}
+      />
       <ConfirmationDialog
         open={!!locationToDelete}
         onClose={() => setLocationToDelete(null)}
