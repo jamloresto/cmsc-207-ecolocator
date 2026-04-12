@@ -90,9 +90,7 @@ export default function AdminContactMessageDetailPage() {
           </p>
         </div>
 
-        <Button variant='outline'
-          onClick={() => router.back()}
-        >
+        <Button type="button" variant="outline" onClick={() => router.back()}>
           Back
         </Button>
       </div>
