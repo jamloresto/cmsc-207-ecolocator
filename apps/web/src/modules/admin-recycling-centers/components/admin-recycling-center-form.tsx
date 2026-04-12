@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { LocationPickerMap } from '@/components/shared/location-picker-map';
 
 import { ActiveMaterialType } from '@/modules/admin-material-types';
 import { WasteCollectionLocationPayload } from '@/modules/admin-recycling-centers';
+import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
 
 type FormAction = 'draft' | 'approve' | 'save';
 
@@ -155,25 +157,36 @@ export function WasteCollectionLocationForm({
         required
       />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Input
-          label="Latitude"
-          type="number"
-          step="any"
-          value={values.latitude}
-          onChange={(e) => updateField('latitude', e.target.value)}
-          required
+      {GOOGLE_MAPS_API_KEY ? (
+        <LocationPickerMap
+          latitude={values.latitude}
+          longitude={values.longitude}
+          onChange={({ latitude, longitude }) => {
+            updateField('latitude', latitude);
+            updateField('longitude', longitude);
+          }}
         />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Input
+            label="Latitude"
+            type="number"
+            step="any"
+            value={values.latitude}
+            onChange={(e) => updateField('latitude', e.target.value)}
+            required
+          />
 
-        <Input
-          label="Longitude"
-          type="number"
-          step="any"
-          value={values.longitude}
-          onChange={(e) => updateField('longitude', e.target.value)}
-          required
-        />
-      </div>
+          <Input
+            label="Longitude"
+            type="number"
+            step="any"
+            value={values.longitude}
+            onChange={(e) => updateField('longitude', e.target.value)}
+            required
+          />
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Input
@@ -231,7 +244,7 @@ export function WasteCollectionLocationForm({
       </label>
 
       <div className="flex justify-end gap-3">
-        <Button variant="ghost" onClick={() => router.back()}>
+        <Button type="button" variant="ghost" onClick={() => router.back()}>
           Cancel
         </Button>
         {showDraftActions ? (
