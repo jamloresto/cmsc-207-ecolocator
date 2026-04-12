@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Plus } from 'lucide-react';
 
-import { TableSkeleton } from '@/components/common/loading/table-skeleton';
 import { AdminHeading } from '@/components/shared/admin-heading';
 import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
@@ -17,6 +16,10 @@ import {
   useWasteCollectionLocations,
   WasteCollectionLocationsTable,
 } from '@/modules/admin-recycling-centers';
+import type { WasteCollectionLocationsQueryParams } from '@/modules/admin-recycling-centers';
+
+type SortField = NonNullable<WasteCollectionLocationsQueryParams['sort_by']>;
+type SortOrder = NonNullable<WasteCollectionLocationsQueryParams['sort_order']>;
 
 export default function AdminLocationsPage() {
   const searchParams = useSearchParams();
@@ -27,17 +30,23 @@ export default function AdminLocationsPage() {
     id: number;
     name: string;
   } | null>(null);
+
   const page = Number(searchParams.get('page') ?? '1');
   const search = searchParams.get('search') ?? '';
   const materialSlug = searchParams.get('material_slug') ?? '';
 
-  const queryParams = useMemo(
+  const sortBy = (searchParams.get('sort_by') ?? 'name') as SortField;
+  const sortOrder = (searchParams.get('sort_order') ?? 'asc') as SortOrder;
+
+  const queryParams = useMemo<WasteCollectionLocationsQueryParams>(
     () => ({
       page,
       search,
       material_slug: materialSlug,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
-    [page, search, materialSlug],
+    [page, search, materialSlug, sortBy, sortOrder],
   );
 
   const locationsQuery = useWasteCollectionLocations(queryParams);
@@ -54,7 +63,10 @@ export default function AdminLocationsPage() {
 
     if (!next.page) params.delete('page');
 
-    router.push(`/admin/recycling-centers?${params.toString()}`);
+    const query = params.toString();
+    router.push(
+      query ? `/admin/recycling-centers?${query}` : '/admin/recycling-centers',
+    );
   }
 
   function handleDelete(location: { id: number; name: string }) {
@@ -86,13 +98,24 @@ export default function AdminLocationsPage() {
     });
   }
 
+  function handleSort(field: SortField) {
+    const nextOrder: SortOrder =
+      sortBy !== field ? 'asc' : sortOrder === 'asc' ? 'desc' : 'asc';
+
+    updateUrl({
+      sort_by: field,
+      sort_order: nextOrder,
+      page: '',
+    });
+  }
+
   return (
     <div className="space-y-6">
       <AdminHeading
         title="Recycling Centers"
         description="View and manage waste collection locations."
       />
-      
+
       <div className="flex w-full justify-end">
         <Link href="/admin/recycling-centers/create">
           <Button size="sm" leftIcon={Plus}>
@@ -104,22 +127,27 @@ export default function AdminLocationsPage() {
       <WasteCollectionLocationsTable
         data={locationsQuery.data?.data ?? []}
         isLoading={locationsQuery.isLoading}
-        searchValue={search}
-        materialTypeSlug={materialSlug}
-        materialTypes={materialTypesQuery.materialTypes ?? []}
-        currentPage={locationsQuery.data?.meta?.current_page ?? 1}
-        totalPages={locationsQuery.data?.meta?.last_page ?? 1}
-        totalItems={
-          locationsQuery.data?.meta?.total ??
-          locationsQuery.data?.data?.length
-        }
+        params={{
+          search,
+          material_slug: materialSlug,
+          sort_by: sortBy,
+          sort_order: sortOrder,
+        }}
         onSearchChange={(value) => updateUrl({ search: value, page: '' })}
         onMaterialTypeChange={(value) =>
           updateUrl({ material_slug: value, page: '' })
         }
+        onSort={handleSort}
+        currentPage={locationsQuery.data?.meta?.current_page ?? 1}
+        totalPages={locationsQuery.data?.meta?.last_page ?? 1}
+        totalItems={
+          locationsQuery.data?.meta?.total ?? locationsQuery.data?.data?.length
+        }
         onPageChange={(nextPage) => updateUrl({ page: String(nextPage) })}
+        materialTypes={materialTypesQuery.materialTypes ?? []}
         onDelete={handleDelete}
       />
+
       <ConfirmationDialog
         open={!!locationToDelete}
         onClose={() => setLocationToDelete(null)}

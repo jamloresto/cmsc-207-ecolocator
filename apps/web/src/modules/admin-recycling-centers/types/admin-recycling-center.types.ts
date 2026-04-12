@@ -60,6 +60,13 @@ export type WasteCollectionLocationsQueryParams = {
   region?: string;
   material_type_id?: number | '';
   material_slug?: string;
-  sort?: string;
-  direction?: 'asc' | 'desc';
+  sort_by?:
+    | 'name'
+    | 'city_municipality'
+    | 'state_province'
+    | 'country_name'
+    | 'is_active'
+    | 'created_at'
+    | 'updated_at';
+  sort_order?: 'asc' | 'desc';
 };

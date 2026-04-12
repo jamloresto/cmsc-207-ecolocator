@@ -11,6 +11,7 @@ import {
 } from '@/modules/admin-contact-messages';
 import type { ContactMessage } from '@/modules/admin-contact-messages';
 import { Loader } from '@/components/common/loading/loader';
+import { Button } from '@/components/ui/button';
 
 function formatDateTime(dateString?: string | null) {
   if (!dateString) return '—';
@@ -89,13 +90,11 @@ export default function AdminContactMessageDetailPage() {
           </p>
         </div>
 
-        <button
-          type="button"
+        <Button variant='outline'
           onClick={() => router.back()}
-          className="border-border hover:bg-muted rounded-xl border px-4 py-2 text-sm font-medium"
         >
           Back
-        </button>
+        </Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
