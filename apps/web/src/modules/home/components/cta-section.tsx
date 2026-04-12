@@ -14,24 +14,24 @@ export default function CtaSection() {
       </div>
 
       <div className="mx-auto max-w-6xl">
-        <div className="reveal-scale from-brand-950 via-brand-800 to-primary relative overflow-hidden rounded-4xl bg-linear-to-br p-8 shadow-xl md:p-12">
+        <div className="reveal-scale from-background to-primary relative overflow-hidden rounded-4xl bg-linear-to-br p-8 shadow-xl md:p-12">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_32%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent,rgba(0,0,0,0.16))]" />
 
           <div className="relative grid items-center gap-10 md:grid-cols-[1fr_auto]">
             {/* LEFT */}
             <div className="max-w-2xl">
-              <div className="reveal-fade inline-flex items-center gap-2 rounded-full border border-red-500 px-4 py-2 text-xs font-semibold tracking-[0.2em] uppercase">
+              <div className="reveal-fade inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.2em] uppercase text-foreground">
                 <Recycle className="h-4 w-4" />
                 Take action today
               </div>
 
               <h2 className="reveal-up mt-6 text-3xl leading-tight font-semibold md:text-5xl">
                 Start recycling smarter,
-                <span className="text-accent"> one search at a time.</span>
+                <span className="text-accent-foreground"> one search at a time.</span>
               </h2>
 
-              <p className="reveal-fade text-background/80 mt-5 max-w-xl text-sm leading-7 md:text-base">
+              <p className="reveal-fade text-foreground/80 mt-5 max-w-xl text-sm leading-7 md:text-base">
                 Find nearby recycling and waste collection centers, check what
                 materials they accept, and make proper disposal part of your
                 everyday routine.
