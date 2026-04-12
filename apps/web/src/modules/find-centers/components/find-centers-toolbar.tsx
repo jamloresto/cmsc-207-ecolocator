@@ -24,14 +24,28 @@ export function FindCentersToolbar({
   onPlaceSelect,
 }: FindCentersToolbarProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const places = useMapsLibrary('places');
 
+  const onSearchChangeRef = useRef(onSearchChange);
+  const onPlaceSelectRef = useRef(onPlaceSelect);
+
   useEffect(() => {
-    if (!places || !inputRef.current) return;
+    onSearchChangeRef.current = onSearchChange;
+  }, [onSearchChange]);
+
+  useEffect(() => {
+    onPlaceSelectRef.current = onPlaceSelect;
+  }, [onPlaceSelect]);
+
+  useEffect(() => {
+    if (!places || !inputRef.current || autocompleteRef.current) return;
 
     const autocomplete = new places.Autocomplete(inputRef.current, {
       fields: ['formatted_address', 'geometry', 'name'],
     });
+
+    autocompleteRef.current = autocomplete;
 
     const listener = autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
@@ -41,8 +55,8 @@ export function FindCentersToolbar({
 
       const label = place.formatted_address || place.name || '';
 
-      onSearchChange(label);
-      onPlaceSelect(
+      onSearchChangeRef.current(label);
+      onPlaceSelectRef.current(
         {
           lat: location.lat(),
           lng: location.lng(),
@@ -52,11 +66,10 @@ export function FindCentersToolbar({
     });
 
     return () => {
-      if (listener) {
-        listener.remove();
-      }
+      listener.remove();
+      autocompleteRef.current = null;
     };
-  }, [places, onPlaceSelect, onSearchChange]);
+  }, [places]);
 
   return (
     <div className="bg-background border-border flex flex-col gap-3 rounded-2xl border p-4 shadow-sm">
