@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { TableSkeleton } from '@/components/common/loading/table-skeleton';
 import { ErrorState } from '@/components/common/states/error-state';
@@ -13,6 +13,8 @@ import {
   LocationSuggestionsTable,
   useAdminLocationSuggestions,
   useRejectLocationSuggestion,
+  type AdminLocationSuggestionStatus,
+  type AdminLocationSuggestionsListParams,
 } from '@/modules/admin-location-suggestions';
 
 const PER_PAGE = 10;
@@ -20,37 +22,37 @@ const PER_PAGE = 10;
 export default function AdminLocationSuggestionsPage() {
   const { toast } = useToast();
 
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('all');
+  const [params, setParams] = useState<AdminLocationSuggestionsListParams>({
+    page: 1,
+    per_page: PER_PAGE,
+    search: '',
+    status: 'all',
+    sort_by: 'created_at',
+    sort_order: 'desc',
+  });
+
   const [suggestionToReject, setSuggestionToReject] = useState<{
     id: number;
     name: string;
   } | null>(null);
 
-  const params = useMemo(
-    () => ({
-      page,
-      per_page: PER_PAGE,
-      search,
-      status,
-      sort_by: 'created_at' as const,
-      sort_order: 'desc' as const,
-    }),
-    [page, search, status],
-  );
-
   const { data: suggestions, isLoading } = useAdminLocationSuggestions(params);
   const rejectMutation = useRejectLocationSuggestion();
 
   function handleSearchChange(value: string) {
-    setPage(1);
-    setSearch(value);
+    setParams((prev) => ({
+      ...prev,
+      page: 1,
+      search: value,
+    }));
   }
 
   function handleStatusChange(value: string) {
-    setPage(1);
-    setStatus(value);
+    setParams((prev) => ({
+      ...prev,
+      page: 1,
+      status: value as AdminLocationSuggestionsListParams['status'],
+    }));
   }
 
   function handleReject(id: number, name: string) {
@@ -94,8 +96,8 @@ export default function AdminLocationSuggestionsPage() {
       />
 
       <LocationSuggestionsFilters
-        search={search}
-        status={status}
+        search={params.search ?? ''}
+        status={params.status ?? 'all'}
         onSearchChange={handleSearchChange}
         onStatusChange={handleStatusChange}
       />
@@ -105,13 +107,20 @@ export default function AdminLocationSuggestionsPage() {
       ) : suggestions ? (
         <LocationSuggestionsTable
           suggestions={suggestions}
+          params={params}
+          setParams={setParams}
           onReject={(id) => {
             const selected = suggestions.data.find((item) => item.id === id);
             if (!selected) return;
 
             handleReject(id, selected.location_name);
           }}
-          onPageChange={setPage}
+          onPageChange={(page) =>
+            setParams((prev) => ({
+              ...prev,
+              page,
+            }))
+          }
           isRejecting={rejectMutation.isPending}
         />
       ) : (

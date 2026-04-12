@@ -1,10 +1,13 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useMutation, useQuery } from '@tanstack/react-query';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ErrorState } from '@/components/common/states/error-state';
 import { TableSkeleton } from '@/components/common/loading/table-skeleton';
+
 import { useToast } from '@/hooks/use-toast';
 import { useActiveMaterialTypes } from '@/modules/admin-material-types';
 import {
@@ -16,7 +19,6 @@ import {
   updateAdminLocationSuggestion,
   approveLocationSuggestion,
 } from '@/modules/admin-location-suggestions/api/location-suggestions';
-import { useMutation, useQuery } from '@tanstack/react-query';
 
 export default function AdminLocationSuggestionDetailsPage() {
   const params = useParams();

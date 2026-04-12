@@ -8,6 +8,7 @@ import { StatusPill } from '@/components/ui/status-pill';
 import { TableEmptyState } from '@/components/shared/table-empty-state';
 import { TableFooterMeta } from '@/components/shared/table-footer-meta';
 import {
+  SortableHeader,
   Table,
   TableCell,
   TableContainer,
@@ -16,10 +17,17 @@ import {
   TableRow,
 } from '@/components/shared/table';
 
-import type { AdminLocationSuggestionsResponse } from '@/modules/admin-location-suggestions';
+import type {
+  AdminLocationSuggestionsListParams,
+  AdminLocationSuggestionsResponse,
+} from '@/modules/admin-location-suggestions';
 
 type LocationSuggestionsTableProps = {
   suggestions: AdminLocationSuggestionsResponse;
+  params: AdminLocationSuggestionsListParams;
+  setParams: React.Dispatch<
+    React.SetStateAction<AdminLocationSuggestionsListParams>
+  >;
   isRejecting?: boolean;
   onReject: (id: number) => void;
   onPageChange: (page: number) => void;
@@ -48,14 +56,41 @@ function parseMaterialsAccepted(
     .filter(Boolean);
 }
 
+function getNextSortOrder(
+  currentSort?: string,
+  currentOrder?: 'asc' | 'desc',
+  field?: string,
+): 'asc' | 'desc' {
+  if (currentSort !== field) return 'asc';
+
+  return currentOrder === 'asc' ? 'desc' : 'asc';
+}
+
 export function LocationSuggestionsTable({
   suggestions,
+  params,
+  setParams,
   isRejecting,
   onReject,
   onPageChange,
 }: LocationSuggestionsTableProps) {
   const items = suggestions.data;
   const meta = suggestions.meta;
+
+  function handleSort(field: string) {
+    setParams((prev) => ({
+      ...prev,
+      page: 1,
+      sort_by: field as
+        | 'created_at'
+        | 'updated_at'
+        | 'status'
+        | 'location_name'
+        | 'city_municipality'
+        | 'province',
+      sort_order: getNextSortOrder(prev.sort_by, prev.sort_order, field),
+    }));
+  }
 
   return (
     <div className="space-y-4">
@@ -64,11 +99,41 @@ export function LocationSuggestionsTable({
           <TableHead>
             <TableRow className="border-t-0">
               <TableHeaderCell>Submitter</TableHeaderCell>
-              <TableHeaderCell>Suggested Location</TableHeaderCell>
+
+              <TableHeaderCell>
+                <SortableHeader
+                  label="Suggested Location"
+                  field="location_name"
+                  sortBy={params.sort_by}
+                  sortOrder={params.sort_order}
+                  onSort={handleSort}
+                />
+              </TableHeaderCell>
+
               <TableHeaderCell>Address</TableHeaderCell>
+
               <TableHeaderCell>Materials</TableHeaderCell>
-              <TableHeaderCell>Status</TableHeaderCell>
-              <TableHeaderCell>Submitted</TableHeaderCell>
+
+              <TableHeaderCell>
+                <SortableHeader
+                  label="Status"
+                  field="status"
+                  sortBy={params.sort_by}
+                  sortOrder={params.sort_order}
+                  onSort={handleSort}
+                />
+              </TableHeaderCell>
+
+              <TableHeaderCell>
+                <SortableHeader
+                  label="Submitted"
+                  field="created_at"
+                  sortBy={params.sort_by}
+                  sortOrder={params.sort_order}
+                  onSort={handleSort}
+                />
+              </TableHeaderCell>
+
               <TableHeaderCell>
                 <div className="text-right">Actions</div>
               </TableHeaderCell>
