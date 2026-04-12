@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MapPinX } from 'lucide-react';
 import { APIProvider } from '@vis.gl/react-google-maps';
@@ -111,6 +111,20 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
     [locations],
   );
 
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchValue(value);
+  }, []);
+
+  const handlePlaceSelect = useCallback(
+    (coords: { lat: number; lng: number }, label: string) => {
+      setSearchValue(label);
+      setMapCenterOverride(coords);
+      setSelectedLocationId(null);
+      setModalLocationId(null);
+    },
+    [],
+  );
+
   if (!GOOGLE_MAPS_API_KEY) {
     return (
       <section className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
@@ -133,13 +147,9 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
               name: materialType.name,
               slug: materialType.slug,
             }))}
-            onSearchChange={setSearchValue}
+            onSearchChange={handleSearchChange}
             onMaterialChange={setSelectedMaterialSlug}
-            onPlaceSelect={(coords) => {
-              setMapCenterOverride(coords);
-              setSelectedLocationId(null);
-              setModalLocationId(null);
-            }}
+            onPlaceSelect={handlePlaceSelect}
           />
         </div>
       )}

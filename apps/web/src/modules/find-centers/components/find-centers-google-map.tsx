@@ -30,8 +30,8 @@ const DEFAULT_CENTER = {
   lng: 120.9842,
 };
 
-const DEFAULT_ZOOM = 15;
-const FOCUSED_ZOOM = 17;
+const DEFAULT_ZOOM = 14;
+const FOCUSED_ZOOM = 16;
 const BOUNDS_DEBOUNCE_MS = 400;
 
 export function FindCentersGoogleMap({
