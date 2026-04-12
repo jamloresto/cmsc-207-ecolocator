@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, SubmitEvent, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -56,6 +57,8 @@ export function WasteCollectionLocationForm({
     () => ({ ...defaultValues, ...initialValues }),
     [initialValues],
   );
+
+    const router = useRouter();
 
   const [values, setValues] = useState<WasteCollectionLocationPayload>(merged);
 
@@ -228,6 +231,9 @@ export function WasteCollectionLocationForm({
       </label>
 
       <div className="flex justify-end gap-3">
+        <Button variant="ghost" onClick={() => router.back()}>
+          Cancel
+        </Button>
         {showDraftActions ? (
           <>
             <Button type="submit" variant="outline" disabled={isSubmitting}>

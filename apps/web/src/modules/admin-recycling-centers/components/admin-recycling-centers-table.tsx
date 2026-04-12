@@ -8,6 +8,7 @@ import { TableFooterMeta } from '@/components/shared/table-footer-meta';
 import { TableToolbar } from '@/components/shared/table-toolbar';
 import { TableEmptyState } from '@/components/shared/table-empty-state';
 import {
+  SortableHeader,
   Table,
   TableCell,
   TableContainer,
@@ -21,13 +22,15 @@ import { Badge } from '@/components/ui/badge';
 import { StatusPill } from '@/components/ui/status-pill';
 import { SelectCustom } from '@/components/ui/select-custom';
 
-import type { WasteCollectionLocation } from '@/modules/admin-recycling-centers';
+import type {
+  WasteCollectionLocationsQueryParams,
+  WasteCollectionLocation,
+} from '@/modules/admin-recycling-centers';
 
 type Props = {
   data: WasteCollectionLocation[];
   isLoading: boolean;
-  searchValue: string;
-  materialTypeSlug: string;
+  params: WasteCollectionLocationsQueryParams;
   materialTypes: { id: number; name: string; slug: string }[];
 
   currentPage: number;
@@ -36,6 +39,16 @@ type Props = {
 
   onSearchChange: (value: string) => void;
   onMaterialTypeChange: (value: string) => void;
+  onSort: (
+    field:
+      | 'name'
+      | 'city_municipality'
+      | 'state_province'
+      | 'country_name'
+      | 'is_active'
+      | 'created_at'
+      | 'updated_at',
+  ) => void;
   onPageChange: (page: number) => void;
   onDelete: (location: { id: number; name: string }) => void;
 };
@@ -43,14 +56,14 @@ type Props = {
 export function WasteCollectionLocationsTable({
   data,
   isLoading,
-  searchValue,
-  materialTypeSlug,
+  params,
   materialTypes,
   currentPage,
   totalPages,
   totalItems,
   onSearchChange,
   onMaterialTypeChange,
+  onSort,
   onPageChange,
   onDelete,
 }: Props) {
@@ -65,13 +78,13 @@ export function WasteCollectionLocationsTable({
   return (
     <div className="space-y-4">
       <TableToolbar
-        searchValue={searchValue}
+        searchValue={params.search ?? ''}
         searchPlaceholder="Search recycling centers..."
         onSearchChange={onSearchChange}
         filters={
           <SelectCustom
             options={materialOptions}
-            value={materialTypeSlug}
+            value={params.material_slug ?? ''}
             placeholder="Filter by material"
             onChange={onMaterialTypeChange}
           />
@@ -85,10 +98,38 @@ export function WasteCollectionLocationsTable({
           <Table>
             <TableHead>
               <TableRow className="border-t-0">
-                <TableHeaderCell>Name</TableHeaderCell>
-                <TableHeaderCell>Location</TableHeaderCell>
+                <TableHeaderCell>
+                  <SortableHeader
+                    label="Name"
+                    field="name"
+                    sortBy={params.sort_by}
+                    sortOrder={params.sort_order}
+                    onSort={onSort}
+                  />
+                </TableHeaderCell>
+
+                <TableHeaderCell>
+                  <SortableHeader
+                    label="Location"
+                    field="city_municipality"
+                    sortBy={params.sort_by}
+                    sortOrder={params.sort_order}
+                    onSort={onSort}
+                  />
+                </TableHeaderCell>
+
                 <TableHeaderCell>Materials</TableHeaderCell>
-                <TableHeaderCell>Status</TableHeaderCell>
+
+                <TableHeaderCell>
+                  <SortableHeader
+                    label="Status"
+                    field="is_active"
+                    sortBy={params.sort_by}
+                    sortOrder={params.sort_order}
+                    onSort={onSort}
+                  />
+                </TableHeaderCell>
+
                 <TableHeaderCell>Actions</TableHeaderCell>
               </TableRow>
             </TableHead>
@@ -105,16 +146,16 @@ export function WasteCollectionLocationsTable({
                   <TableRow key={location.id}>
                     <TableCell>
                       <div className="font-medium">{location.name}</div>
-                      {location.contact_number && (
+                      {location.contact_number ? (
                         <div className="text-muted-foreground text-xs">
                           {location.contact_number}
                         </div>
-                      )}
-                      {location.email && (
+                      ) : null}
+                      {location.email ? (
                         <div className="text-muted-foreground text-xs">
                           {location.email}
                         </div>
-                      )}
+                      ) : null}
                     </TableCell>
 
                     <TableCell>
@@ -128,9 +169,9 @@ export function WasteCollectionLocationsTable({
                     <TableCell>
                       <div className="flex flex-wrap gap-2">
                         {location.material_types?.length ? (
-                          location.material_types.map((m) => (
-                            <Badge key={m.id} variant="outline">
-                              {m.name}
+                          location.material_types.map((material) => (
+                            <Badge key={material.id} variant="outline">
+                              {material.name}
                             </Badge>
                           ))
                         ) : (

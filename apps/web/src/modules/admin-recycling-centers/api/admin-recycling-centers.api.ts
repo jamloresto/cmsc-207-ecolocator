@@ -34,8 +34,8 @@ export async function getAdminWasteCollectionLocations(
   if (params.material_slug?.trim())
     cleanedParams.material_slug = params.material_slug.trim();
 
-  if (params.sort) cleanedParams.sort = params.sort;
-  if (params.direction) cleanedParams.direction = params.direction;
+  if (params.sort_by) cleanedParams.sort_by = params.sort_by;
+  if (params.sort_order) cleanedParams.sort_order = params.sort_order;
 
   const response = await apiClient.get('/api/v1/admin/locations', {
     params: cleanedParams,

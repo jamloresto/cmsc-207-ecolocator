@@ -27,6 +27,30 @@ class WasteCollectionLocationController extends Controller
             new OA\Parameter(name: 'region', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
             new OA\Parameter(name: 'material_type_id', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
             new OA\Parameter(name: 'material_slug', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(
+                name: 'sort_by',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['name', 'city_municipality', 'state_province', 'country_name', 'is_active', 'created_at', 'updated_at']
+                ),
+                example: 'created_at'
+            ),
+            new OA\Parameter(
+                name: 'sort_order',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', enum: ['asc', 'desc']),
+                example: 'desc'
+            ),
+            new OA\Parameter(
+                name: 'per_page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100),
+                example: 10
+            ),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Paginated list of locations'),
@@ -65,7 +89,27 @@ class WasteCollectionLocationController extends Controller
                 fn ($q, $value) => $q->whereHas('materialTypes', fn ($subQ) => $subQ->where('material_types.slug', $value))
             );
 
-        $locations = $query->latest()->paginate(10);
+        $allowedSortFields = [
+            'name',
+            'city_municipality',
+            'state_province',
+            'country_name',
+            'is_active',
+            'created_at',
+            'updated_at',
+        ];
+
+        $sortBy = in_array($request->get('sort_by'), $allowedSortFields, true)
+            ? $request->get('sort_by')
+            : 'created_at';
+
+        $sortOrder = in_array(strtolower($request->get('sort_order', 'desc')), ['asc', 'desc'], true)
+            ? strtolower($request->get('sort_order', 'desc'))
+            : 'desc';
+
+        $locations = $query
+            ->orderBy($sortBy, $sortOrder)
+            ->paginate($request->integer('per_page', 10));
 
         return WasteCollectionLocationResource::collection($locations);
     }

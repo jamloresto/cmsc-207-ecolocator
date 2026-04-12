@@ -1,6 +1,7 @@
 import type { PaginatedResponse } from '@/types/api.types';
 
 export type AdminLocationSuggestionStatus =
+  | 'all'
   | 'pending'
   | 'under_review'
   | 'approved'
@@ -38,3 +39,20 @@ export type AdminLocationSuggestion = {
 
 export type AdminLocationSuggestionsResponse =
   PaginatedResponse<AdminLocationSuggestion>;
+
+export type AdminLocationSuggestionsListParams = {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  status?: AdminLocationSuggestionStatus;
+  province?: string;
+  city_municipality?: string;
+  sort_by?:
+    | 'created_at'
+    | 'updated_at'
+    | 'status'
+    | 'location_name'
+    | 'city_municipality'
+    | 'province';
+  sort_order?: 'asc' | 'desc';
+};
