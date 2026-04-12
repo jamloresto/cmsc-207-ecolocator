@@ -56,11 +56,6 @@ export function LocationSuggestionForm() {
     useState<LocationSuggestionFormValues>(initialValues);
   const [errors, setErrors] = useState<LocationSuggestionFormErrors>({});
 
-  const parsedError = useMemo(() => {
-    if (!submitMutation.error) return null;
-    return getLocationSuggestionSubmitError(submitMutation.error);
-  }, [submitMutation.error]);
-
   const isSubmitting = submitMutation.isPending;
   const isSuccess = submitMutation.isSuccess;
   const successMessage = submitMutation.data?.message;
@@ -150,7 +145,7 @@ export function LocationSuggestionForm() {
         province: values.province.trim(),
         city_municipality: values.city_municipality.trim(),
         materials_accepted: buildMaterialsAccepted(),
-        notes: values.notes.trim(),
+        notes: values.notes.trim() + ' Materials Accepted:' + buildMaterialsAccepted(),
       },
       {
         onSuccess: () => {

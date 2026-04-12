@@ -50,6 +50,26 @@ export async function getAdminLocationSuggestions(
   return response.data;
 }
 
+export async function getAdminLocationSuggestion(id: number) {
+  const response = await apiClient.get(
+    `/api/v1/admin/location-suggestions/${id}`,
+  );
+
+  return response.data.data;
+}
+
+export async function updateAdminLocationSuggestion(
+  id: number,
+  payload: Record<string, unknown>,
+) {
+  const response = await apiClient.patch(
+    `/api/v1/admin/location-suggestions/${id}`,
+    payload,
+  );
+
+  return response.data;
+}
+
 export async function approveLocationSuggestion(id: number) {
   const response = await apiClient.post(
     `/api/v1/admin/location-suggestions/${id}/approve`,

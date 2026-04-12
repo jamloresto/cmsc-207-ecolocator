@@ -221,7 +221,7 @@ class LocationSuggestionController extends Controller
         $locationSuggestion->update($data);
 
         return response()->json([
-            'message' => 'Location suggestion updated successfully.',
+            'message' => 'Location suggestion draft saved successfully.',
             'data' => $locationSuggestion->fresh(),
         ]);
     }
@@ -245,145 +245,145 @@ class LocationSuggestionController extends Controller
         ]
     )]
     public function approve(
-        ApproveLocationSuggestionRequest $request,
-        LocationSuggestion $locationSuggestion
-    ): JsonResponse {
-        if ($locationSuggestion->status === 'approved') {
-            return response()->json([
-                'message' => 'Location suggestion is already approved.',
-            ], 422);
-        }
-
-        if ($locationSuggestion->status === 'rejected') {
-            return response()->json([
-                'message' => 'Rejected suggestions cannot be approved.',
-            ], 422);
-        }
-
-        if ($locationSuggestion->status !== 'pending') {
-            return response()->json([
-                'message' => 'Only pending suggestions can be approved.',
-            ], 422);
-        }
-
-        $data = $locationSuggestion->only([
-            'location_name',
-            'country_code',
-            'country_name',
-            'state_province',
-            'state_code',
-            'city_municipality',
-            'region',
-            'street_address',
-            'postal_code',
-            'latitude',
-            'longitude',
-            'contact_number',
-            'location_email',
-            'operating_hours',
-            'notes',
-            'is_active',
-        ]);
-
-        $validator = Validator::make($data, [
-            'location_name' => ['required', 'string', 'max:255'],
-            'country_code' => ['required', 'string', 'size:2'],
-            'country_name' => ['required', 'string', 'max:100'],
-            'state_province' => ['required', 'string', 'max:100'],
-            'state_code' => ['nullable', 'string', 'max:20'],
-            'city_municipality' => ['required', 'string', 'max:100'],
-            'region' => ['nullable', 'string', 'max:100'],
-            'street_address' => ['required', 'string', 'max:255'],
-            'postal_code' => ['nullable', 'string', 'max:20'],
-            'latitude' => ['required', 'numeric', 'between:-90,90'],
-            'longitude' => ['required', 'numeric', 'between:-180,180'],
-            'contact_number' => ['nullable', 'string', 'max:50'],
-            'location_email' => ['nullable', 'email', 'max:255'],
-            'operating_hours' => ['nullable', 'string'],
-            'notes' => ['nullable', 'string'],
-            'is_active' => ['nullable', 'boolean'],
-        ], [
-            'location_name.required' => 'Location name is required before approval.',
-            'country_code.required' => 'Country code is required before approval.',
-            'country_code.size' => 'Country code must be exactly 2 characters.',
-            'country_name.required' => 'Country name is required before approval.',
-            'state_province.required' => 'State/Province is required before approval.',
-            'city_municipality.required' => 'City/Municipality is required before approval.',
-            'street_address.required' => 'Street address is required before approval.',
-            'latitude.required' => 'Latitude is required before approval.',
-            'longitude.required' => 'Longitude is required before approval.',
-            'latitude.between' => 'Latitude must be between -90 and 90.',
-            'longitude.between' => 'Longitude must be between -180 and 180.',
-            'location_email.email' => 'Location email must be a valid email address.',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => $validator->errors()->first(),
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $user = $request->user();
-
-        DB::transaction(function () use ($locationSuggestion, $user) {
-            $materials = $this->parseMaterialsAccepted($locationSuggestion->materials_accepted);
-            $materialTypeIds = $this->resolveMaterialTypeIds($materials);
-
-            $uniqueMaterialSlugs = collect($materials)
-                ->map(fn ($item) => Str::slug($item))
-                ->unique()
-                ->values()
-                ->all();
-
-            if (count($uniqueMaterialSlugs) !== count($materialTypeIds)) {
-                abort(response()->json([
-                    'message' => 'Some suggested materials do not match official material types. Please review before approval.',
-                ], 422));
-            }
-
-            $location = WasteCollectionLocation::create([
-                'name' => $locationSuggestion->location_name,
-                'country_code' => $locationSuggestion->country_code,
-                'country_name' => $locationSuggestion->country_name,
-                'state_province' => $locationSuggestion->state_province,
-                'state_code' => $locationSuggestion->state_code,
-                'city_municipality' => $locationSuggestion->city_municipality,
-                'region' => $locationSuggestion->region,
-                'street_address' => $locationSuggestion->street_address,
-                'postal_code' => $locationSuggestion->postal_code,
-                'latitude' => $locationSuggestion->latitude,
-                'longitude' => $locationSuggestion->longitude,
-                'contact_number' => $locationSuggestion->contact_number,
-                'email' => $locationSuggestion->location_email,
-                'operating_hours' => $locationSuggestion->operating_hours,
-                'notes' => $locationSuggestion->notes,
-                'is_active' => $locationSuggestion->is_active ?? true,
-                'created_by' => $user->id,
-                'updated_by' => $user->id,
-            ]);
-
-            $location->materialTypes()->sync($materialTypeIds);
-
-            $locationSuggestion->update([
-                'status' => 'approved',
-                'approved_by' => $user->id,
-                'approved_at' => now(),
-                'reviewed_at' => now(),
-                'waste_collection_location_id' => $location->id,
-            ]);
-        });
-
-        $locationSuggestion->refresh();
-
+    ApproveLocationSuggestionRequest $request,
+    LocationSuggestion $locationSuggestion
+): JsonResponse {
+    if ($locationSuggestion->status === 'approved') {
         return response()->json([
-            'message' => 'Location suggestion approved successfully.',
-            'data' => [
-                'id' => $locationSuggestion->id,
-                'status' => $locationSuggestion->status,
-            ],
-        ]);
+            'message' => 'Location suggestion is already approved.',
+        ], 422);
     }
+
+    if ($locationSuggestion->status === 'rejected') {
+        return response()->json([
+            'message' => 'Rejected suggestions cannot be approved.',
+        ], 422);
+    }
+
+    if (!in_array($locationSuggestion->status, ['pending', 'under_review'], true)) {
+        return response()->json([
+            'message' => 'Only pending or under review suggestions can be approved.',
+        ], 422);
+    }
+
+    $data = $locationSuggestion->only([
+        'location_name',
+        'country_code',
+        'country_name',
+        'state_province',
+        'state_code',
+        'city_municipality',
+        'region',
+        'street_address',
+        'postal_code',
+        'latitude',
+        'longitude',
+        'contact_number',
+        'location_email',
+        'operating_hours',
+        'notes',
+        'is_active',
+    ]);
+
+    $validator = Validator::make($data, [
+        'location_name' => ['required', 'string', 'max:255'],
+        'country_code' => ['required', 'string', 'size:2'],
+        'country_name' => ['required', 'string', 'max:100'],
+        'state_province' => ['required', 'string', 'max:100'],
+        'state_code' => ['nullable', 'string', 'max:20'],
+        'city_municipality' => ['required', 'string', 'max:100'],
+        'region' => ['nullable', 'string', 'max:100'],
+        'street_address' => ['required', 'string', 'max:255'],
+        'postal_code' => ['nullable', 'string', 'max:20'],
+        'latitude' => ['required', 'numeric', 'between:-90,90'],
+        'longitude' => ['required', 'numeric', 'between:-180,180'],
+        'contact_number' => ['nullable', 'string', 'max:50'],
+        'location_email' => ['nullable', 'email', 'max:255'],
+        'operating_hours' => ['nullable', 'string'],
+        'notes' => ['nullable', 'string'],
+        'is_active' => ['nullable', 'boolean'],
+    ], [
+        'location_name.required' => 'Location name is required before approval.',
+        'country_code.required' => 'Country code is required before approval.',
+        'country_code.size' => 'Country code must be exactly 2 characters.',
+        'country_name.required' => 'Country name is required before approval.',
+        'state_province.required' => 'State/Province is required before approval.',
+        'city_municipality.required' => 'City/Municipality is required before approval.',
+        'street_address.required' => 'Street address is required before approval.',
+        'latitude.required' => 'Latitude is required before approval.',
+        'longitude.required' => 'Longitude is required before approval.',
+        'latitude.between' => 'Latitude must be between -90 and 90.',
+        'longitude.between' => 'Longitude must be between -180 and 180.',
+        'location_email.email' => 'Location email must be a valid email address.',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => $validator->errors()->first(),
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    $user = $request->user();
+
+    DB::transaction(function () use ($locationSuggestion, $user) {
+        $materials = $this->parseMaterialsAccepted($locationSuggestion->materials_accepted);
+        $materialTypeIds = $this->resolveMaterialTypeIds($materials);
+
+        $uniqueMaterialSlugs = collect($materials)
+            ->map(fn ($item) => Str::slug($item))
+            ->unique()
+            ->values()
+            ->all();
+
+        if (count($uniqueMaterialSlugs) !== count($materialTypeIds)) {
+            abort(response()->json([
+                'message' => 'Some suggested materials do not match official material types. Please review before approval.',
+            ], 422));
+        }
+
+        $location = WasteCollectionLocation::create([
+            'name' => $locationSuggestion->location_name,
+            'country_code' => $locationSuggestion->country_code,
+            'country_name' => $locationSuggestion->country_name,
+            'state_province' => $locationSuggestion->state_province,
+            'state_code' => $locationSuggestion->state_code,
+            'city_municipality' => $locationSuggestion->city_municipality,
+            'region' => $locationSuggestion->region,
+            'street_address' => $locationSuggestion->street_address,
+            'postal_code' => $locationSuggestion->postal_code,
+            'latitude' => $locationSuggestion->latitude,
+            'longitude' => $locationSuggestion->longitude,
+            'contact_number' => $locationSuggestion->contact_number,
+            'email' => $locationSuggestion->location_email,
+            'operating_hours' => $locationSuggestion->operating_hours,
+            'notes' => $locationSuggestion->notes,
+            'is_active' => $locationSuggestion->is_active ?? true,
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+        ]);
+
+        $location->materialTypes()->sync($materialTypeIds);
+
+        $locationSuggestion->update([
+            'status' => 'approved',
+            'approved_by' => $user->id,
+            'approved_at' => now(),
+            'reviewed_at' => now(),
+            'waste_collection_location_id' => $location->id,
+        ]);
+    });
+
+    $locationSuggestion->refresh();
+
+    return response()->json([
+        'message' => 'Location suggestion approved successfully.',
+        'data' => [
+            'id' => $locationSuggestion->id,
+            'status' => $locationSuggestion->status,
+        ],
+    ]);
+}
 
     private function parseMaterialsAccepted(mixed $materialsAccepted): array
     {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, SubmitEvent } from 'react';
+import { useMemo, useState, SubmitEvent, useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -8,16 +8,20 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 import { ActiveMaterialType } from '@/modules/admin-material-types';
-import {
-  WasteCollectionLocationPayload,
-} from '@/modules/admin-recycling-centers';
+import { WasteCollectionLocationPayload } from '@/modules/admin-recycling-centers';
+
+type FormAction = 'draft' | 'approve' | 'save';
 
 type Props = {
   initialValues?: Partial<WasteCollectionLocationPayload>;
   materialOptions: ActiveMaterialType[];
   isSubmitting?: boolean;
   submitLabel?: string;
-  onSubmit: (values: WasteCollectionLocationPayload) => void;
+  showDraftActions?: boolean;
+  onSubmit: (
+    values: WasteCollectionLocationPayload,
+    action: FormAction,
+  ) => void;
 };
 
 const defaultValues: WasteCollectionLocationPayload = {
@@ -45,6 +49,7 @@ export function WasteCollectionLocationForm({
   materialOptions,
   isSubmitting = false,
   submitLabel = 'Save',
+  showDraftActions = false,
   onSubmit,
 }: Props) {
   const merged = useMemo(
@@ -53,6 +58,10 @@ export function WasteCollectionLocationForm({
   );
 
   const [values, setValues] = useState<WasteCollectionLocationPayload>(merged);
+
+  useEffect(() => {
+    setValues(merged);
+  }, [merged]);
 
   function updateField<K extends keyof WasteCollectionLocationPayload>(
     key: K,
@@ -76,7 +85,7 @@ export function WasteCollectionLocationForm({
 
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    onSubmit(values);
+    onSubmit(values, showDraftActions ? 'draft' : 'save');
   }
 
   return (
@@ -204,9 +213,7 @@ export function WasteCollectionLocationForm({
                 checked={values.material_type_ids.includes(material.id)}
                 onChange={() => toggleMaterialType(material.id)}
               />
-              <span className="text-sm">
-                {material.name}
-              </span>
+              <span className="text-sm">{material.name}</span>
             </label>
           ))}
         </div>
@@ -215,15 +222,31 @@ export function WasteCollectionLocationForm({
       <label className="flex items-center gap-2">
         <Checkbox
           checked={values.is_active}
-          onChange={(checked) => updateField('is_active', !values.is_active)}
+          onChange={() => updateField('is_active', !values.is_active)}
         />
         <span className="text-sm">Active</span>
       </label>
 
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : submitLabel}
-        </Button>
+      <div className="flex justify-end gap-3">
+        {showDraftActions ? (
+          <>
+            <Button type="submit" variant="outline" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Draft'}
+            </Button>
+
+            <Button
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => onSubmit(values, 'approve')}
+            >
+              {isSubmitting ? 'Processing...' : 'Approve Suggestion'}
+            </Button>
+          </>
+        ) : (
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Saving...' : submitLabel}
+          </Button>
+        )}
       </div>
     </form>
   );

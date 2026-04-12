@@ -23,7 +23,12 @@ export default function CreateWasteCollectionLocationPage() {
   const createMutation = useCreateWasteCollectionLocation();
   const materialTypesQuery = useActiveMaterialTypes();
 
-  function handleSubmit(values: WasteCollectionLocationPayload) {
+  function handleSubmit(
+    values: WasteCollectionLocationPayload,
+    action: 'draft' | 'approve' | 'save',
+  ) {
+    if (action !== 'save') return;
+
     createMutation.mutate(values, {
       onSuccess: () => {
         toast({
