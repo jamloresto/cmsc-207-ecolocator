@@ -183,9 +183,28 @@ class MaterialTypeController extends Controller
             content: new OA\JsonContent(
                 required: ['name'],
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'Plastic'),
-                    new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Plastic bottles and containers'),
-                    new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                    new OA\Property(
+                        property: 'name',
+                        type: 'string',
+                        example: 'Plastic'
+                    ),
+                    new OA\Property(
+                        property: 'description',
+                        type: 'string',
+                        nullable: true,
+                        example: 'Plastic bottles and containers'
+                    ),
+                    new OA\Property(
+                        property: 'icon',
+                        type: 'string',
+                        nullable: true,
+                        example: 'Package'
+                    ),
+                    new OA\Property(
+                        property: 'is_active',
+                        type: 'boolean',
+                        example: true
+                    ),
                 ]
             )
         ),
@@ -200,6 +219,7 @@ class MaterialTypeController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:material_types,name'],
             'description' => ['nullable', 'string'],
+            'icon' => ['nullable', 'string', 'max:100'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -207,6 +227,7 @@ class MaterialTypeController extends Controller
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'description' => $validated['description'] ?? null,
+            'icon' => $validated['icon'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
@@ -235,9 +256,28 @@ class MaterialTypeController extends Controller
             content: new OA\JsonContent(
                 required: ['name'],
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'Plastic'),
-                    new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Updated description'),
-                    new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                    new OA\Property(
+                        property: 'name',
+                        type: 'string',
+                        example: 'Plastic'
+                    ),
+                    new OA\Property(
+                        property: 'description',
+                        type: 'string',
+                        nullable: true,
+                        example: 'Updated description'
+                    ),
+                    new OA\Property(
+                        property: 'icon',
+                        type: 'string',
+                        nullable: true,
+                        example: 'Package'
+                    ),
+                    new OA\Property(
+                        property: 'is_active',
+                        type: 'boolean',
+                        example: true
+                    ),
                 ]
             )
         ),
@@ -258,6 +298,7 @@ class MaterialTypeController extends Controller
                 Rule::unique('material_types', 'name')->ignore($materialType->id),
             ],
             'description' => ['nullable', 'string'],
+            'icon' => ['nullable', 'string', 'max:100'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -265,6 +306,7 @@ class MaterialTypeController extends Controller
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'description' => $validated['description'] ?? null,
+            'icon' => $validated['icon'] ?? null,
             'is_active' => $validated['is_active'] ?? $materialType->is_active,
         ]);
 

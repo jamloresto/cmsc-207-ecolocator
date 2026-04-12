@@ -13,6 +13,7 @@ class MaterialType extends Model
         'name',
         'slug',
         'description',
+        'icon',
         'is_active',
     ];
 
