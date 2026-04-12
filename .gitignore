@@ -24,4 +24,4 @@ playwright-report/
 Thumbs.db
 
 # OpenApi Documentation
-/storage/api-docs/
+apps/api/storage/api-docs/
