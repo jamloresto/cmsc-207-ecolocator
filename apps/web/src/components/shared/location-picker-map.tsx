@@ -139,8 +139,10 @@ export function LocationPickerMap({
         <div>
           <p className="text-sm font-medium">Pin location on map</p>
           <p className="text-muted-foreground text-xs">
-            Search, click, or drag the marker. Save only when you click Use
-            selected point.
+            Search, click, or drag the marker.
+          </p>
+          <p className="text-muted-foreground text-xs">
+            Save only when you click 'Use selected point.'
           </p>
         </div>
 
@@ -152,7 +154,9 @@ export function LocationPickerMap({
             onClick={commitSelectedPoint}
             disabled={disabled || !hasPendingSelection}
           >
-            Use selected point
+            <span className='whitespace-nowrap'>
+              Use selected point
+            </span>
           </Button>
         ) : null}
       </div>

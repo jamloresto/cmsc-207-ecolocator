@@ -21,8 +21,15 @@ To promote sustainable waste management by making recycling locations accessible
   -  Displays recycling centers directly on a map
   -  Automatically updates results based on map movement (viewport-based filtering)
 - 📡 Location Detection (Geolocation)
-  -  Detects user’s location on first load
+  -  Detects user’s location on first load (if allowed)
   -  Sets map center automatically for nearby results
+- 🧠 Smart Map Behavior
+  - Map auto-centers based on:
+    - User location (on first load)
+    - Search selection (autocomplete)
+    - Selected recycling center
+  - Debounced API requests when moving the map
+  - Prevents duplicate requests using cancellation logic
 - 🧭 Dynamic Map Filtering API
   -  Fetches only locations within the current map bounds
   -  Improves performance and scalability
@@ -37,6 +44,8 @@ To promote sustainable waste management by making recycling locations accessible
   -  Limits visible materials (e.g., first 3 + “See more”)
 - 🔍 Search + Map Integration
   -  Searching updates map position instead of filtering list only
+  -  Google Places Autocomplete integration
+  -  Clicking a suggestion re-centers the map
 - 📬 Contact Form
   -  Users can send inquiries to admins
 - 📝 Location Suggestion System
@@ -71,7 +80,24 @@ To promote sustainable waste management by making recycling locations accessible
 - 📑 Standardized Table System
   -  Pagination
   -  Meta (total items, pages)
-  -  Reusable table components (FE + BE aligned)
+  -  Reusable table components
+    -  Shared pagination + meta structure across backend and frontend
+    -  Sortable columns
+    -  Filterable datasets
+    -  Consistent table UI system
+- 📍 Interactive Location Picker
+  - Search locations using Google Places Autocomplete
+  - Click anywhere on the map to select coordinates
+  - Draggable marker for fine adjustments
+  - Map recenters automatically when a place is searched
+  - Controlled selection – coordinates are only saved when clicking “Use selected point”
+---
+### 🎨 UI/UX Enhancements
+-  Responsive design (mobile + desktop optimized)
+-  Sticky / dynamic header behavior
+-  Smooth scrolling experience
+-  Reusable UI components (tables, filters, badges, etc.)
+-  Dark / Light mode support
 
 ## 🧠 Location Suggestion Workflow
 
@@ -107,7 +133,7 @@ This project uses a **monorepo setup**:
 
 ### apps/
 - `api/` → Laravel backend (API)
-- `web/` → Frontend (React / Next / etc.)
+- `web/` → Next.js (React-based framework)
 
 ### infra/
 - Infrastructure configs (Docker, etc.)
@@ -148,6 +174,7 @@ Make sure you have the following installed:
 - MySQL (or MySQL Workbench or MariaDB)
 - Git
 - Docker (optional)
+- Required Google Maps API
 
 ---
 
