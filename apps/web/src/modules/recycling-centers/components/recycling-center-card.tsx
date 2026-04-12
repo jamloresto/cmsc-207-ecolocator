@@ -4,7 +4,6 @@ import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -51,10 +50,10 @@ export function RecyclingCenterCard({ center }: RecyclingCenterCardProps) {
         ) : null}
 
         {locationAddress ? (
-           <div className="text-muted-foreground flex items-center gap-2 text-sm">
-              <MapPin className="h-4 w-4 shrink-0" />
-              <span>{locationAddress}</span>
-            </div>
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
+            <MapPin className="h-4 w-4 shrink-0" />
+            <span>{locationAddress}</span>
+          </div>
         ) : null}
 
         <div className="space-y-2">
@@ -82,7 +81,9 @@ export function RecyclingCenterCard({ center }: RecyclingCenterCardProps) {
       </CardContent>
 
       <CardFooter>
-        <Link href={`/find-centers?location_id=${center.id}`}>
+        <Link
+          href={`/find-centers?location_id=${center.id}&lat=${center.latitude}&lng=${center.longitude}`}
+        >
           <Button variant="outline" size="sm">
             View at Map
           </Button>
