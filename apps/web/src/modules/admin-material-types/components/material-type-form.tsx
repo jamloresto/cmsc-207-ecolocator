@@ -7,9 +7,33 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
+const ICON_OPTIONS = [
+  'Battery',
+  'Bottle',
+  'Building2',
+  'CircleDashed',
+  'Cuboid',
+  'Factory',
+  'Fence',
+  'Leaf',
+  'MonitorSmartphone',
+  'Newspaper',
+  'Package',
+  'PaintBucket',
+  'Radiation',
+  'Recycle',
+  'Shapes',
+  'Shirt',
+  'SquareDashed',
+  'Stone',
+  'Trash2',
+  'TV',
+];
+
 export type MaterialTypeFormValues = {
   name: string;
   description: string;
+  icon?: string;
   is_active: boolean;
 };
 

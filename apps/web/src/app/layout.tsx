@@ -48,8 +48,6 @@ export const metadata: Metadata = {
 
   manifest: '/manifest.webmanifest',
 
-  themeColor: '#16A34A',
-
   category: 'environment',
 };
 

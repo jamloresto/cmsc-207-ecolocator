@@ -26,7 +26,7 @@ class PublicMaterialTypeController extends Controller
         $materialTypes = MaterialType::query()
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['name', 'slug', 'description']);
+            ->get(['name', 'slug', 'description', 'icon']);
 
         return response()->json([
             'success' => true,
@@ -48,7 +48,7 @@ class PublicMaterialTypeController extends Controller
         $materialTypes = MaterialType::query()
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['name', 'slug']);
+            ->get(['name', 'slug', 'icon']);
 
         return response()->json([
             'data' => $materialTypes,
