@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { MapPinX } from 'lucide-react';
 import { APIProvider } from '@vis.gl/react-google-maps';
 
@@ -25,15 +26,56 @@ type FindCentersPageProps = {
 
 export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
   const isHomeView = view === 'home';
+  const searchParams = useSearchParams();
+  const hasInitializedFromQueryRef = useRef(false);
 
   const [selectedMaterialSlug, setSelectedMaterialSlug] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  const [activeLocationId, setActiveLocationId] = useState<number | null>(null);
+  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(
+    null,
+  );
+  const [modalLocationId, setModalLocationId] = useState<number | null>(null);
   const [bounds, setBounds] = useState<MapBounds | null>(null);
   const [mapCenterOverride, setMapCenterOverride] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
+
+  const queryLocationId = useMemo(() => {
+    const value = searchParams.get('location_id');
+    if (!value) return null;
+
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? null : parsed;
+  }, [searchParams]);
+
+  const queryCenterOverride = useMemo(() => {
+    const latValue = searchParams.get('lat');
+    const lngValue = searchParams.get('lng');
+
+    if (!latValue || !lngValue) return null;
+
+    const lat = Number(latValue);
+    const lng = Number(lngValue);
+
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+
+    return { lat, lng };
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (hasInitializedFromQueryRef.current) return;
+
+    if (queryLocationId) {
+      setSelectedLocationId(queryLocationId);
+    }
+
+    if (queryCenterOverride) {
+      setMapCenterOverride(queryCenterOverride);
+    }
+
+    hasInitializedFromQueryRef.current = true;
+  }, [queryLocationId, queryCenterOverride]);
 
   const { data: materialTypes = [] } = useFindCenterMaterialTypes();
 
@@ -45,7 +87,7 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
   const locations = useMemo(() => data?.data ?? [], [data]);
 
   const { data: activeLocation, isLoading: isActiveLocationLoading } =
-    usePublicLocationDetail(activeLocationId);
+    usePublicLocationDetail(modalLocationId);
 
   const mapListLocations = useMemo(
     () =>
@@ -95,7 +137,8 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
             onMaterialChange={setSelectedMaterialSlug}
             onPlaceSelect={(coords) => {
               setMapCenterOverride(coords);
-              setActiveLocationId(null);
+              setSelectedLocationId(null);
+              setModalLocationId(null);
             }}
           />
         </div>
@@ -105,14 +148,14 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
         <div className="hidden w-full md:flex md:h-[70vh]">
           <div className="h-[70vh] max-h-[70vh] min-h-[70vh] w-64 max-w-64 min-w-64 shrink-0 pr-4">
             <div className="flex h-full flex-col">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-foreground text-sm font-semibold">Centers</p>
+                <p className="text-muted-foreground text-xs">
+                  {isFetching ? 'Updating...' : `${locations.length} visible`}
+                </p>
+              </div>
 
               <div className="flex-1 space-y-3 overflow-y-auto pr-1 [scrollbar-gutter:stable]">
-                <div className="mb-3 flex items-center justify-between">
-                  <p className="text-foreground text-sm font-semibold">Centers</p>
-                  <p className="text-muted-foreground text-xs">
-                    {isFetching ? 'Updating...' : `${locations.length} visible`}
-                  </p>
-                </div>
                 {isLoading || isFetching ? (
                   <div className="bg-background border-border h-full rounded-2xl border p-6 text-center shadow-sm">
                     <Loader text="Loading centers..." />
@@ -122,8 +165,14 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
                     <FindCenterCard
                       key={location.id}
                       location={location}
-                      isActive={activeLocation?.id === location.id}
-                      onClick={() => setActiveLocationId(location.id)}
+                      isActive={selectedLocationId === location.id}
+                      onClick={() => {
+                        setSelectedLocationId(location.id);
+                        setMapCenterOverride({
+                          lat: location.latitude,
+                          lng: location.longitude,
+                        });
+                      }}
                     />
                   ))
                 ) : (
@@ -141,9 +190,12 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
             <div className="h-full w-full">
               <FindCentersGoogleMap
                 locations={locations}
-                activeLocationId={activeLocation?.id ?? null}
+                activeLocationId={selectedLocationId}
                 centerOverride={mapCenterOverride}
-                onLocationSelect={setActiveLocationId}
+                onLocationSelect={(locationId) => {
+                  setSelectedLocationId(locationId);
+                  setModalLocationId(locationId);
+                }}
                 onBoundsChange={setBounds}
                 isLoading={isLoading || isFetching}
               />
@@ -156,9 +208,12 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
         <div className="relative h-[70vh] w-full">
           <FindCentersGoogleMap
             locations={locations}
-            activeLocationId={activeLocation?.id ?? null}
+            activeLocationId={selectedLocationId}
             centerOverride={mapCenterOverride}
-            onLocationSelect={setActiveLocationId}
+            onLocationSelect={(locationId) => {
+              setSelectedLocationId(locationId);
+              setModalLocationId(locationId);
+            }}
             onBoundsChange={setBounds}
             isLoading={isLoading || isFetching}
           />
@@ -167,18 +222,22 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
 
           <div className="absolute right-3 bottom-3 left-3">
             <div className="scrollbar-hide flex h-full snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
-              {isLoading ? (
-                null
-              ) : mapListLocations.length > 0 ? (
+              {isLoading ? null : mapListLocations.length > 0 ? (
                 mapListLocations.map((location: any) => (
                   <div
-                    key={location.name}
+                    key={location.id}
                     className="flex min-w-48 snap-center items-stretch"
                   >
                     <FindCenterCard
                       location={location}
-                      isActive={activeLocation?.id === location.id}
-                      onClick={() => setActiveLocationId(location.id)}
+                      isActive={selectedLocationId === location.id}
+                      onClick={() => {
+                        setSelectedLocationId(location.id);
+                        setMapCenterOverride({
+                          lat: location.latitude,
+                          lng: location.longitude,
+                        });
+                      }}
                     />
                   </div>
                 ))
@@ -195,8 +254,8 @@ export function FindCentersPage({ view = 'default' }: FindCentersPageProps) {
       </div>
 
       <FindCenterLocationModal
-        open={!!activeLocationId}
-        onClose={() => setActiveLocationId(null)}
+        open={!!modalLocationId}
+        onClose={() => setModalLocationId(null)}
         location={activeLocation ?? null}
         isLoading={isActiveLocationLoading}
       />

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import {
   AdvancedMarker,
@@ -30,16 +31,8 @@ const DEFAULT_CENTER = {
 };
 
 const DEFAULT_ZOOM = 15;
+const FOCUSED_ZOOM = 17;
 const BOUNDS_DEBOUNCE_MS = 400;
-
-const options = {
-  disableDefaultUI: true,
-  gestureHandling: 'greedy' as const,
-  zoomControl: true,
-  zoomControlOptions: {},
-  minZoom: 13,
-  maxZoom: 20,
-};
 
 export function FindCentersGoogleMap({
   locations,
@@ -52,7 +45,12 @@ export function FindCentersGoogleMap({
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
+  const searchParams = useSearchParams();
+  const hasQueryOverride =
+    !!searchParams.get('lat') && !!searchParams.get('lng');
+
   const [center, setCenter] = useState(DEFAULT_CENTER);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [hasResolvedLocation, setHasResolvedLocation] = useState(false);
   const [userCoords, setUserCoords] = useState<{
     lat: number;
@@ -60,7 +58,7 @@ export function FindCentersGoogleMap({
   } | null>(null);
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  
   useEffect(() => {
     if (!navigator.geolocation) {
       setHasResolvedLocation(true);
@@ -74,8 +72,18 @@ export function FindCentersGoogleMap({
           lng: position.coords.longitude,
         };
 
-        setCenter(coords);
         setUserCoords(coords);
+
+        setCenter((currentCenter) => {
+          if (hasQueryOverride) return currentCenter;
+          return coords;
+        });
+
+        setZoom((currentZoom) => {
+          if (hasQueryOverride) return currentZoom;
+          return DEFAULT_ZOOM;
+        });
+
         setHasResolvedLocation(true);
       },
       () => {
@@ -87,12 +95,14 @@ export function FindCentersGoogleMap({
         maximumAge: 0,
       },
     );
-  }, []);
+  }, [hasQueryOverride]);
 
   useEffect(() => {
     if (!centerOverride) return;
+
     setCenter(centerOverride);
-  }, [centerOverride]);
+    setZoom(FOCUSED_ZOOM);
+  }, [centerOverride?.lat, centerOverride?.lng]);
 
   useEffect(() => {
     return () => {
@@ -106,6 +116,10 @@ export function FindCentersGoogleMap({
     (event: MapCameraChangedEvent) => {
       const nextCenter = event.detail.center;
       setCenter(nextCenter);
+
+      if (typeof event.detail.zoom === 'number') {
+        setZoom(event.detail.zoom);
+      }
 
       const bounds = event.detail.bounds;
       if (!bounds) return;
@@ -141,20 +155,23 @@ export function FindCentersGoogleMap({
   }
 
   return (
-    <div data-lenis-prevent className="border-border max-h-80vh relative h-full w-full overflow-hidden rounded-2xl border">
+    <div
+      data-lenis-prevent
+      className="border-border relative h-full w-full overflow-hidden rounded-2xl border"
+    >
       <Map
         style={{
           width: '100%',
           height: '100%',
         }}
         center={center}
-        defaultZoom={DEFAULT_ZOOM}
+        zoom={zoom}
         onCameraChanged={handleCameraChanged}
         mapId="find-centers-map"
         disableDefaultUI={true}
         gestureHandling="greedy"
         zoomControl={true}
-        minZoom={13}
+        minZoom={10}
         maxZoom={20}
         colorScheme={isDark ? ColorScheme.DARK : ColorScheme.LIGHT}
       >
