@@ -7,10 +7,11 @@ import {
   Search,
   SlidersHorizontal,
 } from 'lucide-react';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
+
 import { FindCentersPage } from '@/modules/find-centers';
-import Link from 'next/link';
 
 export default function FindCentersNearYouSection() {
   return (

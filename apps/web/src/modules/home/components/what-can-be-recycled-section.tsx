@@ -2,10 +2,11 @@
 
 import * as Icons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
 
 import { MaterialType, useMaterialTypes } from '@/modules/material-types';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 function getMaterialIcon(iconName?: string): LucideIcon {
   if (!iconName) return Icons.Recycle;

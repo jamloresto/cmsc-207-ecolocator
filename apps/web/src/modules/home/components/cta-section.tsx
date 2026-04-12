@@ -1,8 +1,9 @@
 'use client';
 
 import { ArrowRight, MapPin, Recycle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
 
 export default function CtaSection() {
   return (

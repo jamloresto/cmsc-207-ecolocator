@@ -11,10 +11,10 @@ import {
   Newspaper,
   Recycle,
 } from 'lucide-react';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { initHeroAnimations } from '@/lib/animations';
-import Link from 'next/link';
 
 const chips = [
   { label: 'Plastic', icon: Recycle },
