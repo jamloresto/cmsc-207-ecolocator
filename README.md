@@ -2233,6 +2233,92 @@ The EcoLocator API documentation covers both major access layers:
 - public location browsing
 - map-bounds location discovery
 
+## 6.20 Swagger / OpenAPI Support
+### 6.20.1 Overview
+
+EcoLocator supports <b>Swagger / OpenAPI-based API documentation</b> to make the backend easier to understand, test, and maintain. The system uses <b>OpenAPI attributes</b> directly in the Laravel controllers, allowing API documentation to stay close to the source code and remain synchronized with endpoint behavior.
+
+This means the API documentation is not written separately by hand. Instead, it is generated from annotations such as:
+
+- `#[OA\Get(...)]`
+- `#[OA\Post(...)]`
+- `#[OA\Put(...)]`
+- `#[OA\Patch(...)]`
+- `#[OA\Delete(...)]`
+- `#[OA\Tag(...)]`
+
+### 6.20.2 Purpose of Swagger / OpenAPI in EcoLocator
+
+Swagger / OpenAPI support provides the following benefits:
+
+- documents available API endpoints in a structured format
+- describes request parameters, request bodies, and expected responses
+- helps frontend and backend developers integrate more efficiently
+- makes testing endpoints easier through an interactive documentation interface
+- improves maintainability as the API grows
+- supports clearer handoff for future developers
+
+### 6.20.3 Coverage in the Current Project
+
+#### Admin API Coverage
+
+Documented admin modules include:
+
+- Admin Authentication
+- Admin Dashboard
+- Admin Users
+- Admin Material Types
+- Admin Locations
+- Admin Contact Messages
+- Admin Location Suggestions
+
+#### Public API Coverage
+
+Documented public modules include:
+
+- Public Contact Messages
+- Public Location Suggestions
+- Public Material Types
+- Public Locations
+
+### 6.20.4 Documented Elements
+
+From the current controllers, the OpenAPI annotations already describe many essential parts of the API, including:
+
+- endpoint paths
+- HTTP methods
+- endpoint summaries
+- tags for grouping endpoints
+- security requirements for protected routes
+- path parameters
+- query parameters
+- request body schemas
+- example values
+- common response codes such as `200`, `201`, `401`, `403`, `404`, `422`, and `429`
+
+### 6.20.5 Swagger Generation in the Project
+
+Swagger documentation is ignored so developer should generate the document using the following Artisan command:
+```shell
+php artisan l5-swagger:generate
+```
+
+The generated documentation is then accessible at:
+```
+/api/documentation
+```
+
+Access the documentation at: http://127.0.0.1:8000/api/documentation
+
+### 6.20.6 Role in Development Workflow
+
+Swagger / OpenAPI support can be used during development for:
+
+- checking available endpoints without manually reading all controllers
+- validating request formats before frontend integration
+- confirming which fields are required or optional
+- reviewing filtering, sorting, and pagination parameters
+- testing admin and public endpoints during QA and debugging
 
 
 
