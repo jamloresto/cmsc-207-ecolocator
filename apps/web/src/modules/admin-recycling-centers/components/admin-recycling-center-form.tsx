@@ -60,7 +60,7 @@ export function WasteCollectionLocationForm({
     [initialValues],
   );
 
-    const router = useRouter();
+  const router = useRouter();
 
   const [values, setValues] = useState<WasteCollectionLocationPayload>(merged);
 
@@ -94,76 +94,42 @@ export function WasteCollectionLocationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <Input
-          label="Location name"
-          value={values.name}
-          onChange={(e) => updateField('name', e.target.value)}
-          required
-        />
-
-        <Input
-          label="Country name"
-          value={values.country_name}
-          onChange={(e) => updateField('country_name', e.target.value)}
-          required
-        />
-
-        <Input
-          label="Country code"
-          value={values.country_code}
-          onChange={(e) => updateField('country_code', e.target.value)}
-          required
-        />
-
-        <Input
-          label="State / Province"
-          value={values.state_province}
-          onChange={(e) => updateField('state_province', e.target.value)}
-          required
-        />
-
-        <Input
-          label="State code"
-          value={values.state_code ?? ''}
-          onChange={(e) => updateField('state_code', e.target.value)}
-        />
-
-        <Input
-          label="City / Municipality"
-          value={values.city_municipality}
-          onChange={(e) => updateField('city_municipality', e.target.value)}
-          required
-        />
-
-        <Input
-          label="Region"
-          value={values.region ?? ''}
-          onChange={(e) => updateField('region', e.target.value)}
-        />
-
-        <Input
-          label="Postal code"
-          value={values.postal_code ?? ''}
-          onChange={(e) => updateField('postal_code', e.target.value)}
-        />
-      </div>
-
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        label="Street address"
-        value={values.street_address}
-        onChange={(e) => updateField('street_address', e.target.value)}
+        label="Location name"
+        value={values.name}
+        onChange={(e) => updateField('name', e.target.value)}
         required
       />
-
       {GOOGLE_MAPS_API_KEY ? (
         <LocationPickerMap
           latitude={values.latitude}
           longitude={values.longitude}
-          onChange={({ latitude, longitude }) => {
-            updateField('latitude', latitude);
-            updateField('longitude', longitude);
+          onChange={({
+            latitude,
+            longitude,
+            country_code,
+            country_name,
+            state_province,
+            state_code,
+            city_municipality,
+            region,
+            street_address,
+            postal_code,
+          }) => {
+            setValues((prev) => ({
+              ...prev,
+              latitude,
+              longitude,
+              country_code: country_code || prev.country_code,
+              country_name: country_name || prev.country_name,
+              state_province: state_province || prev.state_province,
+              state_code: state_code || prev.state_code,
+              city_municipality: city_municipality || prev.city_municipality,
+              region: region || prev.region,
+              street_address: street_address || prev.street_address,
+              postal_code: postal_code || prev.postal_code,
+            }));
           }}
         />
       ) : (
@@ -187,6 +153,60 @@ export function WasteCollectionLocationForm({
           />
         </div>
       )}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Input
+          label="Country name"
+          value={values.country_name}
+          onChange={(e) => updateField('country_name', e.target.value)}
+          required
+        />
+
+        <Input
+          label="Country code"
+          value={values.country_code}
+          onChange={(e) => updateField('country_code', e.target.value)}
+          required
+        />
+
+        <Input
+          label="Region"
+          value={values.region ?? ''}
+          onChange={(e) => updateField('region', e.target.value)}
+        />
+
+        <Input
+          label="State / Province"
+          value={values.state_province}
+          onChange={(e) => updateField('state_province', e.target.value)}
+          required
+        />
+
+        <Input
+          label="State code"
+          value={values.state_code ?? ''}
+          onChange={(e) => updateField('state_code', e.target.value)}
+        />
+
+        <Input
+          label="Postal code"
+          value={values.postal_code ?? ''}
+          onChange={(e) => updateField('postal_code', e.target.value)}
+        />
+      </div>
+
+      <Input
+        label="City / Municipality"
+        value={values.city_municipality}
+        onChange={(e) => updateField('city_municipality', e.target.value)}
+        required
+      />
+
+      <Input
+        label="Street address"
+        value={values.street_address}
+        onChange={(e) => updateField('street_address', e.target.value)}
+        required
+      />
 
       <div className="grid gap-4 md:grid-cols-2">
         <Input
