@@ -2711,10 +2711,10 @@ The EcoLocator frontend is a <b>modern, scalable, and modular application</b> bu
 
 It combines:
 
-efficient API integration
-dynamic map interactions
-reusable UI components
-animation-driven user experience
+- efficient API integration
+- dynamic map interactions
+- reusable UI components
+- animation-driven user experience
 
 to deliver a responsive and user-friendly platform.
 
