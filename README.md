@@ -2482,7 +2482,241 @@ This ensures that:
 - admin functionalities are protected
 - system data integrity is maintained
 
+# 🎨 8. Frontend Architecture
+## 8.1 Overview
 
+The EcoLocator frontend is built using <b>Next.js</b>, with <b>Tailwind CSS</b> for styling and a modular architecture for scalability and maintainability.
+
+The frontend is responsible for:
+
+- rendering public and admin interfaces
+- managing UI state and interactions
+- integrating with the backend API
+- handling map-based features and animations
+
+## 8.2 Core Technologies
+| Technology	| Purpose |
+|-------------|---------|
+| Next.js	| React framework for SSR/SPA |
+| Tailwind CSS	| Styling and responsive design |
+| TypeScript	| Type safety |
+| React Query (TanStack)	| Data fetching and caching |
+| GSAP	| Animations and scroll effects |
+| Google Maps API	| Map rendering and geolocation |
+
+## 8.3 Application Structure
+
+The frontend follows a <b>modular feature-based structure</b>, making it easier to scale and maintain.
+
+### Folder Structure
+```
+src/
+├── app/                # Next.js app router pages
+├── modules/            # Feature-based modules
+│   ├── admin/
+│   ├── admin-contact-messages/
+│   ├── admin-location-suggestions/
+│   ├── admin-material-types/
+│   ├── admin-recycling-centers/
+│   ├── admin-users/
+│   ├── auth/
+│   ├── contact/
+│   ├── find-centers/
+│   ├── home/
+│   ├── location-suggestions/
+│   ├── material-types/
+│   └──recycling-centers/
+│
+├── components/         # Reusable UI components
+│   └── providers/          # Global providers (theme, store, etc.)
+├── lib/                # Utilities (API client, helpers)
+├── hooks/              # Custom React hooks
+└── types/              # Global types
+```
+
+## 8.4 Modular Design Approach
+
+Each feature is encapsulated inside a <b>module</b>, which typically contains:
+
+- API logic
+- components
+- hooks
+- types
+
+Example: Recycling Centers Module
+```
+modules/recycling-centers/
+├── api.ts
+├── components/
+├── hooks/
+└── types.ts
+```
+
+#### Benefits:
+
+- better separation of concerns
+- easier debugging and testing
+- reusable across pages
+
+## 8.5 State Management
+
+EcoLocator uses a combination of:
+
+### 8.5.1 Server State (React Query)
+
+#### Used for:
+
+- fetching API data
+- caching responses
+- handling loading and error states
+
+#### Examples:
+
+- locations list
+- material types
+- admin tables
+
+### 8.5.2 Local UI State (React Hooks)
+
+#### Used for:
+
+- selected filters
+- active location
+- modal states
+- map center overrides
+
+## 8.6 API Integration Layer
+
+The frontend communicates with the backend through a centralized API client.
+
+### Responsibilities:
+- sending HTTP requests
+- handling errors globally
+- attaching credentials (for admin routes)
+### Pattern Used:
+feature-based API files (api.ts per module)
+reusable API client instance
+
+## 8.7 UI Component System
+
+EcoLocator uses a reusable component system for consistency.
+
+### Common Components
+- Button (variants: primary, secondary, outline, etc.)
+- Badge (for materials, statuses)
+- Input / FormField
+- Table (with sorting and pagination)
+- Modal
+- Toast
+
+#### Benefits:
+- consistent UI across admin and public pages
+- faster development
+- easier theming
+
+## 8.8 Theming (Light/Dark Mode)
+
+The app supports <b>light and dark themes</b> using:
+
+- `next-themes`
+- CSS variables (design tokens)
+
+#### Example Tokens:
+```CSS
+--background
+--foreground
+--primary
+--card
+--muted
+```
+#### Behavior:
+- supports system theme
+- user preference stored locally
+- dynamic switching
+
+## 8.9 Map Integration
+
+The map is one of the most important frontend components.
+
+### Features:
+- interactive map rendering
+- marker display
+- bounds-based fetching
+- autocomplete search
+- location selection
+### Behavior:
+- map movement triggers API requests
+- markers update dynamically
+- selected location syncs with list view
+
+## 8.10 Animations
+
+EcoLocator uses <b>GSAP</b> for animations.
+
+### Use Cases:
+- homepage hero animations
+- scroll-triggered sections
+- horizontal scrolling sections
+- staggered animations
+### Benefits:
+- smooth transitions
+- improved user engagement
+- modern UI feel
+
+## 8.11 Responsive Design
+
+The frontend is designed with a <b>mobile-first approach</b> using Tailwind.
+
+### Key Strategies:
+- breakpoint: md for layout changes
+- flexible widths (w-full, max-w-*)
+- responsive map sizing
+- mobile hamburger menu
+
+## 8.12 Admin Interface Design
+
+The admin panel includes:
+- dashboard cards
+- data tables with:
+  - sorting
+  - filtering
+  - pagination
+- reusable forms for CRUD operations
+### Table Features:
+- consistent pagination UI
+- filter toolbar
+- skeleton loaders
+- status badges
+
+## 8.13 Performance Optimizations
+
+The frontend includes several optimizations:
+
+- React Query caching
+- debounced API requests (map movement)
+- request cancellation
+- lazy loading components
+
+## 8.14 Error Handling
+
+The frontend handles errors through:
+
+- API error interceptors
+- UI feedback (toasts)
+- fallback states (empty lists, loaders)
+
+## 8.15 Summary
+
+The EcoLocator frontend is a <b>modern, scalable, and modular application</b> built using Next.js and Tailwind CSS.
+
+It combines:
+
+efficient API integration
+dynamic map interactions
+reusable UI components
+animation-driven user experience
+
+to deliver a responsive and user-friendly platform.
 
 
 
