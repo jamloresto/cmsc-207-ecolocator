@@ -2320,6 +2320,178 @@ Swagger / OpenAPI support can be used during development for:
 - reviewing filtering, sorting, and pagination parameters
 - testing admin and public endpoints during QA and debugging
 
+# 🔐 7. Authentication & Authorization
+## 7.1 Overview
+
+EcoLocator implements <b>authentication and role-based authorization</b> to secure administrative functionalities while keeping public features accessible to all users.
+
+The system distinguishes between:
+
+- <b>Public Users</b> (no authentication required)
+- <b>Admin Users</b> (authentication required)
+
+## 7.2 Authentication Mechanism
+### 7.2.1 Admin Authentication
+
+EcoLocator uses session-based authentication via Laravel’s web guard for admin users.
+
+#### Login Flow:
+
+1. Admin submits email and password
+2. System validates credentials
+3. Laravel authenticates user via Auth::attempt()
+4. Session is created upon successful login
+5. Authenticated user can access protected routes
+
+#### Key Characteristics:
+
+- Uses cookies/session (not token-based by default)
+- CSRF protection enabled
+- Logout invalidates session and regenerates CSRF token
+### 7.2.2 Public Access
+
+Public endpoints <b>do not require authentication</b>, including:
+
+- Viewing recycling locations
+- Viewing material types
+- Submitting contact messages
+- Submitting location suggestions
+## 7.3 Authorization (Role-Based Access Control)
+
+Authorization is enforced using <b>role-based logic</b> defined in the User model and middleware.
+
+### 7.3.1 Admin Roles
+| Role	| Description |
+|-------|-------------|
+| `super_admin`	| Full access to all admin features |
+| `editor`	| Can manage most data but may have restricted access to sensitive actions |
+
+### 7.3.2 Role Checking Methods
+
+The system uses helper methods inside the User model:
+
+- `isSuperAdmin()`
+- `isEditor()`
+- `hasAdminAccess()`
+
+These methods determine whether a user can access admin routes.
+
+## 7.4 Middleware Protection
+
+Admin routes are protected using middleware such as:
+
+- `auth` → ensures user is authenticated
+- `EnsureUserIsAdmin` → ensures user has admin privileges
+
+#### Behavior:
+
+- Unauthenticated users → `401 Unauthorized`
+- Non-admin users → `403 Forbidden`
+## 7.5 Access Control by Feature
+### Public Features (No Authentication Required)
+- View locations
+- Filter materials
+- Use map features
+- Submit contact form
+- Submit location suggestion
+### Admin Features (Authentication Required)
+| Feature	| Required Role |
+|---------|---------------|
+| Dashboard	| Admin |
+| Manage Locations	| Admin |
+| Manage Material Types	| Admin |
+| Review Suggestions	| Admin |
+| Manage Contact Messages	| Admin |
+| Manage Admin Users	| Super Admin |
+
+## 7.6 Account Status Control
+
+The system uses an `is_active` field in the `users` table.
+
+Behavior:
+- `is_active = true` → user can log in
+- `is_active = false` → login is denied
+
+This allows:
+
+- soft deactivation of accounts
+- better control without deleting users
+
+## 7.7 Security Features
+EcoLocator includes several built-in security mechanisms:
+
+### 7.7.1 Input Validation
+All requests are validated using Laravel Form Requests or $request->validate()
+
+### 7.7.2 CSRF Protection
+Enabled for session-based authentication
+
+### 7.7.3 Rate Limiting
+Public endpoints (contact form, suggestions) are limited (e.g., 5 requests/minute)
+
+### 7.7.4 Password Security
+Passwords are hashed using Laravel’s hashing system
+
+### 7.7.5 Audit Fields
+- Tracks:
+  - created_by
+  - updated_by
+  - approved_by
+  - rejected_by
+
+# 7.8 Authentication Flow Diagram
+```mermaid
+sequenceDiagram
+    participant U as Admin User
+    participant F as Frontend
+    participant B as Laravel Backend
+
+    U->>F: Enter email & password
+    F->>B: POST /admin/login
+    B->>B: Validate credentials
+    B-->>F: Auth success + session
+    F-->>U: Access admin dashboard
+
+    U->>F: Logout
+    F->>B: POST /admin/logout
+    B-->>F: Session destroyed
+```
+
+# 7.9 Authorization Flow Example
+Example: Accessing Admin Locations API
+```mermaid
+flowchart TD
+    A[Request to /api/v1/admin/locations] --> B{Authenticated?}
+    B -->|No| C[401 Unauthorized]
+    B -->|Yes| D{Is Admin?}
+    D -->|No| E[403 Forbidden]
+    D -->|Yes| F[Access Granted]
+```
+# 7.10 Limitations
+- Currently uses session-based auth only (no JWT or OAuth)
+- No multi-factor authentication (MFA)
+- No fine-grained permission system (only role-based)
+
+# 7.11 Summary
+
+EcoLocator implements a <b>secure and structured authentication and authorization system</b> using Laravel’s built-in session authentication and role-based access control.
+
+This ensures that:
+
+- public users can freely access essential features
+- admin functionalities are protected
+- system data integrity is maintained
+
+
+
+
+
+
+
+
+
+
+
 
 
 
