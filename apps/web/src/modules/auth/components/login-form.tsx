@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, SubmitEvent, useMemo, useState } from 'react';
+import { ChangeEvent, SubmitEvent, useState } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -9,11 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 
-import {
-  getAdminLoginErrorMessage,
-  useAdminLogin,
-  type AdminLoginPayload,
-} from '@/modules/auth';
+import { useAdminLogin, type AdminLoginPayload } from '@/modules/auth';
 
 type AdminLoginFormErrors = Partial<Record<keyof AdminLoginPayload, string>>;
 
@@ -28,12 +24,8 @@ export function AdminLoginForm() {
 
   const [values, setValues] = useState<AdminLoginPayload>(initialValues);
   const [errors, setErrors] = useState<AdminLoginFormErrors>({});
+  const [generalError, setGeneralError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  const serverError = useMemo(() => {
-    if (!loginMutation.error) return '';
-    return getAdminLoginErrorMessage(loginMutation.error);
-  }, [loginMutation.error]);
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -47,6 +39,8 @@ export function AdminLoginForm() {
       ...prev,
       [name]: '',
     }));
+
+    setGeneralError('');
 
     if (loginMutation.isError) {
       loginMutation.reset();
@@ -65,12 +59,13 @@ export function AdminLoginForm() {
     }
 
     setErrors(nextErrors);
-
     return Object.keys(nextErrors).length === 0;
   }
 
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    setGeneralError('');
 
     if (!validate()) return;
 
@@ -82,6 +77,11 @@ export function AdminLoginForm() {
       {
         onSuccess: () => {
           router.replace('/admin');
+        },
+        onError: (error: Error) => {
+          setGeneralError(
+            error.message || 'Unable to sign in. Please try again.',
+          );
         },
       },
     );
@@ -116,6 +116,7 @@ export function AdminLoginForm() {
               onChange={handleChange}
               disabled={isLoading}
               autoComplete="email"
+              error={errors.email}
             />
           </FormField>
 
@@ -135,6 +136,7 @@ export function AdminLoginForm() {
                 disabled={isLoading}
                 autoComplete="current-password"
                 className="pr-12"
+                error={errors.password}
               />
 
               <button
@@ -153,9 +155,9 @@ export function AdminLoginForm() {
             </div>
           </FormField>
 
-          {serverError ? (
+          {generalError ? (
             <div className="border-destructive/20 bg-destructive/10 text-destructive rounded-lg border px-4 py-3 text-sm">
-              {serverError}
+              {generalError}
             </div>
           ) : null}
 

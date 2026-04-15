@@ -130,6 +130,7 @@ export function ContactForm() {
               value={values.name}
               onChange={handleChange}
               disabled={isSubmitting}
+              error={errors.name}
             />
           </FormField>
 
@@ -142,6 +143,7 @@ export function ContactForm() {
               value={values.email}
               onChange={handleChange}
               disabled={isSubmitting}
+              error={errors.email}
             />
           </FormField>
 
@@ -153,6 +155,7 @@ export function ContactForm() {
               value={values.contact_info}
               onChange={handleChange}
               disabled={isSubmitting}
+              error={errors.contact_info}
             />
           </FormField>
 
@@ -168,6 +171,7 @@ export function ContactForm() {
               value={values.subject}
               onChange={handleChange}
               disabled={isSubmitting}
+              error={errors.subject}
             />
           </FormField>
 
@@ -180,6 +184,7 @@ export function ContactForm() {
               disabled={isSubmitting}
               rows={6}
               label="Message*"
+              error={errors.message}
             />
           </FormField>
 

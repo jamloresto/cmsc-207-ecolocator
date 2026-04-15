@@ -1,34 +1,11 @@
 'use client';
 
-import { SubmitEvent } from 'react';
+import { SubmitEvent, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-
-const ICON_OPTIONS = [
-  'Battery',
-  'Bottle',
-  'Building2',
-  'CircleDashed',
-  'Cuboid',
-  'Factory',
-  'Fence',
-  'Leaf',
-  'MonitorSmartphone',
-  'Newspaper',
-  'Package',
-  'PaintBucket',
-  'Radiation',
-  'Recycle',
-  'Shapes',
-  'Shirt',
-  'SquareDashed',
-  'Stone',
-  'Trash2',
-  'TV',
-];
 
 export type MaterialTypeFormValues = {
   name: string;
@@ -47,6 +24,10 @@ type MaterialTypeFormProps = {
   onCancel: () => void;
 };
 
+type FormErrors = {
+  name?: string;
+};
+
 export function MaterialTypeForm({
   values,
   isSaving = false,
@@ -56,8 +37,29 @@ export function MaterialTypeForm({
   onSubmit,
   onCancel,
 }: MaterialTypeFormProps) {
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  function validate() {
+    const nextErrors: FormErrors = {};
+
+    if (!values.name.trim()) {
+      nextErrors.name = 'Name is required.';
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  }
+
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    if (!validate()) return;
+
+    onSubmit(e);
+  }
+
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error ? (
         <div className="border-destructive/30 bg-destructive/5 text-destructive rounded-xl border p-3 text-sm">
           {error}
@@ -71,15 +73,20 @@ export function MaterialTypeForm({
         <Input
           id="material-type-name"
           value={values.name}
-          onChange={(e) =>
+          onChange={(e) => {
             onChange({
               ...values,
               name: e.target.value,
-            })
-          }
+            });
+
+            setErrors((prev) => ({ ...prev, name: '' }));
+          }}
           placeholder="Enter material type name"
-          required
+          error={errors.name}
         />
+        {errors.name && (
+          <p className="text-destructive text-sm">{errors.name}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -132,7 +139,7 @@ export function MaterialTypeForm({
           Cancel
         </Button>
 
-        <Button type="submit" disabled={isSaving || !values.name.trim()}>
+        <Button type="submit" disabled={isSaving}>
           {isSaving ? 'Saving...' : submitLabel}
         </Button>
       </div>
