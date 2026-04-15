@@ -834,13 +834,384 @@ By combining:
 
 the system delivers a responsive and scalable location-based experience.
 
+# 🗄️ 5. Database Design
+## 5.1 Overview
 
+EcoLocator uses a <b>relational database design</b> implemented in <b>MySQL</b> to store and manage structured system data. The database supports both the <b>public-facing platform</b> and <b>the admin management system</b>, including recycling locations, material types, contact messages, user accounts, and user-submitted location suggestions.
 
+The database is designed to ensure:
 
+- data integrity through structured relationships
+- consistency of location and moderation records
+- scalability for future expansion
+- maintainability for admin operations
 
+## 5.2 Entity-Relationship Diagram (ERD)
 
+```mermaid
+erDiagram
 
+    USERS {
+        bigint id PK
+        string name
+        string email
+        string password
+        string role
+        boolean is_active
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
+    }
 
+    MATERIAL_TYPES {
+        bigint id PK
+        string name
+        string slug
+        text description
+        string icon
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    WASTE_COLLECTION_LOCATIONS {
+        bigint id PK
+        string name
+        string country_code
+        string country_name
+        string state_province
+        string state_code
+        string city_municipality
+        string city_slug
+        string region
+        string street_address
+        string postal_code
+        float latitude
+        float longitude
+        string contact_number
+        string email
+        text operating_hours
+        text notes
+        boolean is_active
+        bigint created_by FK
+        bigint updated_by FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    LOCATION_SUGGESTIONS {
+        bigint id PK
+        string name
+        string email
+        string contact_info
+        string location_name
+        string country_code
+        string country_name
+        string state_province
+        string state_code
+        string city_municipality
+        string region
+        string street_address
+        string address
+        string province
+        string postal_code
+        float latitude
+        float longitude
+        string contact_number
+        string location_email
+        text operating_hours
+        text materials_accepted
+        text notes
+        text review_notes
+        string status
+        timestamp reviewed_at
+        timestamp approved_at
+        timestamp rejected_at
+        bigint approved_by FK
+        bigint rejected_by FK
+        bigint waste_collection_location_id FK
+        boolean is_active
+        string ip_address
+        text user_agent
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CONTACT_MESSAGES {
+        bigint id PK
+        string name
+        string email
+        string contact_info
+        string subject
+        text message
+        string status
+        timestamp read_at
+        timestamp replied_at
+        string ip_address
+        text user_agent
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    LOCATION_MATERIAL_TYPE {
+        bigint waste_collection_location_id FK
+        bigint material_type_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    USERS ||--o{ WASTE_COLLECTION_LOCATIONS : creates
+    USERS ||--o{ WASTE_COLLECTION_LOCATIONS : updates
+    USERS ||--o{ LOCATION_SUGGESTIONS : approves
+    USERS ||--o{ LOCATION_SUGGESTIONS : rejects
+    WASTE_COLLECTION_LOCATIONS ||--o{ LOCATION_MATERIAL_TYPE : has
+    MATERIAL_TYPES ||--o{ LOCATION_MATERIAL_TYPE : belongs_to
+    WASTE_COLLECTION_LOCATIONS ||--o| LOCATION_SUGGESTIONS : sourced_from
+```
+
+## 5.3 Core Tables Description
+### 5.3.1 Users Table
+
+#### Purpose:
+Stores authenticated system users who can access the admin panel. Based on the model, users may have the roles super_admin or editor, and admin access is determined through role-checking methods such as isSuperAdmin(), isEditor(), and hasAdminAccess().
+
+#### Important Fields:
+
+- `id` – primary key
+- `name` – full name of the user
+- `email` – unique login identifier
+- `password` – hashed password
+- `role` – access level of the user
+- `is_active` – indicates whether the account is active
+- `email_verified_at` – email verification timestamp
+- `created_at`, `updated_at` – audit timestamps
+
+#### Role Values Observed in Model Logic:
+
+- `super_admin`
+- `editor`
+
+### 5.3.2 Material Types Table
+
+#### Purpose:
+Stores recyclable material categories used for classifying waste collection locations. The model also includes an icon field, which supports visual representation in the frontend. Only active material types should typically be exposed to the public side of the system.
+
+#### Important Fields:
+
+- `id`
+- `name`
+- `slug`
+- `description`
+- `icon`
+- `is_active`
+- `created_at`, `updated_at`
+
+#### Relationships:
+
+many-to-many with `waste_collection_locations` through the `location_material_type` pivot table
+
+### 5.3.3 Waste Collection Locations Table
+
+#### Purpose:
+Stores official recycling centers and waste collection locations displayed to users on the map and in search results. This table contains normalized address information and operational details.
+
+#### Important Fields:
+
+- `id`
+- `name`
+- `country_code`
+- `country_name`
+- `state_province`
+- `state_code`
+- `city_municipality`
+- `city_slug`
+- `region`
+- `street_address`
+- `postal_code`
+- `latitude`
+- `longitude`
+- `contact_number`
+- `email`
+- `operating_hours`
+- `notes`
+- `is_active`
+- `created_by`
+- `updated_by`
+- `created_at`, `updated_at`
+
+#### Special Model Behavior:
+
+- `city_slug` is automatically generated from `city_municipality`
+- `country_code` is converted to uppercase before save
+- `state_code` is converted to uppercase before save
+
+#### Relationships:
+
+- belongs to a creator via `created_by`
+- belongs to an updater via `updated_by`
+- belongs to many `material_types` through `location_material_type`
+
+### 5.3.4 Location Suggestions Table
+
+#### Purpose:
+Stores user-submitted location suggestions before they become official waste collection locations. This is one of the most detailed tables in the system because it supports both raw user submission and admin moderation.
+
+#### Important Fields:
+
+- submitter information:
+  - `name`
+  - `email`
+  - `contact_info`
+- suggested location details:
+  - `location_name`
+  - `country_code`
+  - `country_name`
+  - `state_province`
+  - `state_code`
+  - `city_municipality`
+  - `region`
+  - `street_address`
+  - `address`
+  - `province`
+  - `postal_code`
+  - `latitude`
+  - `longitude`
+  - `contact_number`
+  - `location_email`
+  - `operating_hours`
+  - `materials_accepted`
+  - `notes`
+- moderation fields:
+  - `review_notes`
+  - `status`
+  - `reviewed_at`
+  - `approved_at`
+  - `rejected_at`
+  - `approved_by`
+  - `rejected_by`
+- linkage and system metadata:
+  - `waste_collection_location_id`
+  - `is_active`
+  - `ip_address`
+  - `user_agent`
+  - `created_at`, `updated_at`
+
+#### Relationships:
+
+- belongs to approving user through `approved_by`
+- belongs to rejecting user through `rejected_by`
+- belongs to `waste_collection_location` through `waste_collection_location_id` once approved and converted into an official record
+
+#### Observation:
+Unlike the earlier draft, the current model does not define a many-to-many relationship to `material_types`. Instead, accepted materials are currently stored in the `materials_accepted` field.
+
+### 5.3.5 Contact Messages Table
+
+#### Purpose:
+Stores inquiries or messages submitted by users through the contact form. This model includes not only the message content but also moderation and tracking metadata.
+
+#### Important Fields:
+
+- `id`
+- `name`
+- `email`
+- `contact_info`
+- `subject`
+- `message`
+- `status`
+- `read_at`
+- `replied_at`
+- `ip_address`
+- `user_agent`
+- `created_at`, `updated_at`
+
+#### Purpose of Metadata Fields:
+
+- `read_at` – tracks when a message was opened/read
+- `replied_at` – tracks when a reply was sent
+- `ip_address` – captures request source
+- `user_agent` – captures client device/browser context
+
+## 5.4 Pivot Table
+### 5.4.1 Location Material Type Table
+
+#### Purpose:
+Supports the many-to-many relationship between official waste collection locations and material types. The table name used in the models is `location_material_type`.
+
+#### Fields:
+
+- `waste_collection_location_id` or location foreign key
+- `material_type_id`
+- `timestamps`
+
+#### Use Case:
+A single waste collection location may accept multiple material types, while a single material type may be accepted by multiple locations.
+
+## 5.5 Relationships Summary
+
+The updated model relationships based on your code are:
+
+- <b>User → WasteCollectionLocation</b>
+  - one user may create many locations
+  - one user may update many locations
+- <b>User → LocationSuggestion</b>
+  - one user may approve many suggestions
+  - one user may reject many suggestions
+- <b>WasteCollectionLocation ↔ MaterialType</b>
+  - many-to-many through `location_material_type`
+- <b>LocationSuggestion → WasteCollectionLocation</b>
+  - a suggestion may link to the official location created after approval through `waste_collection_location_id`
+
+## 5.6 Data Integrity and Constraints
+
+The models suggest several integrity and control rules in the system:
+
+- primary keys uniquely identify records
+- foreign keys connect moderation and ownership relationships
+- boolean flags such as `is_active` are used for activation status
+- timestamps support auditability and workflow tracking
+- role checks in the `User` model enforce admin permissions
+- location suggestions are separated from official locations until approval
+
+## 5.7 Suggestion Approval Data Flow
+```mermaid
+flowchart TD
+    A[Public user submits suggestion] --> B[Stored in location_suggestions]
+    B --> C[Admin reviews suggestion]
+    C -->|Approved| D[Create official waste_collection_location]
+    D --> E[Store new location ID in waste_collection_location_id]
+    C -->|Rejected| F[Store rejection details and reviewer info]
+```
+
+This reflects the current moderation structure where a suggestion can later reference the official location record that resulted from approval.
+
+## 5.8 Normalization Notes
+
+The schema is mostly normalized because:
+
+- `users`, `material_types`, `waste_collection_locations`, `location_suggestions`, and `contact_messages` are separated by concern
+- many-to-many data between locations and materials is stored in a pivot table
+- moderation metadata is stored directly in location_suggestions for workflow traceability
+
+One notable design choice is that `materials_accepted` in `location_suggestions` is stored as a direct field instead of through a normalized pivot relation. This is practical for submissions but less normalized than the official location-material design.
+
+5.9 Summary
+
+The EcoLocator database is built around five primary entities:
+
+- `users`
+- `material_types`
+- `waste_collection_locations`
+- `location_suggestions`
+- `contact_messages`
+
+It also includes the `location_material_type` pivot table to support material classification for official locations. Compared with the earlier draft, the updated schema now more accurately reflects:
+
+- richer address fields for locations
+- explicit moderation fields for suggestions
+- audit fields for contact messages
+- creator/updater tracking for official locations
+- icon support for material types
 
 
 ----------
