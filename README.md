@@ -89,78 +89,245 @@ EcoLocator is composed of two main components:
 
 These components communicate through a centralized <b>API backend</b>, ensuring scalability and maintainability.
 
+# 🏗️ 2. System Architecture
+## 2.1 Overview
+
+EcoLocator follows a <b>client-server architecture</b> within a <b>monorepo setup</b>, where the frontend and backend are maintained in a single repository but operate as separate applications.
+
+The system is composed of four major parts:
+
+1. Frontend Web Application<br>
+Built with Next.js and Tailwind CSS, this serves the public user interface and admin interface.
+2. Backend API<br>
+Built with Laravel, this handles business logic, authentication, data processing, and communication with the database.
+3. Database<br>
+Uses MySQL to store system data such as users, recycling centers, material types, contact messages, and location suggestions.
+4. External Services<br>
+Google Maps services are used for map rendering, place search, geolocation assistance, and interactive location picking.
+
+## 2.2 Architectural Style
+
+The system uses a three-tier architecture:
+
+### Presentation Layer
+
+This is the frontend application where users and admins interact with the system through web pages, forms, filters, tables, and maps.
+
+### Application Layer
+
+This is the Laravel API, which processes requests, applies validation and authorization rules, and executes the business logic.
+
+### Data Layer
+
+This is the MySQL database, which stores and retrieves persistent system data.
+
+## 2.3 High-Level Architecture Diagram
+
+```mermaid
+flowchart LR
+    A[Public User / Admin User] --> B[Next.js Frontend]
+    B --> C[Laravel API]
+    C --> D[MySQL Database]
+    B --> E[Google Maps API / Places API]
+
+    E --> B
+    D --> C
+    C --> B
+```
+
+## 2.4 Monorepo Structure
+
+EcoLocator is organized using a monorepo structure to keep related applications and shared configuration in one codebase.
+
+```
+root/
+│
+├── apps/
+│   ├── api/        # Laravel backend API
+│   └── web/        # Next.js frontend
+│
+├── infra/          # Infrastructure and Docker configuration
+│
+├── package.json
+├── pnpm-workspace.yaml
+├── turbo.json
+└── README.md
+```
+
+This setup improves maintainability by allowing both frontend and backend to evolve together while remaining logically separated.
+
+## 2.5 Frontend Architecture
+
+The frontend is built using <b>Next.js</b>, with <b>Tailwind CSS</b> for styling and modular feature-based organization.
+
+### Main Responsibilities of the Frontend
+- Render public pages and admin pages
+- Display the interactive map and location markers
+- Handle user interactions such as search, filtering, and form submission
+- Communicate with the backend API
+- Integrate Google Maps and Places features
+- Manage UI state such as selected location, filters, theme, and loading states
+
+### Frontend Modules
+
+Typical frontend modules include:
+
+- Authentication
+- Material types
+- Recycling centers
+- Contact messages
+- Location suggestions
+- Admin tables and forms
+- Shared UI components
+
+## 2.6 Backend Architecture
+
+The backend is built with <b>Laravel</b> and exposes REST-style API endpoints.
+
+### Main Responsibilities of the Backend
+- Receive and validate API requests
+- Process business logic
+- Handle user authentication and role-based authorization
+- Manage CRUD operations for system records
+- Approve or reject location suggestions
+- Return structured JSON responses to the frontend
+- Generate API documentation using Swagger / OpenAPI
+
+### Backend Design Approach
+
+The backend separates routes and controllers based on access level:
+
+- <b>Public API endpoints</b> for general users
+- <b>Admin API endpoints</b> for authorized users
+
+This separation improves security and makes the API easier to maintain.
+
+## 2.7 Database Architecture
+
+The database uses <b>MySQL</b> as the primary relational database management system.
+
+### Main Data Stored
+- User accounts and roles
+- Waste collection and recycling locations
+- Material types
+- User-submitted location suggestions
+- Contact messages
+- Suggestion review statuses and metadata
+
+Because the database is relational, it supports structured connections between entities such as:
+- a recycling center and its material types
+- a suggestion and its review status
+- an admin user and approved records
+
+## 2.8 External Services Integration
+
+EcoLocator relies on <b>Google Maps Platform</b> for map-related functionality.
+
+### Google Maps Features Used
+- Interactive map rendering
+- Place autocomplete for search
+- Map-based coordinate selection
+- Marker placement
+- Location recentering based on selected place or coordinates
+
+This integration enhances user experience by allowing users to visually explore nearby recycling centers and search more efficiently.
+
+### 2.9 Request and Response Flow
+
+The typical request flow in EcoLocator works as follows:
+
+1. A user opens the web application.
+2. The frontend displays the interface and loads required components.
+3. When the user performs an action, such as searching for a place or filtering materials, the frontend sends a request to the Laravel API.
+4. The API validates the request and processes the required logic.
+5. The API retrieves or updates data in the MySQL database.
+6. The API sends a JSON response back to the frontend.
+7. The frontend updates the interface and displays the results to the user.
+
+## 2.10 Example Flow: Finding Nearby Recycling Centers
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Next.js Frontend
+    participant G as Google Maps API
+    participant B as Laravel API
+    participant D as MySQL Database
+
+    U->>F: Open Find Centers page
+    F->>G: Load interactive map
+    U->>F: Move map / search location / apply filters
+    F->>B: Request locations within map bounds
+    B->>D: Query matching recycling centers
+    D-->>B: Return filtered location data
+    B-->>F: JSON response
+    F-->>U: Display markers and location cards
+```
+
+## 2.11 Example Flow: Location Suggestion Approval
+
+```mermaid
+sequenceDiagram
+    participant P as Public User
+    participant F as Frontend
+    participant B as Laravel API
+    participant D as MySQL Database
+    participant A as Admin
+
+    P->>F: Submit location suggestion
+    F->>B: Send suggestion data
+    B->>D: Save suggestion as pending
+
+    A->>F: Review suggestion in admin panel
+    F->>B: Send approve request
+    B->>D: Create official recycling location
+    B->>D: Update suggestion status to approved
+    B-->>F: Return success response
+```
+
+## 2.12 Security and Access Control Architecture
+
+EcoLocator includes role-based access control to protect administrative functions.
+
+### Access Levels
+- Public Users
+  - Can browse locations
+  - Can submit contact forms
+  - Can suggest new locations
+- Admin Users
+  - Can manage data inside the admin panel
+  - Can review and moderate location suggestions
+  - Can update statuses of records
+### Admin Roles
+- Super Admin
+- Editor
+
+Authorization is enforced in the backend using middleware and protected routes.
+
+## 2.13 Scalability and Maintainability Considerations
+
+The architecture of EcoLocator supports future growth because:
+
+- The frontend and backend are clearly separated
+- The API is modular and documented
+- The database is relational and structured
+- Map-based fetching reduces unnecessary data loading
+- Public and admin functionality are logically separated
+- The monorepo structure keeps the project organized
+
+This makes the system easier to extend with future features such as:
+
+- mobile application support
+- analytics dashboards
+- AI-based waste classification
+- real-time collection schedules
+
+## 2.14 Summary
+
+EcoLocator uses a modern web system architecture composed of a <b>Next.js frontend</b>, <b>Laravel backend</b>, <b>MySQL database</b>, and <b>Google Maps integration</b>. This architecture enables the platform to provide a responsive user experience, secure admin operations, and scalable data management for recycling and waste collection services.
+
 
 ----------
-### 🎨 UI/UX Enhancements
--  Responsive design (mobile + desktop optimized)
--  Sticky / dynamic header behavior
--  Smooth scrolling experience
--  Reusable UI components (tables, filters, badges, etc.)
--  Dark / Light mode support
-
-## 🧠 Location Suggestion Workflow
-
-EcoLocator implements a structured moderation system for adding new locations:
-
-1. **Public Submission**
-   - Users submit suggested recycling locations via API
-   - Only basic information is required
-
-2. **Admin Review**
-   - Admins (Super Admin / Editor) can:
-     - View all suggestions
-     - Edit and enrich data (e.g., country, region, contact info)
-     - Add review notes
-
-3. **Approval Process**
-   - Once approved:
-     - A new record is created in `waste_collection_locations`
-     - Suggestion is marked as `approved`
-   - If rejected:
-     - Suggestion is marked as `rejected`
-     - Admin provides reason via `review_notes`
-
-4. **Data Integrity**
-   - Approval requires required fields (e.g., country_code, state_province)
-   - Ensures only clean, verified data enters the main database
-
----
-
-## 🏗️ Project Structure
-
-This project uses a **monorepo setup**:
-
-### apps/
-- `api/` → Laravel backend (API)
-- `web/` → Next.js (React-based framework)
-
-### infra/
-- Infrastructure configs (Docker, etc.)
-
-### Root Files
-- `docker-compose.yml`
-- `package.json`
-- `pnpm-workspace.yaml`
-- `turbo.json`
-
----
-
-## 🧰 Tech Stack
-
-### Backend
-- Laravel (PHP)
-- MySQL
-- Laravel Sanctum (authentication)
-- OpenAPI (Swagger) for API documentation
-
-### Frontend
-- Next.js
-- Tailwind CSS
-
-### Dev Tools
-- Docker (optional)
-- PNPM (monorepo management)
----
 
 ## ⚙️ Requirements
 
