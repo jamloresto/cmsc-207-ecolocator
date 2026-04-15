@@ -1213,6 +1213,677 @@ It also includes the `location_material_type` pivot table to support material cl
 - creator/updater tracking for official locations
 - icon support for material types
 
+# 🔌 6. API Documentation
+## 6.1 Overview
+
+EcoLocator exposes a REST-style backend API for administrative operations. The admin API is responsible for authentication, dashboard statistics, user management, material type management, waste collection location management, contact message moderation, and location suggestion review workflows.
+
+## 6.2 Admin API Modules
+
+The admin API is organized into the following functional modules:
+
+- Admin Authentication
+- Admin Dashboard
+- Admin Users
+- Admin Material Types
+- Admin Locations
+- Admin Contact Messages
+- Admin Location Suggestions
+
+## 6.3 Authentication and Access Control
+
+The admin API is intended for authenticated administrative users only. Admin access is restricted to accounts with valid admin roles and active status. Login is handled through the web guard, and protected endpoints require authenticated admin access.
+
+### Admin Roles
+- `super_admin`
+- `editor`
+### Access Rules
+- only authenticated admins may access protected admin endpoints
+- inactive accounts are denied access to the admin panel
+- the routes, admin user management, is expected to be more sensitive, which only `super_admin` can access
+
+## 6.4 Admin Authentication API
+### 6.4.1 Login Admin
+
+#### Endpoint
+```
+POST /api/v1/admin/login
+```
+#### Description
+Authenticates an admin user using email and password. If credentials are valid but the user is not an active admin, access is denied.
+
+#### Request Body
+```JSON
+{
+  "email": "admin@ecolocator.com",
+  "password": "password123"
+}
+```
+#### Success Response
+```JSON
+{
+  "message": "Login successful.",
+  "user": {
+    "id": 1,
+    "name": "EcoLocator Super Admin",
+    "email": "admin@ecolocator.com",
+    "role": "super_admin",
+    "is_active": true
+  }
+}
+```
+#### Possible Responses
+
+- `200 OK` – login successful
+- `401 Unauthorized` – invalid credentials
+- `403 Forbidden` – account not allowed to access admin panel
+- `422 Unprocessable Entity` – validation failed
+### 6.4.2 Get Authenticated Admin Profile
+
+#### Endpoint
+```
+GET /api/v1/admin/me
+```
+#### Description
+Returns the currently authenticated admin user.
+
+#### Success Response
+```JSON
+{
+  "user": {
+    "id": 1,
+    "name": "EcoLocator Super Admin",
+    "email": "admin@ecolocator.com",
+    "role": "super_admin",
+    "is_active": true
+  }
+}
+```
+#### Possible Responses
+
+- `200 OK`
+- `401 Unauthorized`
+### 6.4.3 Logout Admin
+
+#### Endpoint
+```
+POST /api/v1/admin/logout
+```
+#### Description
+Logs out the authenticated admin, invalidates the session, and regenerates the CSRF token.
+
+#### Success Response
+```JSON
+{
+  "message": "Logged out successfully."
+}
+```
+#### Possible Responses
+
+- `200 OK`
+- `401 Unauthorized`
+
+## 6.5 Admin Dashboard API
+### 6.5.1 Get Dashboard Statistics
+
+#### Endpoint
+```
+GET /api/v1/admin/dashboard/stats
+```
+#### Description
+Returns summary metrics used by the admin dashboard. The current implementation includes counts for recycling centers, active material types, pending location suggestions, unread contact messages, and contact messages created during the current month.
+
+#### Success Response
+```JSON
+{
+  "data": {
+    "recycling_centers_count": 128,
+    "material_types_count": 12,
+    "pending_location_suggestions_count": 15,
+    "unread_contact_messages_count": 6,
+    "contact_messages_this_month_count": 42
+  }
+}
+```
+#### Possible Responses
+
+- `200 OK`
+- `401 Unauthorized`
+- `403 Forbidden`
+
+## 6.6 Admin Users API
+### 6.6.1 List Admin Users
+
+#### Endpoint
+```
+GET /api/v1/admin/users
+```
+#### Description
+Returns a paginated list of admin users with optional searching, filtering, and sorting. Users may be filtered by role and active status, and searched by name or email.
+
+#### Query Parameters
+
+- `search`
+- `role`
+- `is_active`
+- `sort` = `name | email | role | is_active | created_at`
+- `direction` = `asc | desc`
+- `per_page`
+### 6.6.2 Create Admin User
+
+#### Endpoint
+```
+POST /api/v1/admin/users
+```
+#### Description
+Creates a new admin user.
+
+#### Request Body
+```JSON
+{
+  "name": "Editor One",
+  "email": "editor1@ecolocator.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "role": "editor",
+  "is_active": true
+}
+```
+#### Possible Responses
+
+- `201 Created`
+- `401 Unauthorized`
+- `403 Forbidden`
+- `422 Unprocessable Entity`
+### 6.6.3 Get One Admin User
+
+#### Endpoint
+```
+GET /api/v1/admin/users/{user}
+```
+#### Description
+Returns a single admin user record.
+
+#### Possible Responses
+
+- `200 OK`
+- `401 Unauthorized`
+- `403 Forbidden`
+- `404 Not Found`
+
+### 6.6.4 Update Admin User
+
+#### Endpoint
+```
+PUT /api/v1/admin/users/{user}
+```
+#### Description
+Updates an existing admin user. Password is updated only when explicitly provided.
+
+#### Request Body
+```JSON
+{
+  "name": "Updated Editor",
+  "email": "updated.editor@ecolocator.com",
+  "password": "newpassword123",
+  "password_confirmation": "newpassword123",
+  "role": "editor",
+  "is_active": true
+}
+```
+#### Possible Responses
+
+- `200 OK`
+- `401 Unauthorized`
+- `403 Forbidden`
+- `404 Not Found`
+- `422 Unprocessable Entity`
+
+### 6.6.5 Delete Admin User
+
+#### Endpoint
+```
+DELETE /api/v1/admin/users/{user}
+```
+#### Description
+Deletes an admin user. The controller prevents a user from deleting their own account. It also deletes the user’s tokens before deletion.
+
+#### Success Response
+```JSON
+{
+  "message": "Admin user deleted successfully."
+}
+```
+#### Special Error Response
+```JSON
+{
+  "message": "You cannot delete your own account."
+}
+```
+#### Possible Responses
+
+- `200 OK`
+- `401 Unauthorized`
+- `403 Forbidden`
+- `404 Not Found`
+- `422 Unprocessable Entity`
+
+## 6.7 Admin Material Types API
+### 6.7.1 List Material Types
+
+#### Endpoint
+```
+GET /api/v1/admin/material-types
+```
+#### Description
+Returns a paginated list of material types with support for search, active-status filtering, and sorting.
+
+#### Query Parameters
+
+- `search`
+- `is_active`
+- `sort` = `name | created_at | updated_at`
+- `direction` = `asc | desc`
+- `per_page`
+
+#### Response Structure
+```JSON
+{
+  "success": true,
+  "message": "Material types fetched successfully.",
+  "data": {
+    "data": [],
+    "links": {
+      "first": "...",
+      "last": "...",
+      "prev": null,
+      "next": "..."
+    },
+    "meta": {
+      "current_page": 1,
+      "from": 1,
+      "last_page": 3,
+      "path": "...",
+      "per_page": 10,
+      "to": 10,
+      "total": 25
+    }
+  }
+}
+```
+### 6.7.2 Get All Active Material Types
+
+#### Endpoint
+```
+GET /api/v1/admin/material-types/all
+```
+#### Description
+Returns all active material types, but only with id, name, and slug. This is useful for populating dropdowns and selection inputs in forms.
+
+### 6.7.3 Get One Material Type
+
+#### Endpoint
+```
+GET /api/v1/admin/material-types/{materialType}
+```
+#### Description
+Returns a single material type.
+
+### 6.7.4 Create Material Type
+
+#### Endpoint
+```
+POST /api/v1/admin/material-types
+```
+#### Description
+Creates a new material type. The slug is automatically generated from the name.
+
+#### Request Body
+```JSON
+{
+  "name": "Plastic",
+  "description": "Plastic bottles and containers",
+  "icon": "Package",
+  "is_active": true
+}
+```
+#### Possible Responses
+
+- `201 Created`
+- `401 Unauthorized`
+- `422 Unprocessable Entity`
+### 6.7.5 Update Material Type
+
+#### Endpoint
+```
+PUT /api/v1/admin/material-types/{materialType}
+```
+#### Description
+Updates a material type and regenerates its slug from the updated name.
+
+### 6.7.6 Update Material Type Status
+
+#### Endpoint
+```
+PATCH /api/v1/admin/material-types/{materialType}/status
+```
+#### Description
+Updates the is_active status of a material type. This supports activate/deactivate workflows without deleting records.
+
+#### Request Body
+```JSON
+{
+  "is_active": false
+}
+```
+
+## 6.8 Admin Locations API
+### 6.8.1 List Waste Collection Locations
+
+#### Endpoint
+```
+GET /api/v1/admin/locations
+```
+#### Description
+Returns a paginated list of waste collection locations for admin management. The endpoint supports searching, location-based filtering, material-based filtering, and sorting. Related material types are eager-loaded.
+
+#### Query Parameters
+
+- `search`
+- `country_code`
+- `state_province`
+- `state_code`
+- `city_municipality`
+- `city_slug`
+- `region`
+- `material_type_id`
+- `material_slug`
+- `sort_by` = `name | city_municipality | state_province | country_name | is_active | created_at | updated_at`
+- `sort_order` = `asc | desc`
+- `per_page`
+### 6.8.2 Create Waste Collection Location
+
+#### Endpoint
+```
+POST /api/v1/admin/locations
+```
+#### Description
+Creates a new official waste collection location and syncs the related material types. The authenticated user is recorded as both creator and updater.
+
+#### Required Core Fields
+
+- `name`
+- `country_code`
+- `country_name`
+- `state_province`
+- `city_municipality`
+- `street_address`
+- `latitude`
+- `longitude`
+
+#### Example Body
+```JSON
+{
+  "name": "Barangay Recycling Center",
+  "country_code": "PH",
+  "country_name": "Philippines",
+  "state_province": "Davao del Sur",
+  "state_code": "DVO",
+  "city_municipality": "Davao City",
+  "region": "Region XI",
+  "street_address": "123 Recycling St.",
+  "postal_code": "8000",
+  "latitude": 7.0707,
+  "longitude": 125.6087,
+  "contact_number": "09171234567",
+  "email": "center@example.com",
+  "operating_hours": "Mon-Fri 8AM-5PM",
+  "notes": "Walk-in accepted",
+  "is_active": true,
+  "material_type_ids": [1, 2, 5]
+}
+```
+### 6.8.3 Get One Waste Collection Location
+
+#### Endpoint
+```
+GET /api/v1/admin/locations/{location}
+```
+#### Description
+Returns one waste collection location with its related material types.
+
+### 6.8.4 Update Waste Collection Location
+
+#### Endpoint
+```
+PUT /api/v1/admin/locations/{location}
+```
+#### Description
+Updates an existing location. If material_type_ids is present, the material associations are synced. The authenticated user is recorded as the updater.
+
+### 6.8.5 Delete Waste Collection Location
+
+#### Endpoint
+```
+DELETE /api/v1/admin/locations/{location}
+```
+#### Description
+Deletes a waste collection location.
+
+#### Success Response
+```JSON
+{
+  "message": "Location deleted successfully."
+}
+```
+
+## 6.9 Admin Contact Messages API
+### 6.9.1 List Contact Messages
+
+#### Endpoint
+```
+GET /api/v1/admin/contact-messages
+```
+#### Description
+Returns paginated contact messages with support for search, status filtering, date filtering, and sorting. Search applies to name, email, and subject.
+
+#### Query Parameters
+
+- `status` = `new | read | replied | archived`
+- `search`
+- `date_from`
+- `date_to`
+- `sort_by` = `created_at | updated_at | status | name | email | subject`
+- `sort_order` = `asc | desc`
+- `per_page`
+### 6.9.2 Get Contact Message Details
+
+#### Endpoint
+```
+GET /api/v1/admin/contact-messages/{id}
+```
+#### Description
+Returns one contact message. If the message has not yet been read, the controller automatically sets `read_at` and changes the status from new to read.
+
+### 6.9.3 Archive Contact Message
+
+#### Endpoint
+```
+PATCH /api/v1/admin/contact-messages/{id}/archive
+```
+#### Description
+Archives a contact message. If the message has never been opened, `read_at` is also set automatically.
+
+#### Success Response
+```JSON
+{
+  "message": "Contact message archived successfully.",
+  "data": {}
+}
+```
+### 6.9.4 Reply to Contact Message
+
+#### Endpoint
+```
+POST /api/v1/admin/contact-messages/{id}/reply
+```
+#### Description
+Marks a message as replied and stores reply-tracking timestamps. The controller currently contains a TODO for actually sending an email or notification, so the endpoint presently updates system state but does not yet implement outbound messaging.
+
+#### Request Body
+```JSON
+{
+  "reply_message": "Thank you for your inquiry. We will get back to you shortly."
+}
+```
+#### Behavior
+
+- validates `reply_message`
+- sets status to `replied`
+- sets `read_at` if still null
+- sets `replied_at` if still null
+
+## 6.10 Admin Location Suggestions API
+### 6.10.1 List Location Suggestions
+
+#### Endpoint
+```
+GET /api/v1/admin/location-suggestions
+```
+#### Description
+Returns paginated location suggestions with support for filtering by status, province, city or municipality, searching, and sorting. Search applies to location name, address, street address, submitter name, and submitter email.
+
+#### Query Parameters
+
+- `status` = `pending | under_review | approved | rejected | archived`
+- `search`
+- `province`
+- `city_municipality`
+- `sort_by` = `created_at | updated_at | status | location_name | city_municipality | province`
+- `sort_order` = `asc | desc`
+- `per_page`
+### 6.10.2 Get One Location Suggestion
+
+#### Endpoint
+```
+GET /api/v1/admin/location-suggestions/{locationSuggestion}
+```
+#### Description
+Returns one location suggestion.
+
+### 6.10.3 Save Draft Changes to a Suggestion
+
+#### Endpoint
+```
+PATCH /api/v1/admin/location-suggestions/{locationSuggestion}
+```
+#### Description
+Allows admins to save draft changes to a location suggestion while it is still editable. If the suggestion is in `pending` status, updating it changes the status to `under_review`. If `reviewed_at` is still null, it is set during the first update. Approved and rejected suggestions can no longer be edited.
+
+#### Important Behavior
+
+- pending → becomes `under_review` on first draft update
+- `reviewed_at` is set on first review update
+- locked statuses: `approved`, `rejected`
+### 6.10.4 Approve Location Suggestion
+
+#### Endpoint
+```
+POST /api/v1/admin/location-suggestions/{locationSuggestion}/approve
+```
+#### Description
+Approves a suggestion and converts it into an official waste collection location. This is one of the most important workflow endpoints in the system.
+
+#### Approval Logic
+
+- only pending or `under_review` suggestions may be approved
+- `approved` suggestions cannot be re-approved
+- `rejected` suggestions cannot be approved
+- required official location fields are validated before approval
+- `materials_accepted` is parsed and matched against official material type slugs
+- approval fails if some suggested materials do not resolve to official material types
+- on success, a waste collection location is created inside a database transaction
+- the new location is linked back through `waste_collection_location_id`
+- suggestion status is updated to approved
+- `approved_by`, `approved_at`, and `reviewed_at` are set
+
+#### Success Response
+```JSON
+{
+  "success": true,
+  "message": "Location suggestion approved successfully.",
+  "data": {
+    "id": 1,
+    "status": "approved",
+    "waste_collection_location_id": 15
+  }
+}
+```
+### 6.10.5 Reject Location Suggestion
+
+#### Endpoint
+```
+POST /api/v1/admin/location-suggestions/{locationSuggestion}/reject
+```
+#### Description
+Rejects a location suggestion. Approved suggestions cannot be rejected. The system records rejection metadata and optional review notes.
+
+#### Request Body
+```JSON
+{
+  "review_notes": "Insufficient location details"
+}
+```
+#### Behavior
+
+- sets status to `rejected`
+- stores `review_notes`
+- sets `reviewed_at` if not already set
+- sets `rejected_at`
+- stores `rejected_by`
+### 6.10.6 Delete Location Suggestion
+
+#### Endpoint
+```
+DELETE /api/v1/admin/location-suggestions/{locationSuggestion}
+```
+#### Description
+Deletes a location suggestion record.
+
+## 6.11 Admin API Validation and Business Rules Summary
+- only valid admin users may log in to the admin panel
+- inactive users are denied admin access
+- users cannot delete their own admin account
+- material type slugs are generated from names
+- location suggestion editing is disabled once approved or rejected
+- suggestion approval requires complete official location data
+- suggestion approval also requires all suggested materials to map to official material types
+- viewing a contact message can automatically mark it as read
+- replying to a contact message updates status and timestamps, even though actual outbound email sending is still - pending implementation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ----------
 
