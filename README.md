@@ -814,21 +814,23 @@ EcoLocator implements several strategies to maintain performance:
 - Debounced API calls
 - Request cancellation
 - Efficient state management in frontend
+
 ## 4.11 Limitations
-Requires stable internet connection
-Dependent on Google Maps Platform availability
-Accuracy depends on user device GPS and submitted data
-API usage may incur costs depending on request volume
+- Requires stable internet connection
+- Dependent on Google Maps Platform availability
+- Accuracy depends on user device GPS and submitted data
+- API usage may incur costs depending on request volume
+
 ## 4.12 Summary
 
-The Map & Geolocation module is the core of EcoLocator, enabling real-time, interactive, and efficient discovery of recycling centers.
+The Map & Geolocation module is the <b>core of EcoLocator</b>, enabling real-time, interactive, and efficient discovery of recycling centers.
 
 By combining:
 
-Geolocation
-Autocomplete search
-Viewport-based data fetching
-Smart interaction logic
+- Geolocation
+- Autocomplete search
+- Viewport-based data fetching
+- Smart interaction logic
 
 the system delivers a responsive and scalable location-based experience.
 
