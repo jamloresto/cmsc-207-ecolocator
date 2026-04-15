@@ -1,97 +1,96 @@
-# ♻️ EcoLocator
+# 1. Project Overview: ♻️ EcoLocator
 
-### by Jessa Mae Hernandez
+## 📌 Project Title
 
-## 📌 Description
+Ecolocator: Waste Collection & Recycling Locator System
 
-EcoLocator is a web-based application designed to help users easily locate nearby recycling centers and waste collection facilities. It provides essential information such as location, materials accepted, and contact details. Enhanced with real-time map interactions and smarter filtering.
+## 📄 Project Description
 
----
+EcoLocator is a web-based application designed to help users easily locate nearby recycling centers and waste collection facilities. It provides essential information such as location, accepted materials, and contact details through an interactive, map-based interface.
 
-## 🎯 Goal
-
-To promote sustainable waste management by making recycling locations accessible and searchable for everyone.
+The system integrates real-time geolocation, dynamic filtering, and map-based search capabilities to improve accessibility and usability. Additionally, it includes an administrative platform for managing recycling data and moderating user-submitted location suggestions.
 
 ---
 
-## ✨ Features
+## 🎯 Project Objectives
+
+### General Objective
+
+To promote sustainable waste management by providing an accessible and centralized platform for locating recycling centers.
+
+### Specific Objectives
+
+- Enable users to find nearby recycling centers using an interactive map
+- Allow filtering of locations based on accepted material types
+- Provide a system for users to suggest new recycling locations
+- Implement an admin workflow to review, approve, and manage data
+- Improve awareness and participation in environmental sustainability efforts
+
+## 👥 Target Users
+
+1. General Public
+   - Individuals looking for recycling centers
+   - Environmentally conscious users
+   - Households practicing waste segregation
+2. Administrators
+   - System admins (Super Admin / Editor)
+   - Organizations or LGUs managing recycling data
+
+## ✨ Key Features
 
 ### 🌍 Public Features
-- 📍 Interactive Map-Based Search
-  -  Displays recycling centers directly on a map
-  -  Automatically updates results based on map movement (viewport-based filtering)
-- 📡 Location Detection (Geolocation)
-  -  Detects user’s location on first load (if allowed)
-  -  Sets map center automatically for nearby results
-- 🧠 Smart Map Behavior
-  - Map auto-centers based on:
-    - User location (on first load)
-    - Search selection (autocomplete)
-    - Selected recycling center
-  - Debounced API requests when moving the map
-  - Prevents duplicate requests using cancellation logic
-- 🧭 Dynamic Map Filtering API
-  -  Fetches only locations within the current map bounds
-  -  Improves performance and scalability
-- 🏷️ Material-Based Filtering
-  -  Filter recycling centers by material types (e.g., plastic, batteries, e-waste)
-  -  Supports multi-select filtering
-  -  Includes:
-     - Select All
-     - Clear All
-- 🧾 Compact Location Cards
-  -  Displays key info (name + materials)
-  -  Limits visible materials (e.g., first 3 + “See more”)
-- 🔍 Search + Map Integration
-  -  Searching updates map position instead of filtering list only
-  -  Google Places Autocomplete integration
-  -  Clicking a suggestion re-centers the map
-- 📬 Contact Form
-  -  Users can send inquiries to admins
-- 📝 Location Suggestion System
-  -  Users can suggest new recycling centers
-  -  Supports material selection + custom input (“Others”)
----
+- Interactive map-based search for recycling centers
+- Automatic location detection (geolocation)
+- Dynamic filtering by material types (e.g., plastic, e-waste, metals)
+- Search with Google Places Autocomplete
+- Location suggestion submission
+- Contact form for inquiries
+
 ### 🛠️ Admin Features
-- 🔐 Role-Based Access
-  -  Super Admin
-  -  Editor
-- 📊 Admin Dashboard
-  -  Overview statistics:
-  -  Total recycling centers
-  -  Material types
-  -  Pending suggestions
-  -  Contact messages
-- 🏢 Waste Collection Location Management
-  -  CRUD operations
-  -  Active/inactive status
-- 🧾 Material Types Management
-  -  Manage recyclable categories
-  -  Only active types exposed to public API
-- 📥 Contact Message Management
-  -  Status tracking:
-     -  new, read, replied, archived
-  -  Pagination + filtering
-- 🧠 Location Suggestion Moderation
-  -  Review submitted suggestions
-  -  Edit and enrich data
-  -  Approve → becomes official location
-  -  Reject → with review notes
-- 📑 Standardized Table System
-  -  Pagination
-  -  Meta (total items, pages)
-  -  Reusable table components
-    -  Shared pagination + meta structure across backend and frontend
-    -  Sortable columns
-    -  Filterable datasets
-    -  Consistent table UI system
-- 📍 Interactive Location Picker
-  - Search locations using Google Places Autocomplete
-  - Click anywhere on the map to select coordinates
-  - Draggable marker for fine adjustments
-  - Map recenters automatically when a place is searched
-  - Controlled selection – coordinates are only saved when clicking “Use selected point”
----
+- Dashboard with system statistics
+- Waste collection location management (CRUD)
+- Material type management
+- Location suggestion moderation (approve/reject workflow)
+- Contact message management with status tracking
+
+## 💡 Significance of the Project
+
+EcoLocator addresses a common problem: lack of accessible information on where to recycle waste. Many individuals are willing to recycle but are unable to do so due to limited knowledge of nearby facilities.
+
+This system contributes to:
+
+- Environmental sustainability by encouraging proper waste disposal
+- Community awareness of recycling practices
+- Data centralization for recycling centers
+
+## 🧱 Scope and Limitations
+
+### Scope
+- Covers recycling centers and waste collection locations
+- Provides location-based search within map bounds
+- Supports material-based filtering
+- Includes admin management system
+- Allows user-generated location suggestions
+
+### Limitations
+- Requires internet connection
+- Dependent on Google Maps API for map functionality
+- Accuracy of data depends on admin validation and user submissions
+- Limited to areas with available recycling data
+
+## System Summary
+
+EcoLocator is composed of two main components:
+
+1. Public Web Application
+  - Used by general users to search and explore recycling centers
+  - Admin Management System
+  - Used to manage data, moderate suggestions, and maintain system integrity
+
+These components communicate through a centralized <b>API backend</b>, ensuring scalability and maintainability.
+
+
+----------
 ### 🎨 UI/UX Enhancements
 -  Responsive design (mobile + desktop optimized)
 -  Sticky / dynamic header behavior
