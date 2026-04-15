@@ -2905,7 +2905,165 @@ The deployment process ensures:
 - secure API communication
 - integration with external services
 
+# 🧪 10. Testing
+## 10.1 Overview
 
+Testing in EcoLocator ensures that both the <b>backend API</b> and <b>frontend application</b> function correctly, securely, and reliably.
+
+The system primarily focuses on:
+
+- Backend testing (Laravel Feature Tests)
+- Manual frontend testing and QA
+- API validation through Swagger/OpenAPI
+
+## 10.2 Testing Strategy
+
+EcoLocator follows a combination of:
+
+| Type of Testing	| Purpose |
+|-----------------|---------|
+| Feature Testing	| Validate API endpoints and workflows |
+| Integration Testing	| Ensure frontend-backend  |interaction works
+| Manual Testing	| Validate UI behavior and user flows |
+| API Testing	| Test endpoints via Swagger/Postman |
+
+## 10.3 Backend Testing (Laravel)
+
+The backend uses Laravel’s built-in testing framework for feature testing.
+
+### 10.3.1 Feature Tests
+
+Feature tests simulate real HTTP requests to API endpoints.
+
+Example Scenarios Tested:
+- admin authentication (login/logout)
+- access control (unauthorized vs authorized users)
+- CRUD operations (material types, locations, users)
+- filtering and pagination
+- location suggestion approval workflow
+- contact message status updates
+
+### 10.3.2 Example Test Case
+```php
+public function test_admin_can_create_material_type()
+{
+    $admin = User::factory()->create([
+        'role' => 'super_admin',
+    ]);
+
+    $response = $this->actingAs($admin)->postJson('/api/v1/admin/material-types', [
+        'name' => 'Plastic',
+    ]);
+
+    $response->assertStatus(201);
+}
+```
+
+### 10.3.3 Authorization Testing
+
+Ensures proper access control:
+
+- guest users → cannot access admin routes
+- non-admin users → receive 403 Forbidden
+- admin users → allowed access
+
+## 10.4 API Testing
+
+API endpoints are tested using:
+
+- Swagger UI (`/api/documentation`)
+- Postman or similar tools
+
+### What is Tested:
+- request validation
+- response structure
+- query parameters (filters, sorting)
+- status codes
+
+## 10.5 Frontend Testing
+
+Currently, frontend testing is primarily manual.
+
+### 10.5.1 Manual Testing Areas
+- map interaction (zoom, pan, markers)
+- filtering logic (materials, search)
+- autocomplete behavior
+- form submissions (contact, suggestion)
+- admin CRUD operations
+- responsive layout (mobile vs desktop)
+
+### 10.5.2 UI/UX Testing
+- correct rendering of components
+- loading states (skeleton loaders)
+- empty states
+- error handling (toasts, messages)
+
+### 10.6 Map Feature Testing
+
+Special attention is given to map-based features:
+
+#### Tested Scenarios:
+- map loads correctly
+- geolocation detection works
+- markers update on bounds change
+- debounce prevents excessive API calls
+- selecting a location highlights marker
+
+## 10.7 Data Validation Testing
+
+All user inputs are validated both:
+
+### Backend Validation
+- Laravel validation rules
+- required fields
+- format constraints (email, numbers, etc.)
+
+### Frontend Validation
+- form validation
+- user feedback messages
+
+## 10.8 Error Handling Testing
+
+The system ensures proper handling of errors:
+- invalid requests → `422`
+- unauthorized → `401`
+- forbidden → `403`
+- not found → `404`
+
+Frontend displays:
+- error messages
+- toast notifications
+- fallback UI
+
+## 10.9 Performance Testing
+
+Basic performance checks include:
+- response time of API endpoints
+- map loading speed
+- number of API requests (debounced behavior)
+- pagination effectiveness
+
+## 10.10 Limitations
+- no automated frontend testing yet (e.g., Jest, Cypress)
+- limited load testing
+- no automated end-to-end testing
+- relies heavily on manual QA
+
+## 10.11 Suggested Improvements
+
+Future testing improvements may include:
+
+- unit testing for frontend components
+- end-to-end testing (Cypress or Playwright)
+- automated regression testing
+- load and stress testing for API
+- CI/CD integration for automated tests
+
+## 10.12 Summary
+
+EcoLocator applies a combination of backend feature testing and manual frontend testing to ensure system reliability.
+
+While backend testing is well-structured using Laravel, frontend testing can be further improved with automated tools in future development.
 
 
 
