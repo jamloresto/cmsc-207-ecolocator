@@ -587,6 +587,260 @@ Ensures accurate geographic data for recycling centers.
 EcoLocator combines map-based interaction, data filtering, and admin moderation tools to create a complete system for managing and discovering recycling locations.
 
 The integration of public participation (via suggestions) and admin validation ensures both scalability and data reliability.
+
+# 🗺️ 4. Map & Geolocation Logic
+## 4.1 Overview
+
+The EcoLocator system relies on an interactive map powered by the <b>Google Maps Platform</b> to provide location-based services.
+
+This module enables users to:
+
+- View recycling centers geographically
+- Search locations using autocomplete
+- Filter results dynamically
+- Interact with map elements (markers, bounds, zoom)
+
+The system is designed to be efficient, responsive, and scalable by minimizing unnecessary data requests and prioritizing user experience.
+
+## 4.2 Core Map Components
+### 4.2.1 Map Rendering
+
+Description:
+The map is rendered in the frontend using a React-based integration of Google Maps.
+
+#### Key Functionalities:
+
+- Displays map tiles and geographic data
+- Supports zooming, panning, and resizing
+- Adapts to light/dark mode
+
+#### Purpose:
+Provides a visual interface for exploring recycling locations.
+
+### 4.2.2 Map Markers
+
+#### Description:
+Markers represent recycling centers on the map.
+
+#### Key Functionalities:
+
+- Each marker corresponds to a recycling center
+- Clicking a marker highlights the selected location
+- Custom marker icons are used for branding and visibility
+
+#### Purpose:
+Helps users quickly identify and select locations.
+
+### 4.2.3 Map Bounds (Viewport)
+
+#### Description:
+The visible portion of the map is defined by geographic boundaries.
+
+#### Key Functionalities:
+
+- Tracks:
+  - Minimum latitude
+  - Maximum latitude
+  - Minimum longitude
+  - Maximum longitude
+- Updates dynamically when the user moves the map
+
+#### Purpose:
+Used to determine which recycling centers should be fetched and displayed.
+
+## 4.3 Location Detection (Geolocation)
+### 4.3.1 Initial User Location
+
+#### Description:
+On first load, the system attempts to detect the user’s current location using the browser’s geolocation API.
+
+#### Flow:
+
+1. User opens the application
+2. Browser requests permission
+3. If allowed:
+   - Latitude and longitude are retrieved
+   - Map centers on the user’s location
+
+#### Fallback Behavior:
+
+- If denied or unavailable:
+  - Default coordinates are used
+
+#### Purpose:
+Improves usability by immediately showing nearby recycling centers.
+
+## 4.4 Search Functionality (Autocomplete)
+### 4.4.1 Place Search Integration
+
+#### Description:
+The system integrates Google Places Autocomplete for location search.
+
+#### Key Functionalities:
+
+Suggests locations as the user types
+Includes cities, addresses, and landmarks
+Selecting a result updates the map center
+
+#### Flow:
+
+1. User types a location (e.g., “Pasig”)
+2. Autocomplete suggestions appear
+3. User selects a suggestion
+4. Map recenters to selected location
+
+#### Purpose:
+Allows users to quickly navigate to a specific area.
+
+## 4.5 Dynamic Data Fetching (Viewport-Based)
+### 4.5.1 Bounds-Based API Requests
+
+#### Description:
+Instead of loading all recycling centers, the system fetches only those within the visible map area.
+
+#### Request Parameters:
+
+- north
+- south
+- east
+- west
+
+#### Backend Behavior:
+
+Queries database for locations within bounds
+Returns filtered results
+
+#### Purpose:
+
+- Reduces server load
+- Improves performance
+- Supports scalability
+
+### 4.5.2 Debouncing and Request Optimization
+
+#### Description:
+API requests are optimized to prevent excessive calls.
+
+#### Key Techniques:
+
+- <b>Debouncing:</b><br>
+Delays API calls until user stops moving the map
+- <b>Request Cancellation:</b><br>
+Cancels previous requests when a new one is triggered
+
+#### Purpose:
+Ensures efficient and smooth user experience.
+
+## 4.6 Material-Based Filtering Logic
+### 4.6.1 Filtering Mechanism
+
+#### Description:
+Users can filter locations based on accepted materials.
+
+#### Flow:
+
+1. User selects material types
+2. Selected filters are sent to API
+3. API returns matching locations
+
+#### Example Filters:
+
+- Plastic
+- Metal
+- Electronics
+- Batteries
+
+#### Purpose:
+Helps users find relevant recycling centers faster.
+
+## 4.7 Map Interaction Flow
+### 4.7.1 User Interaction Cycle
+
+```mermaid
+flowchart TD
+    A[User opens map] --> B[Map loads default or user location]
+    B --> C[User moves map / searches location]
+    C --> D[Frontend calculates map bounds]
+    D --> E[API request sent with bounds + filters]
+    E --> F[Backend queries database]
+    F --> G[Filtered locations returned]
+    G --> H[Markers updated on map]
+```
+
+## 4.8 Location Selection Logic
+4.8.1 Selecting a Recycling Center
+
+### Description:
+Users can select a location from either the map or list.
+
+### Behavior:
+
+- Clicking a marker:
+  - Highlights location
+  - Displays additional details
+- Clicking a list item:
+  - Centers map on selected location
+  - Highlights corresponding marker
+
+### Purpose:
+Synchronizes map and list views.
+
+## 4.9 Admin Location Picker Logic
+### 4.9.1 Interactive Coordinate Selection
+
+#### Description:
+Admins use a map-based tool to set accurate coordinates.
+
+#### Key Functionalities:
+
+- Search using autocomplete
+- Click on map to set coordinates
+- Drag marker for precision
+- Confirm selection via button
+
+#### Important Behavior:
+
+- Coordinates are <b>not saved automatically</b>
+- Must click <b>“Use selected point”</b>
+
+#### Purpose:
+Prevents accidental or incorrect data entry.
+
+## 4.10 Performance Considerations
+
+EcoLocator implements several strategies to maintain performance:
+
+- Viewport-based data fetching
+- Debounced API calls
+- Request cancellation
+- Efficient state management in frontend
+## 4.11 Limitations
+Requires stable internet connection
+Dependent on Google Maps Platform availability
+Accuracy depends on user device GPS and submitted data
+API usage may incur costs depending on request volume
+## 4.12 Summary
+
+The Map & Geolocation module is the core of EcoLocator, enabling real-time, interactive, and efficient discovery of recycling centers.
+
+By combining:
+
+Geolocation
+Autocomplete search
+Viewport-based data fetching
+Smart interaction logic
+
+the system delivers a responsive and scalable location-based experience.
+
+
+
+
+
+
+
+
+
+
 ----------
 
 ## ⚙️ Requirements
