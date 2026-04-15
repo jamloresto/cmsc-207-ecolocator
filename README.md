@@ -1,5 +1,7 @@
 # 0. Project Overview: ♻️ EcoLocator
 
+EcoLocator is a smart waste management platform that helps users locate nearby recycling centers through an interactive map and community-driven data.
+
 ## 📌 Project Title
 
 Ecolocator: Waste Collection & Recycling Locator System
@@ -92,11 +94,19 @@ This system contributes to:
 EcoLocator is composed of two main components:
 
 1. Public Web Application
-  - Used by general users to search and explore recycling centers
-  - Admin Management System
-  - Used to manage data, moderate suggestions, and maintain system integrity
+   - Used by general users to search and explore recycling centers
+
+2. Admin Management System
+   - Used to manage data, moderate suggestions, and maintain system integrity
 
 These components communicate through a centralized <b>API backend</b>, ensuring scalability and maintainability.
+
+## 📖 Terms and Definitions
+
+- <b>Viewport</b> – the visible area of the map
+- <b>Debouncing</b> – delaying API calls until user stops interaction
+- <b>Monorepo</b> – a single repository containing multiple applications
+- <b>Haversine Formula</b> – used to compute distance between coordinates
 
 # ⚙️ 1. System Requirements
 
@@ -150,6 +160,9 @@ Recommended:
   - dependency installation
 
 # 🏗️ 2. System Architecture
+
+EcoLocator works by allowing users to interact with a map interface. The frontend sends requests to the backend API based on user actions such as map movement, filtering, or searching. The backend processes these requests, queries the database, and returns only relevant data, which is then displayed dynamically on the map.
+
 ## 2.1 Overview
 
 EcoLocator follows a <b>client-server architecture</b> within a <b>monorepo setup</b>, where the frontend and backend are maintained in a single repository but operate as separate applications.
@@ -396,6 +409,8 @@ These features are accessible to all users without requiring authentication.
 
 ### 🌍 3.1.1 Interactive Map-Based Search
 
+![Find Centers Screen](/images/find-centers.png)
+
 #### Description:
 Users can view recycling centers displayed on an interactive map interface.
 
@@ -509,6 +524,8 @@ Provides a communication channel between users and system administrators.
 
 ### 📝 3.1.9 Location Suggestion System
 
+![Suggest Location Form](/images/suggest-location.png)
+
 #### Description:
 Users can suggest new recycling centers not yet in the system.
 
@@ -540,6 +557,8 @@ Ensures system security and controlled access to sensitive operations.
 
 ### 📊 3.2.2 Admin Dashboard
 
+![Admin Dashboard](/images/admin-dashboard.png)
+
 #### Description:
 Provides an overview of system statistics.
 
@@ -554,6 +573,8 @@ Provides an overview of system statistics.
 Gives administrators quick insights into system activity.
 
 ### 🏢 3.2.3 Waste Collection Location Management
+
+![Admin Recycling Centers Table](/images/admin-recycling-centers.png)
 
 #### Description:
 Admins can manage recycling center records.
@@ -2856,15 +2877,15 @@ php artisan view:cache
 
 1. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 2. Build the application:
 ```bash
-npm run build
+pnpm run build
 ```
 3. Start production server:
 ```bash
-npm run start
+pnpm run start
 ```
 
 ## 9.6 Database Deployment
@@ -2925,7 +2946,7 @@ Steps:
 3. Generate API key
 4. Restrict key (recommended)
 
-Alternatively, get a demo API key at
+You can also get a demo API key at
 https://mapsplatform.google.com/maps-demo-key/
 
 Add your API key to your frontend .env file:
@@ -3166,10 +3187,24 @@ EcoLocator addresses a real-world problem by:
 
 ## 11.5 Final Remarks
 
-EcoLocator demonstrates how modern web technologies can be used to solve environmental challenges through accessible and scalable digital solutions.
+EcoLocator demonstrates how modern web technologies can be used to solve environmental challenges through accessible and scalable digital solutions. This system bridges the gap between environmental awareness and actual action by making recycling locations easily accessible.
 
 With further improvements and wider adoption, the system has the potential to contribute significantly to <b>sustainable waste management and environmental awareness.</b>
 
-# 📬 Contact
+# 🔮 12. Future Enhancements
+
+Potential improvements for EcoLocator include:
+
+- Mobile application (React Native / Flutter)
+- AI-based waste classification using image recognition
+- Real-time collection schedules integration
+- SMS/email notifications for nearby recycling events
+- Advanced analytics dashboard for LGUs
+
+# 👨‍💻 13. Author
+
+This project was designed and developed by <b>Jessa Mae Hernandez</b>
+
+## Contact
 
 For inquiries, suggestions, or collaboration, message: Jessa Mae Hernandez (https://www.linkedin.com/in/jam-hernandez/)
