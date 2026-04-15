@@ -1216,7 +1216,15 @@ It also includes the `location_material_type` pivot table to support material cl
 # 🔌 6. API Documentation
 ## 6.1 Overview
 
-EcoLocator exposes a REST-style backend API for administrative operations. The admin API is responsible for authentication, dashboard statistics, user management, material type management, waste collection location management, contact message moderation, and location suggestion review workflows.
+The Admin API exposes a REST-style backend API for administrative operations. The admin API is responsible for authentication, dashboard statistics, user management, material type management, waste collection location management, contact message moderation, and location suggestion review workflows.
+
+The Public API exposes endpoints that can be accessed by general users without admin authentication. These endpoints support the main user-facing features of EcoLocator, including:
+- browsing active waste collection locations
+- map-based location discovery
+- filtering by material types
+- viewing public material types
+- submitting contact messages
+- submitting location suggestions
 
 ## 6.2 Admin API Modules
 
@@ -1861,20 +1869,369 @@ Deletes a location suggestion record.
 - viewing a contact message can automatically mark it as read
 - replying to a contact message updates status and timestamps, even though actual outbound email sending is still - pending implementation
 
+## 6.12 Public API Modules
 
+The Public API is organized into the following modules:
 
+- Public Contact Messages
+- Public Location Suggestions
+- Public Material Types
+- Public Locations
 
+## 6.13 Authentication and Access
 
+The public endpoints shown in the uploaded controllers do not require admin authentication. They are intended for general platform use such as searching locations and submitting forms.
 
+Some submission endpoints explicitly document `rate limiting to 5 requests per minute per IP address`, particularly for contact messages and location suggestions.
 
+## 6.14 Public Contact Messages API
+### 6.14.1 Submit Contact Form
 
+#### Endpoint
+```
+POST /api/v1/contact-messages
+```
+#### Description
+Allows public users to submit inquiries through the contact form. The controller stores the message with default status new and also records the request IP address and user agent for moderation and audit purposes. This endpoint is documented as rate limited to 5 requests per minute per IP address.
 
+#### Request Body
+```JSON
+{
+  "name": "Juan Dela Cruz",
+  "email": "juan@example.com",
+  "contact_info": "+639171234567",
+  "subject": "Inquiry about recycling center",
+  "message": "Hello, I would like to ask about the nearest e-waste drop-off center."
+}
+```
+#### Success Response
+```JSON
+{
+  "message": "Contact message submitted successfully.",
+  "data": {
+    "id": 1,
+    "name": "Juan Dela Cruz",
+    "email": "juan@example.com",
+    "contact_info": "+639171234567",
+    "subject": "Inquiry about recycling center",
+    "message": "Hello, I would like to ask about the nearest e-waste drop-off center.",
+    "status": "new"
+  }
+}
+```
+#### Possible Responses
 
+- `201 Created`
+- `422 Unprocessable Entity`
+- `429 Too Many Requests`
 
+## 6.15 Public Location Suggestions API
+### 6.15.1 Submit a New Location Suggestion
 
+#### Endpoint
+```
+POST /api/v1/location-suggestions
+```
+#### Description
+Allows public users to suggest new waste collection or recycling locations. The controller stores the submission as a `pending` suggestion and records metadata such as IP address and user agent. This endpoint is documented as rate limited to 5 requests per minute per IP address.
 
+#### Required Fields in OpenAPI Annotation
 
+- `name`
+- `email`
+- `location_name`
+- `address`
+- `city_municipality`
+- `province`
 
+#### Request Body Example
+```JSON
+{
+  "name": "Juan Dela Cruz",
+  "email": "juan@example.com",
+  "contact_info": "09123456789",
+  "location_name": "Barangay Green Recycling Center",
+  "address": "123 Mabini Street, Barangay San Isidro",
+  "city_municipality": "Pasay City",
+  "province": "Metro Manila",
+  "postal_code": "1300",
+  "latitude": 14.5378,
+  "longitude": 121.0014,
+  "materials_accepted": "Plastic, paper, e-waste",
+  "notes": "Open every Saturday morning."
+}
+```
+#### Additional Supported Fields
+The controller also accepts and stores a fuller location structure when present, including:
+
+- `country_code`
+- `country_name`
+- `state_province`
+- `state_code`
+- `region`
+- `street_address`
+- `contact_number`
+- `location_email`
+- `operating_hours`
+
+#### System Behavior
+
+- creates a new `location_suggestions` record
+- sets status to `pending`
+- sets `is_active` to `true`
+- stores `ip_address`
+- stores `user_agent`
+
+#### Success Response
+```JSON
+{
+  "message": "Location suggestion submitted successfully.",
+  "data": {
+    "id": 1,
+    "location_name": "Barangay Green Recycling Center",
+    "status": "pending"
+  }
+}
+```
+#### Possible Responses
+
+- `201 Created`
+- `422 Unprocessable Entity`
+- `429 Too Many Requests`
+
+## 6.16 Public Material Types API
+### 6.16.1 List All Active Material Types
+
+#### Endpoint
+```
+GET /api/v1/material-types
+```
+#### Description
+Returns all active material types for public viewing. The result is sorted by name and includes `name`, `slug`, `description`, and `icon`.
+
+#### Success Response
+```JSON
+{
+  "success": true,
+  "message": "Material types retrieved successfully.",
+  "data": [
+    {
+      "name": "Plastic",
+      "slug": "plastic",
+      "description": "Plastic bottles and containers",
+      "icon": "Package"
+    }
+  ]
+}
+```
+#### Possible Responses
+
+- `200 OK`
+### 6.16.2 List Active Material Types for Public Filters
+
+#### Endpoint
+```
+GET /api/v1/material-types/active
+```
+#### Description
+Returns active material types in a lighter response format for public filter controls. The selected fields are `name`, `slug`, and `icon`.
+
+#### Success Response
+```JSON
+{
+  "data": [
+    {
+      "name": "Plastic",
+      "slug": "plastic",
+      "icon": "Package"
+    }
+  ]
+}
+```
+#### Possible Responses
+
+- `200 OK`
+### 6.16.3 Get a Single Active Material Type
+
+#### Endpoint
+```
+GET /api/v1/material-types/{id}
+```
+#### Description
+Returns one active material type by ID. If the material type is inactive or not found, the endpoint returns a 404 response.
+
+#### Success Response
+```JSON
+{
+  "success": true,
+  "message": "Material type retrieved successfully.",
+  "data": {
+    "id": 1,
+    "name": "Plastic",
+    "slug": "plastic",
+    "description": "Plastic bottles and containers",
+    "icon": "Package",
+    "is_active": true
+  }
+}
+```
+#### Not Found Response
+```JSON
+{
+  "success": false,
+  "message": "Material type not found."
+}
+```
+#### Possible Responses
+
+- `200 OK`
+- `404 Not Found`
+
+## 6.17 Public Locations API
+### 6.17.1 List Active Waste Collection Locations
+
+#### Endpoint
+```
+GET /api/v1/locations
+```
+#### Description
+Returns a paginated list of active waste collection locations for public browsing. The query includes related material types and supports filtering by search terms, location fields, and material-based filters.
+
+#### Supported Filters
+
+- `search`
+- `country_code`
+- `state_province`
+- `state_code`
+- `city_municipality`
+- `city_slug`
+- `region`
+- `material_type_id`
+- `material_slug`
+- `material_slugs[]`
+
+#### Search Behavior
+Search applies to:
+
+- `name`
+- `street_address`
+- `city_municipality`
+- `state_province`
+- `country_name`
+
+#### Material Filtering Behavior
+
+- `material_type_id` filters by one material type ID
+- `material_slug` filters by one material slug
+- `material_slugs[]` supports multiple material slugs
+- when `material_slugs[]` is provided, it takes precedence over single `material_slug` filtering logic in practice
+
+#### Response Style
+This endpoint returns a paginated Laravel resource collection using `WasteCollectionLocationResource`.
+
+### 6.17.2 List Active Waste Collection Locations Within Map Bounds
+
+#### Endpoint
+```
+GET /api/v1/locations/map
+```
+#### Description
+Returns active waste collection locations constrained to the currently visible map bounds. This endpoint is central to EcoLocator’s map-based UX because it only loads points within the current viewport. It also supports optional user coordinates for distance-based ordering.
+
+#### Required Query Parameters
+
+- `north`
+- `south`
+- `east`
+- `west`
+
+#### Optional Query Parameters
+
+- `material_slug`
+- `latitude`
+- `longitude`
+
+#### Validation Rules
+
+- latitude bounds must be between `-90` and `90`
+- longitude bounds must be between `-180` and `180`
+- optional user coordinates follow the same validation rules
+
+#### Core Logic
+
+- only active locations are returned
+- only locations with non-null latitude and longitude are included
+- the query constrains locations within the bounding box
+- material filtering can be applied through `material_slug`
+- if user coordinates are provided, the query calculates distance using a Haversine-style formula and orders results by distance
+- if user coordinates are not provided, results are ordered by name
+
+#### Example Request
+```
+GET /api/v1/locations/map?north=14.75&south=14.52&east=121.12&west=120.96&material_slug=plastic&latitude=14.5995&longitude=120.9842
+```
+#### Response Style
+This endpoint returns a collection using `MapWasteCollectionLocationResource`. The selected payload differs depending on whether distance is computed:
+
+- with user coordinates: includes computed `distance`
+- without user coordinates: returns basic location coordinates and identifiers
+
+#### Possible Responses
+
+- `200 OK`
+- `422 Unprocessable Entity`
+### 6.17.3 Get One Active Waste Collection Location
+
+#### Endpoint
+```
+GET /api/v1/locations/{location}
+```
+#### Description
+Returns a single active waste collection location. If the record exists but is inactive, the endpoint still returns `404 Not Found` to hide inactive entries from public access. Related material types are loaded before returning the resource.
+
+#### Not Found Response
+```JSON
+{
+  "message": "Location not found."
+}
+```
+
+#### Possible Responses
+
+- `200 OK`
+- `404 Not Found`
+
+## 6.18 Public API Business Rules Summary
+
+- public contact form submissions are stored with default status `new`
+- public location suggestions are stored with default status `pending`
+- both public submission endpoints record request IP address and user agent
+- both submission endpoints are documented as rate limited to 5 requests per minute per IP address
+- only active material types are visible publicly
+- only active waste collection locations are visible publicly
+- inactive public material types and inactive locations return or behave as not publicly available
+- the map endpoint only returns locations within the requested map bounds
+- the map endpoint can optionally sort results by proximity when user coordinates are provided
+
+## 6.19 Full API Summary
+
+The EcoLocator API documentation covers both major access layers:
+
+### Admin API
+- authentication
+- dashboard statistics
+- admin users
+- material types
+- locations
+- contact messages
+- location suggestions
+
+### Public API
+- contact form submission
+- location suggestion submission
+- material type listing
+- public location browsing
+- map-bounds location discovery
 
 
 
