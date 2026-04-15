@@ -1,4 +1,4 @@
-# 1. Project Overview: ♻️ EcoLocator
+# 0. Project Overview: ♻️ EcoLocator
 
 ## 📌 Project Title
 
@@ -10,7 +10,16 @@ EcoLocator is a web-based application designed to help users easily locate nearb
 
 The system integrates real-time geolocation, dynamic filtering, and map-based search capabilities to improve accessibility and usability. Additionally, it includes an administrative platform for managing recycling data and moderating user-submitted location suggestions.
 
----
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | Next.js, Tailwind CSS |
+| Backend | Laravel |
+| Database | MySQL |
+| Maps | Google Maps API |
+| State | React Query |
+| Animation | GSAP |
 
 ## 🎯 Project Objectives
 
@@ -88,6 +97,57 @@ EcoLocator is composed of two main components:
   - Used to manage data, moderate suggestions, and maintain system integrity
 
 These components communicate through a centralized <b>API backend</b>, ensuring scalability and maintainability.
+
+# ⚙️ 1. System Requirements
+
+## 1.1 Overview
+
+This section outlines the necessary software, hardware, and external services required to run the EcoLocator system in both development and production environments.
+
+## 1.2 Software Requirements
+
+### Backend
+- PHP >= 8.1
+- Composer
+- Laravel Framework
+
+### Frontend
+- Node.js >= 18
+- pnpm / npm / yarn
+
+### Database
+- MySQL / MariaDB
+
+### Development Tools
+- Git
+- Web browser (Chrome, Edge, Firefox)
+- Docker (optional)
+
+## 1.3 External Services
+
+EcoLocator requires integration with:
+
+- Google Maps JavaScript API
+- Google Places API
+
+A valid API key is required for map rendering, location search, and geolocation features.
+
+## 1.4 Hardware Requirements
+
+Minimum:
+- 8 GB RAM
+- Dual-core processor
+
+Recommended:
+- 16 GB RAM
+- SSD storage
+
+## 1.5 Network Requirements
+
+- Stable internet connection required for:
+  - API communication
+  - Google Maps services
+  - dependency installation
 
 # 🏗️ 2. System Architecture
 ## 2.1 Overview
@@ -2298,7 +2358,7 @@ From the current controllers, the OpenAPI annotations already describe many esse
 
 ### 6.20.5 Swagger Generation in the Project
 
-Swagger documentation is ignored so developer should generate the document using the following Artisan command:
+Swagger documentation files are not committed to the repository. Developers must generate them using:
 ```shell
 php artisan l5-swagger:generate
 ```
@@ -2525,7 +2585,7 @@ src/
 │   ├── home/
 │   ├── location-suggestions/
 │   ├── material-types/
-│   └──recycling-centers/
+│   └── recycling-centers/
 │
 ├── components/         # Reusable UI components
 │   └── providers/          # Global providers (theme, store, etc.)
@@ -2829,11 +2889,11 @@ https://ecolocator.com
 
 - Backend API:
 ```
-https://ecolocator.com/api
-```
-or
-```
 https://api.ecolocator.com
+```
+or (optional)
+```
+https://ecolocator.com/api
 ```
 
 ### Configuration:
@@ -2923,7 +2983,7 @@ EcoLocator follows a combination of:
 | Type of Testing	| Purpose |
 |-----------------|---------|
 | Feature Testing	| Validate API endpoints and workflows |
-| Integration Testing	| Ensure frontend-backend  |interaction works
+| Integration Testing	| Ensure frontend-backend interaction works
 | Manual Testing	| Validate UI behavior and user flows |
 | API Testing	| Test endpoints via Swagger/Postman |
 
@@ -3113,224 +3173,3 @@ With further improvements and wider adoption, the system has the potential to co
 # 📬 Contact
 
 For inquiries, suggestions, or collaboration, message: Jessa Mae Hernandez (https://www.linkedin.com/in/jam-hernandez/)
-
-
-
-
-
-
-
-<!-- 
-
-----------
-
-## ⚙️ Requirements
-
-Make sure you have the following installed:
-
-- Node.js (v18+ recommended)
-- pnpm (or npm/yarn)
-- PHP (v8.1+)
-- Composer
-- MySQL (or MySQL Workbench or MariaDB)
-- Git
-- Docker (optional)
-- Required Google Maps API
-
----
-
-## 🗺️ Google Maps API Key (Required)
-
-EcoLocator uses Google Maps for the interactive map and location-based features.
-
-To run the project locally, you need a Google Maps API Key.
-
-### 🔑 Get a Demo API Key
-
-You can quickly get a demo key here:
-https://mapsplatform.google.com/maps-demo-key/
-
-### ⚙️ Setup
-
-Add your API key to your frontend .env file:
-
-`NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here`
-### 📌 Notes
-- Required for:
-  - Map rendering
-  - Location detection
-  - Map-based filtering
-- Without this key, the map will not load properly
-
----
-
-## 🚀 Local Setup Guide
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/jamloresto/cmsc-207-ecolocator.git
-cd cmsc-207-ecolocator
-```
-
----
-
-### 2. Install Frontend & Workspace Dependencies
-
-Using **pnpm (recommended)**:
-
-```bash
-pnpm install
-```
-
-> This installs all dependencies including `node_modules` for the entire monorepo.
-
----
-
-### 3. Setup Backend (Laravel API)
-
-Go to the API folder:
-
-```bash
-cd apps/api
-```
-
-### Install PHP dependencies:
-
-```bash
-composer install
-```
-
----
-
-### 4. Setup Environment File
-
-Copy `.env.example`:
-
-```bash
-cp .env.example .env
-```
-
-Generate app key
-
-```bash
-php artisan key:generate
-```
-
----
-
-### 5. Configure Database
-
-Edit `.env`:
-
-```bash
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=ecolocator
-DB_USERNAME=root
-DB_PASSWORD=your_password
-```
-
----
-
-### 6. Create Database
-
-Using MySQL:
-
-```sql
-CREATE DATABASE ecolocator;
-```
-
----
-
-### 7. Run Migrations
-
-```bash
-php artisan migrate
-```
-
-(Optional: seed data if available)
-
-```bash
-php artisan db:seed
-```
-
----
-
-### 8. Run the Backend Server
-
-```bash
-php artisan serve
-```
-
->Backend will run at: http://127.0.0.1:8000
-
----
-
-### 9. Run the Frontend
-
-Go to web app:
-
-```bash
-cd ../web
-pnpm dev
-```
-
->Frontend will run at: http://localhost:3000
-
----
-
-## 🧪 Running Tests
-
-From `apps/api`:
-
-```bash
-php artisan test
-```
-
----
-
-## 📄 API Documentation (Swagger)
-
-Generate Swagger docs:
-
-```bash
-php artisan l5-swagger:generate
-```
-
-Access documentation: http://127.0.0.1:8000/api/documentation
-
-
----
-
-## 🐳 (Optional) Docker
-
-If using Docker:
-
-```bash
-docker compose -f infra/ecolocator/docker-compose.yml up -d
-```
-
----
-
-## 🔑 Notes
-
-- `node_modules` is **not included** in the repository → run `pnpm install`
-- `.env` is **not included** → copy from `.env.example`
-- Database must be **manually created** before running migrations
-- Public users can:
-  - View locations
-  - Submit contact forms
-  - Suggest new locations
-- Admin users (Super Admin / Editor) can:
-  - Manage waste collection locations
-  - Review, edit, approve, or reject location suggestions
-- Location suggestions go through a **review + approval workflow**
-  before becoming official locations
-
----
-
-## 📬 Contact
-
-For inquiries, suggestions, or collaboration, message: Jessa Mae Hernandez (https://www.linkedin.com/in/jam-hernandez/) -->
