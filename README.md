@@ -326,7 +326,267 @@ This makes the system easier to extend with future features such as:
 
 EcoLocator uses a modern web system architecture composed of a <b>Next.js frontend</b>, <b>Laravel backend</b>, <b>MySQL database</b>, and <b>Google Maps integration</b>. This architecture enables the platform to provide a responsive user experience, secure admin operations, and scalable data management for recycling and waste collection services.
 
+# 🧩 3. Features Documentation
 
+This section provides a detailed explanation of the system’s functionalities, grouped into Public Features and Admin Features. Each feature describes its purpose, behavior, and how it contributes to the overall system.
+
+## 3.1 Public Features
+
+These features are accessible to all users without requiring authentication.
+
+### 🌍 3.1.1 Interactive Map-Based Search
+
+#### Description:
+Users can view recycling centers displayed on an interactive map interface.
+
+#### Key Functionalities:
+
+- Displays markers representing recycling centers
+- Automatically updates visible locations based on the current map viewport
+- Supports zooming and panning
+
+#### Purpose:
+Allows users to visually explore nearby recycling centers in an intuitive and user-friendly way.
+
+### 📡 3.1.2 Location Detection (Geolocation)
+
+#### Description:
+The system detects the user’s current location upon initial load (with user permission).
+
+#### Key Functionalities:
+
+- Automatically centers the map based on user location
+- Improves relevance of displayed recycling centers
+
+#### Purpose:
+Enhances user experience by showing nearby results without requiring manual input.
+
+### 🧠 3.1.3 Smart Map Behavior
+
+#### Description:
+The map dynamically responds to user actions and system events.
+
+#### Key Functionalities:
+
+- Auto-centers based on:
+  - User location
+  - Search selection
+  - Selected recycling center
+- Debounced API requests when map is moved
+- Prevents duplicate requests using cancellation logic
+
+#### Purpose:
+Optimizes performance and ensures smooth interaction with the map.
+
+### 🧭 3.1.4 Dynamic Map Filtering API
+
+#### Description:
+Only recycling centers within the current map bounds are fetched and displayed.
+
+#### Key Functionalities:
+
+- Sends bounding coordinates (min/max latitude and longitude) to the API
+- Returns only relevant data within the visible map area
+
+#### Purpose:
+Improves performance and scalability by reducing unnecessary data loading.
+
+### 🏷️ 3.1.5 Material-Based Filtering
+
+#### Description:
+Users can filter recycling centers based on accepted material types.
+
+#### Key Functionalities:
+
+- Multi-select filtering (e.g., plastic, metal, e-waste)
+- Includes “Select All” and “Clear All” options
+- Dynamically updates map results
+
+#### Purpose:
+Helps users find locations that accept specific types of recyclable materials.
+
+### 🧾 3.1.6 Compact Location Cards
+
+#### Description:
+Displays summarized information about each recycling center.
+
+#### Key Functionalities:
+
+- Shows name and key material types
+- Limits visible materials (e.g., first 3 + “See more”)
+- Click interaction highlights selected location on map
+
+#### Purpose:
+Provides a quick and readable overview of available recycling centers.
+
+### 🔍 3.1.7 Search and Map Integration
+
+#### Description:
+Search functionality is integrated with the map using location autocomplete.
+
+#### Key Functionalities:
+
+- Google Places Autocomplete suggestions
+- Selecting a suggestion re-centers the map
+- Synchronizes search input with map view
+
+#### Purpose:
+Allows users to quickly navigate to specific locations.
+
+### 📬 3.1.8 Contact Form
+
+#### Description:
+Users can send inquiries or messages to administrators.
+
+#### Key Functionalities:
+
+- Input fields for user details and message
+- Data is stored in the system for admin review
+- Status tracking (handled in admin panel)
+
+#### Purpose:
+Provides a communication channel between users and system administrators.
+
+### 📝 3.1.9 Location Suggestion System
+
+#### Description:
+Users can suggest new recycling centers not yet in the system.
+
+#### Key Functionalities:
+
+- Submit location details and materials accepted
+- Supports custom entries (e.g., “Others”)
+- Stored as pending suggestions
+
+#### Purpose:
+Enables community-driven data expansion.
+
+## 3.2 Admin Features
+
+These features are restricted to authorized users (Super Admin and Editor).
+
+### 🔐 3.2.1 Role-Based Access Control
+
+#### Description:
+Access to admin features is restricted based on user roles.
+
+#### Roles:
+
+- Super Admin
+- Editor
+
+#### Purpose:
+Ensures system security and controlled access to sensitive operations.
+
+### 📊 3.2.2 Admin Dashboard
+
+#### Description:
+Provides an overview of system statistics.
+
+#### Displayed Data:
+
+- Total recycling centers
+- Material types
+- Pending location suggestions
+- Contact messages
+
+#### Purpose:
+Gives administrators quick insights into system activity.
+
+### 🏢 3.2.3 Waste Collection Location Management
+
+#### Description:
+Admins can manage recycling center records.
+
+#### Key Functionalities:
+
+- Create, read, update, and deactivate locations
+- Set active/inactive status
+- Assign material types
+
+#### Purpose:
+Maintains accurate and up-to-date location data.
+
+### 🧾 3.2.4 Material Types Management
+
+#### Description:
+Admins manage recyclable material categories.
+
+#### Key Functionalities:
+
+- Add, update, and deactivate material types
+- Only active materials are visible to public users
+
+#### Purpose:
+Ensures consistent classification of recyclable items.
+
+### 📥 3.2.5 Contact Message Management
+
+#### Description:
+Admins can manage user inquiries submitted through the contact form.
+
+#### Key Functionalities:
+
+- View messages
+- Update status:
+  - new
+  - read
+  - replied
+  - archived
+- Pagination and filtering
+
+#### Purpose:
+Organizes communication and improves response tracking.
+
+### 🧠 3.2.6 Location Suggestion Moderation
+
+#### Description:
+Admins review and validate user-submitted location suggestions.
+
+#### Key Functionalities:
+
+- Edit and enrich submitted data
+- Approve or reject suggestions
+- Add review notes
+
+#### Purpose:
+Ensures data quality before adding new recycling centers.
+
+### 📑 3.2.7 Standardized Table System
+
+#### Description:
+Admin interface uses a reusable table system for managing data.
+
+#### Key Functionalities:
+
+- Pagination with metadata
+- Sortable columns
+- Filterable datasets
+- Consistent UI components
+
+#### Purpose:
+Provides a uniform and efficient data management interface.
+
+### 📍 3.2.8 Interactive Location Picker
+
+#### Description:
+Admins can precisely select and adjust location coordinates.
+
+#### Key Functionalities:
+
+- Search places using autocomplete
+- Click on map to set coordinates
+- Draggable marker for adjustments
+- Controlled selection via “Use selected point”
+
+#### Purpose:
+Ensures accurate geographic data for recycling centers.
+
+## 3.3 Feature Summary
+
+EcoLocator combines map-based interaction, data filtering, and admin moderation tools to create a complete system for managing and discovering recycling locations.
+
+The integration of public participation (via suggestions) and admin validation ensures both scalability and data reliability.
 ----------
 
 ## ⚙️ Requirements
