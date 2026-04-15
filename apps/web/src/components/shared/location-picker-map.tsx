@@ -14,10 +14,26 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
 
+type LocationAddressFields = {
+  country_code?: string;
+  country_name?: string;
+  state_province?: string;
+  state_code?: string;
+  city_municipality?: string;
+  region?: string;
+  street_address?: string;
+  postal_code?: string;
+};
+
+type LocationPickerChange = {
+  latitude: string;
+  longitude: string;
+} & LocationAddressFields;
+
 type LocationPickerMapProps = {
   latitude?: string | number;
   longitude?: string | number;
-  onChange: (coords: { latitude: string; longitude: string }) => void;
+  onChange: (values: LocationPickerChange) => void;
   disabled?: boolean;
 };
 
@@ -27,6 +43,11 @@ const DEFAULT_CENTER = {
 };
 
 const DEFAULT_ZOOM = 12;
+
+type SelectedPoint = {
+  lat: number;
+  lng: number;
+};
 
 function SearchBox({
   onPlaceSelect,
@@ -81,6 +102,65 @@ function SearchBox({
   );
 }
 
+function extractAddressFields(
+  result: google.maps.GeocoderResult,
+): LocationAddressFields {
+  const components = result.address_components ?? [];
+
+  console.log(result);
+
+  const getLongName = (...types: string[]) =>
+    components.find((component) =>
+      types.every((type) => component.types.includes(type)),
+    )?.long_name ?? '';
+
+  const getShortName = (...types: string[]) =>
+    components.find((component) =>
+      types.every((type) => component.types.includes(type)),
+    )?.short_name ?? '';
+
+  const plusCode = getLongName('plus_code');
+  const establishment = getLongName('establishment');
+  const streetNumber = getLongName('street_number');
+  const route = getLongName('route');
+  const barangay =
+    getLongName('sublocality_level_1') ||
+    getLongName('sublocality') ||
+    getLongName('neighborhood');
+  const city =
+    getLongName('locality') ||
+    getLongName('administrative_area_level_2');
+  const province =
+    getLongName('administrative_area_level_2') ||
+    getLongName('administrative_area_level_1');
+  const region =
+    getLongName('administrative_area_level_1') ||
+    getLongName('administrative_area_level_2');
+  const countryName = getLongName('country');
+  const countryCode = getShortName('country');
+  const stateCode = getShortName('administrative_area_level_2');
+  const postalCode = getShortName('postal_code');
+
+  const streetAddress = [
+    plusCode || establishment || streetNumber,
+    route || barangay,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+
+  return {
+    country_code: countryCode,
+    country_name: countryName,
+    state_province: province,
+    state_code: stateCode,
+    city_municipality: city,
+    region,
+    street_address: streetAddress,
+    postal_code: postalCode,
+  };
+}
+
 export function LocationPickerMap({
   latitude,
   longitude,
@@ -107,10 +187,10 @@ export function LocationPickerMap({
 
   const initialCenter = committedPosition ?? DEFAULT_CENTER;
 
-  const [selectedPosition, setSelectedPosition] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(committedPosition);
+  const [selectedPosition, setSelectedPosition] = useState<SelectedPoint | null>(
+    committedPosition,
+  );
+  const [isResolvingAddress, setIsResolvingAddress] = useState(false);
 
   useEffect(() => {
     setSelectedPosition(committedPosition);
@@ -120,13 +200,36 @@ export function LocationPickerMap({
     setSelectedPosition({ lat, lng });
   }
 
-  function commitSelectedPoint() {
-    if (!selectedPosition) return;
+  async function commitSelectedPoint() {
+    if (!selectedPosition || !window.google?.maps) return;
 
-    onChange({
-      latitude: String(selectedPosition.lat),
-      longitude: String(selectedPosition.lng),
-    });
+    setIsResolvingAddress(true);
+
+    try {
+      const geocoder = new window.google.maps.Geocoder();
+
+      const response = await geocoder.geocode({
+        location: selectedPosition,
+      });
+
+      const firstResult = response.results?.[0];
+      const addressFields = firstResult
+        ? extractAddressFields(firstResult)
+        : {};
+
+      onChange({
+        latitude: String(selectedPosition.lat),
+        longitude: String(selectedPosition.lng),
+        ...addressFields,
+      });
+    } catch {
+      onChange({
+        latitude: String(selectedPosition.lat),
+        longitude: String(selectedPosition.lng),
+      });
+    } finally {
+      setIsResolvingAddress(false);
+    }
   }
 
   const hasPendingSelection =
@@ -142,7 +245,7 @@ export function LocationPickerMap({
             Search, click, or drag the marker.
           </p>
           <p className="text-muted-foreground text-xs">
-            Save only when you click 'Use selected point.'
+            Save only when you click &quot;Use selected point.&quot;
           </p>
         </div>
 
@@ -152,10 +255,10 @@ export function LocationPickerMap({
             variant="outline"
             size="sm"
             onClick={commitSelectedPoint}
-            disabled={disabled || !hasPendingSelection}
+            disabled={disabled || !hasPendingSelection || isResolvingAddress}
           >
-            <span className='whitespace-nowrap'>
-              Use selected point
+            <span className="whitespace-nowrap">
+              {isResolvingAddress ? 'Filling address...' : 'Use selected point'}
             </span>
           </Button>
         ) : null}
