@@ -20,17 +20,25 @@ export function ContactMessageReplyForm({
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldError, setFieldError] = useState(''); // ✅ NEW
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    setSuccessMessage('');
+    setErrorMessage('');
+    setFieldError('');
+
+    if (!replyMessage.trim()) {
+      setFieldError('Reply message is required.');
+      return;
+    }
+
     try {
       setSubmitting(true);
-      setSuccessMessage('');
-      setErrorMessage('');
 
       const response = await replyToAdminContactMessage(messageId, {
-        reply_message: replyMessage,
+        reply_message: replyMessage.trim(),
       });
 
       setSuccessMessage(response.message || 'Reply sent successfully.');
@@ -56,12 +64,23 @@ export function ContactMessageReplyForm({
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        <Textarea
-          value={replyMessage}
-          onChange={(event) => setReplyMessage(event.target.value)}
-          placeholder="Write your reply here..."
-          rows={8}
-        />
+        <div>
+          <Textarea
+            value={replyMessage}
+            onChange={(event) => {
+              setReplyMessage(event.target.value);
+              setFieldError('');
+              setErrorMessage('');
+            }}
+            placeholder="Write your reply here..."
+            rows={8}
+            error={fieldError}
+          />
+
+          {fieldError && (
+            <p className="text-destructive mt-2 text-sm">{fieldError}</p>
+          )}
+        </div>
 
         {successMessage ? (
           <div className="border-success/20 bg-success/5 text-success rounded-xl border p-3 text-sm">

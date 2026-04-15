@@ -93,10 +93,13 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
     }));
 
     setErrors((prev) => {
-      if (!prev[field]) return prev;
-
       const next = { ...prev };
       delete next[field];
+
+      if (field === 'password') {
+        delete next.password_confirmation;
+      }
+
       return next;
     });
   }
@@ -143,6 +146,29 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
     }, redirectDelay);
   }
 
+  function validate() {
+    const nextErrors: Record<string, string[]> = {};
+
+    if (!values.name.trim()) {
+      nextErrors.name = ['Name is required.'];
+    }
+
+    if (!values.email.trim()) {
+      nextErrors.email = ['Email is required.'];
+    }
+
+    if (mode === 'create' && !values.password.trim()) {
+      nextErrors.password = ['Password is required.'];
+    }
+
+    if (values.password && values.password !== values.password_confirmation) {
+      nextErrors.password_confirmation = ['Passwords do not match.'];
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  }
+
   function handleValidationErrors(responseErrors?: Record<string, string[]>) {
     if (responseErrors) {
       setErrors(responseErrors);
@@ -152,6 +178,8 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setErrors({});
+
+    if (!validate()) return;
 
     if (mode === 'create') {
       createAdminUserMutation.mutate(buildCreatePayload(), {

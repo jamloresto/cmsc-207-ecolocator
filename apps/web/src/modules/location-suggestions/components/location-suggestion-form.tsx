@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, SubmitEvent, useMemo, useState } from 'react';
+import { ChangeEvent, SubmitEvent, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { SectionSubheading } from '@/components/shared/section-subheading';
@@ -145,7 +145,10 @@ export function LocationSuggestionForm() {
         province: values.province.trim(),
         city_municipality: values.city_municipality.trim(),
         materials_accepted: buildMaterialsAccepted(),
-        notes: values.notes.trim() + ' Materials Accepted:' + buildMaterialsAccepted(),
+        notes:
+          values.notes.trim() +
+          ' Materials Accepted:' +
+          buildMaterialsAccepted(),
       },
       {
         onSuccess: () => {
@@ -186,6 +189,7 @@ export function LocationSuggestionForm() {
                 value={values.name}
                 onChange={handleChange}
                 disabled={isSubmitting}
+                error={errors.name}
               />
             </FormField>
 
@@ -202,6 +206,7 @@ export function LocationSuggestionForm() {
                 value={values.email}
                 onChange={handleChange}
                 disabled={isSubmitting}
+                error={errors.email}
               />
             </FormField>
           </div>
@@ -216,11 +221,12 @@ export function LocationSuggestionForm() {
               value={values.location_name}
               onChange={handleChange}
               disabled={isSubmitting}
+              error={errors.location_name}
             />
           </FormField>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <FormField htmlFor="location_email" error={errors.location_email}>
+            <FormField htmlFor="location_email">
               <Input
                 id="location_email"
                 name="location_email"
@@ -257,6 +263,7 @@ export function LocationSuggestionForm() {
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="Street, barangay, landmark, or full address"
+              error={errors.address}
             />
           </FormField>
 
@@ -269,6 +276,7 @@ export function LocationSuggestionForm() {
                 value={values.province}
                 onChange={handleChange}
                 disabled={isSubmitting}
+                error={errors.province}
               />
             </FormField>
 
@@ -283,6 +291,7 @@ export function LocationSuggestionForm() {
                 value={values.city_municipality}
                 onChange={handleChange}
                 disabled={isSubmitting}
+                error={errors.city_municipality}
               />
             </FormField>
           </div>
