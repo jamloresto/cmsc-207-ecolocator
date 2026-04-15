@@ -2718,6 +2718,192 @@ It combines:
 
 to deliver a responsive and user-friendly platform.
 
+# 🚀 9. Deployment
+## 9.1 Overview
+
+EcoLocator is designed to be deployed as a full-stack web application, consisting of:
+
+- Frontend Application (Next.js)
+- Backend API (Laravel)
+- Database (MySQL)
+- External Services (Google Maps API)
+
+Deployment involves configuring each component and ensuring proper communication between them.
+
+## 9.2 Deployment Architecture
+```mermaid
+flowchart LR
+    A[User Browser] --> B[Frontend - Next.js]
+    B --> C[Backend API - Laravel]
+    C --> D[MySQL Database]
+    B --> E[Google Maps API]
+```
+
+## 9.3 Environment Setup
+### 9.3.1 Backend Environment Variables (`.env`)
+```bash
+APP_NAME=EcoLocator
+APP_ENV=production
+APP_KEY=base64:your_app_key
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=ecolocator
+DB_USERNAME=root
+DB_PASSWORD=your_password
+
+SESSION_DRIVER=file
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+```
+
+### 9.3.2 Frontend Environment Variables (`.env.local`)
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://api.yourdomain.com
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
+```
+
+## 9.4 Backend Deployment (Laravel)
+#### Steps:
+1. Upload project files to server
+2. Install dependencies:
+```bash
+composer install
+```
+3. Set environment variables
+4. Generate application key:
+```bash
+php artisan key:generate
+```
+5. Run database migrations:
+```bash
+php artisan migrate
+```
+6. Generate Swagger docs:
+```
+php artisan l5-swagger:generate
+```
+7. Optimize application:
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+## 9.5 Frontend Deployment (Next.js)
+#### Steps:
+
+1. Install dependencies:
+```bash
+npm install
+```
+2. Build the application:
+```bash
+npm run build
+```
+3. Start production server:
+```bash
+npm run start
+```
+
+## 9.6 Database Deployment
+- Uses MySQL
+- Can be hosted on:
+  - local server
+  - VPS
+  - cloud database services
+#### Key Steps:
+- create database
+- configure `.env`
+- run migrations
+- optionally seed initial data
+
+## 9.7 Domain and Hosting Setup
+### Example Structure:
+
+- Frontend:
+```
+https://ecolocator.com
+```
+
+- Backend API:
+```
+https://ecolocator.com/api
+```
+or
+```
+https://api.ecolocator.com
+```
+
+### Configuration:
+- configure DNS records
+- set up virtual hosts
+- enable HTTPS (SSL certificate)
+
+## 9.8 CORS Configuration
+
+The backend must allow requests from the frontend domain.
+
+Example (`config/cors.php`):
+```php
+'allowed_origins' => [
+    'https://ecolocator.com',
+    'http://localhost:3000'
+],
+```
+
+## 9.9 Google Maps API Setup
+
+EcoLocator requires a valid API key from <b>Google Maps Platform</b>.
+
+Steps:
+1. Create project in Google Cloud Console
+2. Enable:
+  - Maps JavaScript API
+  - Places API
+3. Generate API key
+4. Restrict key (recommended)
+
+Alternatively, get a demo API key at
+https://mapsplatform.google.com/maps-demo-key/
+
+Add your API key to your frontend .env file:
+```bash
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
+```
+
+## 9.10 Deployment Considerations
+### Performance
+- enable caching (Laravel)
+- optimize queries
+- use pagination
+### Security
+- use HTTPS
+- secure API keys
+- restrict admin routes
+### Scalability
+- separate frontend and backend servers
+- use CDN for frontend
+- consider load balancing for API
+
+## 9.11 Common Issues and Solutions
+| Issue	| Solution |
+|-------|----------|
+| CORS errors	| update backend CORS config |
+| Map not loading	| check API key |
+| Slow API	| enable caching, optimize queries |
+| Auth issues	| check session/cookie config |
+
+## 9.12 Summary
+
+EcoLocator can be deployed as a <b>production-ready full-stack application</b> using standard web hosting or cloud infrastructure.
+
+The deployment process ensures:
+
+- proper configuration of frontend and backend
+- secure API communication
+- integration with external services
 
 
 
@@ -2731,8 +2917,7 @@ to deliver a responsive and user-friendly platform.
 
 
 
-
-
+<!-- 
 
 ----------
 
@@ -2945,4 +3130,4 @@ docker compose -f infra/ecolocator/docker-compose.yml up -d
 
 ## 📬 Contact
 
-For inquiries, suggestions, or collaboration, message: Jessa Mae Hernandez (https://www.linkedin.com/in/jam-hernandez/)
+For inquiries, suggestions, or collaboration, message: Jessa Mae Hernandez (https://www.linkedin.com/in/jam-hernandez/) -->
