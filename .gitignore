@@ -25,3 +25,4 @@ Thumbs.db
 
 # OpenApi Documentation
 apps/api/storage/api-docs/
+*.pdf
