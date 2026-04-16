@@ -35,12 +35,6 @@ export const metadata: Metadata = {
   authors: [{ name: 'Jessa Mae Hernandez' }],
   creator: 'Jessa Mae Hernandez',
 
-  // metadataBase: new URL('https://ecolocator.app'),
-
-  // alternates: {
-  //   canonical: '/',
-  // },
-
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
