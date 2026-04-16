@@ -1,4 +1,4 @@
-import { AdminLocationSuggestion } from "@/modules/admin-location-suggestions";
+import { AdminLocationSuggestion } from '@/modules/admin-location-suggestions';
 
 export type LocationSuggestionFormValues = {
   name: string;
@@ -12,6 +12,14 @@ export type LocationSuggestionFormValues = {
   materials_accepted: string[];
   materials_other: string;
   notes: string;
+
+  latitude: string;
+  longitude: string;
+  country_code: string;
+  country_name: string;
+  state_code: string;
+  region: string;
+  postal_code: string;
 };
 
 export type SubmitLocationSuggestionPayload = {
@@ -25,6 +33,14 @@ export type SubmitLocationSuggestionPayload = {
   city_municipality: string;
   materials_accepted: string;
   notes: string;
+
+  latitude?: string | null;
+  longitude?: string | null;
+  country_code?: string | null;
+  country_name?: string | null;
+  state_code?: string | null;
+  region?: string | null;
+  postal_code?: string | null;
 };
 
 export type SubmitLocationSuggestionResponse = {

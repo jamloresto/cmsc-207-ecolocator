@@ -107,8 +107,6 @@ function extractAddressFields(
 ): LocationAddressFields {
   const components = result.address_components ?? [];
 
-  console.log(result);
-
   const getLongName = (...types: string[]) =>
     components.find((component) =>
       types.every((type) => component.types.includes(type)),
@@ -265,7 +263,10 @@ export function LocationPickerMap({
       </div>
 
       <APIProvider apiKey={GOOGLE_MAPS_API_KEY} libraries={['places']}>
-        <div className="border-border relative overflow-hidden rounded-2xl border">
+        <div
+          data-lenis-prevent
+          className="border-border relative overflow-hidden rounded-2xl border"
+        >
           <SearchBox
             disabled={disabled}
             onPlaceSelect={({ lat, lng }) => setTemporaryCoords(lat, lng)}

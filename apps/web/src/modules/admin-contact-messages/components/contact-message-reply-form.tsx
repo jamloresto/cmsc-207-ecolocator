@@ -20,7 +20,7 @@ export function ContactMessageReplyForm({
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [fieldError, setFieldError] = useState(''); // ✅ NEW
+  const [fieldError, setFieldError] = useState('');
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
