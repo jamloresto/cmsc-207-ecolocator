@@ -14,14 +14,14 @@ The system integrates real-time geolocation, dynamic filtering, and map-based se
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | Next.js, Tailwind CSS |
-| Backend | Laravel |
-| Database | MySQL |
-| Maps | Google Maps API |
-| State | React Query |
-| Animation | GSAP |
+| Layer     | Technology            |
+| --------- | --------------------- |
+| Frontend  | Next.js, Tailwind CSS |
+| Backend   | Laravel               |
+| Database  | MySQL                 |
+| Maps      | Google Maps API       |
+| State     | React Query           |
+| Animation | GSAP                  |
 
 ## 🎯 Project Objectives
 
@@ -89,7 +89,7 @@ This system contributes to:
 - Accuracy of data depends on admin validation and user submissions
 - Limited to areas with available recycling data
 
-## System Summary
+## 💻 System Summary
 
 EcoLocator is composed of two main components:
 
@@ -108,6 +108,8 @@ These components communicate through a centralized <b>API backend</b>, ensuring 
 - <b>Monorepo</b> – a single repository containing multiple applications
 - <b>Haversine Formula</b> – used to compute distance between coordinates
 
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
 # ⚙️ 1. System Requirements
 
 ## 1.1 Overview
@@ -116,19 +118,19 @@ This section outlines the necessary software, hardware, and external services re
 
 ## 1.2 Software Requirements
 
-### Backend
+#### Backend
 - PHP >= 8.1
 - Composer
 - Laravel Framework
 
-### Frontend
+#### Frontend
 - Node.js >= 18
 - pnpm / npm / yarn
 
-### Database
+#### Database
 - MySQL / MariaDB
 
-### Development Tools
+#### Development Tools
 - Git
 - Web browser (Chrome, Edge, Firefox)
 - Docker (optional)
@@ -159,6 +161,8 @@ Recommended:
   - Google Maps services
   - dependency installation
 
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
 # 🏗️ 2. System Architecture
 
 EcoLocator works by allowing users to interact with a map interface. The frontend sends requests to the backend API based on user actions such as map movement, filtering, or searching. The backend processes these requests, queries the database, and returns only relevant data, which is then displayed dynamically on the map.
@@ -182,15 +186,15 @@ Google Maps services are used for map rendering, place search, geolocation assis
 
 The system uses a three-tier architecture:
 
-### Presentation Layer
+#### Presentation Layer
 
 This is the frontend application where users and admins interact with the system through web pages, forms, filters, tables, and maps.
 
-### Application Layer
+#### Application Layer
 
 This is the Laravel API, which processes requests, applies validation and authorization rules, and executes the business logic.
 
-### Data Layer
+#### Data Layer
 
 This is the MySQL database, which stores and retrieves persistent system data.
 
@@ -233,7 +237,7 @@ This setup improves maintainability by allowing both frontend and backend to evo
 
 The frontend is built using <b>Next.js</b>, with <b>Tailwind CSS</b> for styling and modular feature-based organization.
 
-### Main Responsibilities of the Frontend
+#### Main Responsibilities of the Frontend
 - Render public pages and admin pages
 - Display the interactive map and location markers
 - Handle user interactions such as search, filtering, and form submission
@@ -241,7 +245,7 @@ The frontend is built using <b>Next.js</b>, with <b>Tailwind CSS</b> for styling
 - Integrate Google Maps and Places features
 - Manage UI state such as selected location, filters, theme, and loading states
 
-### Frontend Modules
+#### Frontend Modules
 
 Typical frontend modules include:
 
@@ -257,7 +261,7 @@ Typical frontend modules include:
 
 The backend is built with <b>Laravel</b> and exposes REST-style API endpoints.
 
-### Main Responsibilities of the Backend
+#### Main Responsibilities of the Backend
 - Receive and validate API requests
 - Process business logic
 - Handle user authentication and role-based authorization
@@ -266,7 +270,7 @@ The backend is built with <b>Laravel</b> and exposes REST-style API endpoints.
 - Return structured JSON responses to the frontend
 - Generate API documentation using Swagger / OpenAPI
 
-### Backend Design Approach
+#### Backend Design Approach
 
 The backend separates routes and controllers based on access level:
 
@@ -279,7 +283,7 @@ This separation improves security and makes the API easier to maintain.
 
 The database uses <b>MySQL</b> as the primary relational database management system.
 
-### Main Data Stored
+#### Main Data Stored
 - User accounts and roles
 - Waste collection and recycling locations
 - Material types
@@ -296,7 +300,7 @@ Because the database is relational, it supports structured connections between e
 
 EcoLocator relies on <b>Google Maps Platform</b> for map-related functionality.
 
-### Google Maps Features Used
+#### Google Maps Features Used
 - Interactive map rendering
 - Place autocomplete for search
 - Map-based coordinate selection
@@ -305,7 +309,7 @@ EcoLocator relies on <b>Google Maps Platform</b> for map-related functionality.
 
 This integration enhances user experience by allowing users to visually explore nearby recycling centers and search more efficiently.
 
-### 2.9 Request and Response Flow
+## 2.9 Request and Response Flow
 
 The typical request flow in EcoLocator works as follows:
 
@@ -362,7 +366,7 @@ sequenceDiagram
 
 EcoLocator includes role-based access control to protect administrative functions.
 
-### Access Levels
+#### Access Levels
 - Public Users
   - Can browse locations
   - Can submit contact forms
@@ -371,7 +375,8 @@ EcoLocator includes role-based access control to protect administrative function
   - Can manage data inside the admin panel
   - Can review and moderate location suggestions
   - Can update statuses of records
-### Admin Roles
+
+#### Admin Roles
 - Super Admin
 - Editor
 
@@ -399,6 +404,8 @@ This makes the system easier to extend with future features such as:
 
 EcoLocator uses a modern web system architecture composed of a <b>Next.js frontend</b>, <b>Laravel backend</b>, <b>MySQL database</b>, and <b>Google Maps integration</b>. This architecture enables the platform to provide a responsive user experience, secure admin operations, and scalable data management for recycling and waste collection services.
 
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
 # 🧩 3. Features Documentation
 
 This section provides a detailed explanation of the system’s functionalities, grouped into Public Features and Admin Features. Each feature describes its purpose, behavior, and how it contributes to the overall system.
@@ -409,7 +416,7 @@ These features are accessible to all users without requiring authentication.
 
 ### 🌍 3.1.1 Interactive Map-Based Search
 
-![Find Centers Screen](/images/find-centers.png)
+![Find Centers Screen](https://raw.githubusercontent.com/jamloresto/cmsc-207-ecolocator/refs/heads/master/images/find-centers.png)
 
 #### Description:
 Users can view recycling centers displayed on an interactive map interface.
@@ -524,7 +531,7 @@ Provides a communication channel between users and system administrators.
 
 ### 📝 3.1.9 Location Suggestion System
 
-![Suggest Location Form](/images/suggest-location.png)
+![Suggest Location Form](https://raw.githubusercontent.com/jamloresto/cmsc-207-ecolocator/refs/heads/master/images/suggest-location.png)
 
 #### Description:
 Users can suggest new recycling centers not yet in the system.
@@ -548,7 +555,6 @@ These features are restricted to authorized users (Super Admin and Editor).
 Access to admin features is restricted based on user roles.
 
 #### Roles:
-
 - Super Admin
 - Editor
 
@@ -557,7 +563,7 @@ Ensures system security and controlled access to sensitive operations.
 
 ### 📊 3.2.2 Admin Dashboard
 
-![Admin Dashboard](/images/admin-dashboard.png)
+![Admin Dashboard](https://raw.githubusercontent.com/jamloresto/cmsc-207-ecolocator/refs/heads/master/images/admin-dashboard.png)
 
 #### Description:
 Provides an overview of system statistics.
@@ -574,7 +580,7 @@ Gives administrators quick insights into system activity.
 
 ### 🏢 3.2.3 Waste Collection Location Management
 
-![Admin Recycling Centers Table](/images/admin-recycling-centers.png)
+![Admin Recycling Centers Table](https://raw.githubusercontent.com/jamloresto/cmsc-207-ecolocator/refs/heads/master/images/admin-recycling-centers.png)
 
 #### Description:
 Admins can manage recycling center records.
@@ -669,6 +675,8 @@ EcoLocator combines map-based interaction, data filtering, and admin moderation 
 
 The integration of public participation (via suggestions) and admin validation ensures both scalability and data reliability.
 
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
 # 🗺️ 4. Map & Geolocation Logic
 ## 4.1 Overview
 
@@ -720,10 +728,10 @@ The visible portion of the map is defined by geographic boundaries.
 #### Key Functionalities:
 
 - Tracks:
-  - Minimum latitude
-  - Maximum latitude
-  - Minimum longitude
-  - Maximum longitude
+  - north
+  - south
+  - east
+  - west
 - Updates dynamically when the user moves the map
 
 #### Purpose:
@@ -838,14 +846,14 @@ Helps users find relevant recycling centers faster.
 ### 4.7.1 User Interaction Cycle
 
 ```mermaid
-flowchart TD
+flowchart LR
     A[User opens map] --> B[Map loads default or user location]
     B --> C[User moves map / searches location]
-    C --> D[Frontend calculates map bounds]
-    D --> E[API request sent with bounds + filters]
-    E --> F[Backend queries database]
-    F --> G[Filtered locations returned]
+    C --> D[Backend calculates map bounds]
     G --> H[Markers updated on map]
+    F --> G[Filtered locations returned]
+    E --> F[Backend queries database]
+    D --> E[API request sent with bounds + filters]
 ```
 
 ## 4.8 Location Selection Logic
@@ -856,21 +864,18 @@ Users can select a location from either the map or list.
 
 ### Behavior:
 
-- Clicking a marker:
+- Clicking a marker/list item:
   - Highlights location
   - Displays additional details
-- Clicking a list item:
-  - Centers map on selected location
-  - Highlights corresponding marker
 
 ### Purpose:
 Synchronizes map and list views.
 
-## 4.9 Admin Location Picker Logic
+## 4.9 Location Picker Logic
 ### 4.9.1 Interactive Coordinate Selection
 
 #### Description:
-Admins use a map-based tool to set accurate coordinates.
+A map-based tool to set accurate coordinates.
 
 #### Key Functionalities:
 
@@ -914,6 +919,8 @@ By combining:
 - Smart interaction logic
 
 the system delivers a responsive and scalable location-based experience.
+
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
 
 # 🗄️ 5. Database Design
 ## 5.1 Overview
@@ -1089,7 +1096,7 @@ Stores recyclable material categories used for classifying waste collection loca
 
 #### Relationships:
 
-many-to-many with `waste_collection_locations` through the `location_material_type` pivot table
+- many-to-many with `waste_collection_locations` through the `location_material_type` pivot table
 
 ### 5.3.3 Waste Collection Locations Table
 
@@ -1276,7 +1283,7 @@ The schema is mostly normalized because:
 
 One notable design choice is that `materials_accepted` in `location_suggestions` is stored as a direct field instead of through a normalized pivot relation. This is practical for submissions but less normalized than the official location-material design.
 
-5.9 Summary
+## 5.9 Summary
 
 The EcoLocator database is built around five primary entities:
 
@@ -1293,6 +1300,8 @@ It also includes the `location_material_type` pivot table to support material cl
 - audit fields for contact messages
 - creator/updater tracking for official locations
 - icon support for material types
+
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
 
 # 🔌 6. API Documentation
 ## 6.1 Overview
@@ -2401,6 +2410,8 @@ Swagger / OpenAPI support can be used during development for:
 - reviewing filtering, sorting, and pagination parameters
 - testing admin and public endpoints during QA and debugging
 
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
 # 🔐 7. Authentication & Authorization
 ## 7.1 Overview
 
@@ -2442,10 +2453,10 @@ Public endpoints <b>do not require authentication</b>, including:
 Authorization is enforced using <b>role-based logic</b> defined in the User model and middleware.
 
 ### 7.3.1 Admin Roles
-| Role	| Description |
-|-------|-------------|
-| `super_admin`	| Full access to all admin features |
-| `editor`	| Can manage most data but may have restricted access to sensitive actions |
+| Role          | Description                                                              |
+| ------------- | ------------------------------------------------------------------------ |
+| `super_admin` | Full access to all admin features                                        |
+| `editor`      | Can manage most data but may have restricted access to sensitive actions |
 
 ### 7.3.2 Role Checking Methods
 
@@ -2476,14 +2487,14 @@ Admin routes are protected using middleware such as:
 - Submit contact form
 - Submit location suggestion
 ### Admin Features (Authentication Required)
-| Feature	| Required Role |
-|---------|---------------|
-| Dashboard	| Admin |
-| Manage Locations	| Admin |
-| Manage Material Types	| Admin |
-| Review Suggestions	| Admin |
-| Manage Contact Messages	| Admin |
-| Manage Admin Users	| Super Admin |
+| Feature                 | Required Role |
+| ----------------------- | ------------- |
+| Dashboard               | Admin         |
+| Manage Locations        | Admin         |
+| Manage Material Types   | Admin         |
+| Review Suggestions      | Admin         |
+| Manage Contact Messages | Admin         |
+| Manage Admin Users      | Super Admin   |
 
 ## 7.6 Account Status Control
 
@@ -2520,7 +2531,7 @@ Passwords are hashed using Laravel’s hashing system
   - approved_by
   - rejected_by
 
-# 7.8 Authentication Flow Diagram
+## 7.8 Authentication Flow Diagram
 ```mermaid
 sequenceDiagram
     participant U as Admin User
@@ -2538,7 +2549,9 @@ sequenceDiagram
     B-->>F: Session destroyed
 ```
 
-# 7.9 Authorization Flow Example
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
+## 7.9 Authorization Flow Example
 Example: Accessing Admin Locations API
 ```mermaid
 flowchart TD
@@ -2548,12 +2561,13 @@ flowchart TD
     D -->|No| E[403 Forbidden]
     D -->|Yes| F[Access Granted]
 ```
-# 7.10 Limitations
+
+## 7.10 Limitations
 - Currently uses session-based auth only (no JWT or OAuth)
 - No multi-factor authentication (MFA)
 - No fine-grained permission system (only role-based)
 
-# 7.11 Summary
+## 7.11 Summary
 
 EcoLocator implements a <b>secure and structured authentication and authorization system</b> using Laravel’s built-in session authentication and role-based access control.
 
@@ -2562,6 +2576,8 @@ This ensures that:
 - public users can freely access essential features
 - admin functionalities are protected
 - system data integrity is maintained
+
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
 
 # 🎨 8. Frontend Architecture
 ## 8.1 Overview
@@ -2576,17 +2592,16 @@ The frontend is responsible for:
 - handling map-based features and animations
 
 ## 8.2 Core Technologies
-| Technology	| Purpose |
-|-------------|---------|
-| Next.js	| React framework for SSR/SPA |
-| Tailwind CSS	| Styling and responsive design |
-| TypeScript	| Type safety |
-| React Query (TanStack)	| Data fetching and caching |
-| GSAP	| Animations and scroll effects |
-| Google Maps API	| Map rendering and geolocation |
+| Technology             | Purpose                       |
+| ---------------------- | ----------------------------- |
+| Next.js                | React framework for SSR/SPA   |
+| Tailwind CSS           | Styling and responsive design |
+| TypeScript             | Type safety                   |
+| React Query (TanStack) | Data fetching and caching     |
+| GSAP                   | Animations and scroll effects |
+| Google Maps API        | Map rendering and geolocation |
 
 ## 8.3 Application Structure
-
 The frontend follows a <b>modular feature-based structure</b>, making it easier to scale and maintain.
 
 ### Folder Structure
@@ -2670,11 +2685,11 @@ EcoLocator uses a combination of:
 
 The frontend communicates with the backend through a centralized API client.
 
-### Responsibilities:
+#### Responsibilities:
 - sending HTTP requests
 - handling errors globally
 - attaching credentials (for admin routes)
-### Pattern Used:
+#### Pattern Used:
 feature-based API files (api.ts per module)
 reusable API client instance
 
@@ -2682,7 +2697,7 @@ reusable API client instance
 
 EcoLocator uses a reusable component system for consistency.
 
-### Common Components
+#### Common Components
 - Button (variants: primary, secondary, outline, etc.)
 - Badge (for materials, statuses)
 - Input / FormField
@@ -2719,13 +2734,14 @@ The app supports <b>light and dark themes</b> using:
 
 The map is one of the most important frontend components.
 
-### Features:
+#### Features:
 - interactive map rendering
 - marker display
 - bounds-based fetching
 - autocomplete search
 - location selection
-### Behavior:
+
+#### Behavior:
 - map movement triggers API requests
 - markers update dynamically
 - selected location syncs with list view
@@ -2734,12 +2750,13 @@ The map is one of the most important frontend components.
 
 EcoLocator uses <b>GSAP</b> for animations.
 
-### Use Cases:
+#### Use Cases:
 - homepage hero animations
 - scroll-triggered sections
 - horizontal scrolling sections
 - staggered animations
-### Benefits:
+
+#### Benefits:
 - smooth transitions
 - improved user engagement
 - modern UI feel
@@ -2748,7 +2765,7 @@ EcoLocator uses <b>GSAP</b> for animations.
 
 The frontend is designed with a <b>mobile-first approach</b> using Tailwind.
 
-### Key Strategies:
+#### Key Strategies:
 - breakpoint: md for layout changes
 - flexible widths (w-full, max-w-*)
 - responsive map sizing
@@ -2763,7 +2780,8 @@ The admin panel includes:
   - filtering
   - pagination
 - reusable forms for CRUD operations
-### Table Features:
+
+#### Table Features:
 - consistent pagination UI
 - filter toolbar
 - skeleton loaders
@@ -2798,6 +2816,8 @@ It combines:
 - animation-driven user experience
 
 to deliver a responsive and user-friendly platform.
+
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
 
 # 🚀 9. Deployment
 ## 9.1 Overview
@@ -2901,7 +2921,7 @@ pnpm run start
 - optionally seed initial data
 
 ## 9.7 Domain and Hosting Setup
-### Example Structure:
+#### Example Structure:
 
 - Frontend:
 ```
@@ -2917,7 +2937,7 @@ or (optional)
 https://ecolocator.com/api
 ```
 
-### Configuration:
+#### Configuration:
 - configure DNS records
 - set up virtual hosts
 - enable HTTPS (SSL certificate)
@@ -2955,26 +2975,26 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
 ```
 
 ## 9.10 Deployment Considerations
-### Performance
+#### Performance
 - enable caching (Laravel)
 - optimize queries
 - use pagination
-### Security
+#### Security
 - use HTTPS
 - secure API keys
 - restrict admin routes
-### Scalability
+#### Scalability
 - separate frontend and backend servers
 - use CDN for frontend
 - consider load balancing for API
 
 ## 9.11 Common Issues and Solutions
-| Issue	| Solution |
-|-------|----------|
-| CORS errors	| update backend CORS config |
-| Map not loading	| check API key |
-| Slow API	| enable caching, optimize queries |
-| Auth issues	| check session/cookie config |
+| Issue           | Solution                         |
+| --------------- | -------------------------------- |
+| CORS errors     | update backend CORS config       |
+| Map not loading | check API key                    |
+| Slow API        | enable caching, optimize queries |
+| Auth issues     | check session/cookie config      |
 
 ## 9.12 Summary
 
@@ -2985,6 +3005,8 @@ The deployment process ensures:
 - proper configuration of frontend and backend
 - secure API communication
 - integration with external services
+
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
 
 # 🧪 10. Testing
 ## 10.1 Overview
@@ -3001,12 +3023,12 @@ The system primarily focuses on:
 
 EcoLocator follows a combination of:
 
-| Type of Testing	| Purpose |
-|-----------------|---------|
-| Feature Testing	| Validate API endpoints and workflows |
-| Integration Testing	| Ensure frontend-backend interaction works
-| Manual Testing	| Validate UI behavior and user flows |
-| API Testing	| Test endpoints via Swagger/Postman |
+| Type of Testing     | Purpose                                   |
+| ------------------- | ----------------------------------------- |
+| Feature Testing     | Validate API endpoints and workflows      |
+| Integration Testing | Ensure frontend-backend interaction works |
+| Manual Testing      | Validate UI behavior and user flows       |
+| API Testing         | Test endpoints via Swagger/Postman        |
 
 ## 10.3 Backend Testing (Laravel)
 
@@ -3055,7 +3077,7 @@ API endpoints are tested using:
 - Swagger UI (`/api/documentation`)
 - Postman or similar tools
 
-### What is Tested:
+#### What is Tested:
 - request validation
 - response structure
 - query parameters (filters, sorting)
@@ -3079,7 +3101,7 @@ Currently, frontend testing is primarily manual.
 - empty states
 - error handling (toasts, messages)
 
-### 10.6 Map Feature Testing
+## 10.6 Map Feature Testing
 
 Special attention is given to map-based features:
 
@@ -3094,12 +3116,12 @@ Special attention is given to map-based features:
 
 All user inputs are validated both:
 
-### Backend Validation
+#### Backend Validation
 - Laravel validation rules
 - required fields
 - format constraints (email, numbers, etc.)
 
-### Frontend Validation
+#### Frontend Validation
 - form validation
 - user feedback messages
 
@@ -3146,6 +3168,8 @@ EcoLocator applies a combination of backend feature testing and manual frontend 
 
 While backend testing is well-structured using Laravel, frontend testing can be further improved with automated tools in future development.
 
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
 # 🧾 11. Conclusion
 
 ## 11.1 Summary of the Project
@@ -3191,6 +3215,8 @@ EcoLocator demonstrates how modern web technologies can be used to solve environ
 
 With further improvements and wider adoption, the system has the potential to contribute significantly to <b>sustainable waste management and environmental awareness.</b>
 
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
 # 🔮 12. Future Enhancements
 
 Potential improvements for EcoLocator include:
@@ -3201,10 +3227,12 @@ Potential improvements for EcoLocator include:
 - SMS/email notifications for nearby recycling events
 - Advanced analytics dashboard for LGUs
 
+<div style="page-break-after: always; visibility: hidden"> \pagebreak </div>
+
 # 👨‍💻 13. Author
 
 This project was designed and developed by <b>Jessa Mae Hernandez</b>
 
-## Contact
+### Contact
 
 For inquiries, suggestions, or collaboration, message: Jessa Mae Hernandez (https://www.linkedin.com/in/jam-hernandez/)
