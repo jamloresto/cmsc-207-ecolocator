@@ -33,11 +33,6 @@ export function ContactForm() {
   const [values, setValues] = useState<ContactFormValues>(initialValues);
   const [errors, setErrors] = useState<ContactFormErrors>({});
 
-  const parsedError = useMemo(() => {
-    if (!submitMutation.error) return null;
-    return getContactSubmitError(submitMutation.error);
-  }, [submitMutation.error]);
-
   const isSubmitting = submitMutation.isPending;
   const isSuccess = submitMutation.isSuccess;
   const successMessage = submitMutation.data?.message;

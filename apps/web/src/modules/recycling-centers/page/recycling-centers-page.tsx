@@ -58,7 +58,6 @@ export function RecyclingCentersPage() {
   const meta = centersQuery.data?.meta;
 
   const isInitialLoading = centersQuery.isLoading && !centersQuery.data;
-  const isRefreshing = centersQuery.isFetching && !isInitialLoading;
 
   const selectedMaterialLabel = useMemo(() => {
     if (materialSlugsFromUrl.length === 0) return 'All materials';

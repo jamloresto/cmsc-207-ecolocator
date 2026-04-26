@@ -37,8 +37,9 @@ export type AdminLocationSuggestion = {
   updated_at: string;
 };
 
-export type AdminLocationSuggestionsResponse =
-  PaginatedResponse<AdminLocationSuggestion>;
+export type AdminLocationSuggestionsResponse = {
+  data: PaginatedResponse<AdminLocationSuggestion>;
+};
 
 export type AdminLocationSuggestionsListParams = {
   page?: number;

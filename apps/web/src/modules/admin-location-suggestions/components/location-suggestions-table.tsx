@@ -74,8 +74,8 @@ export function LocationSuggestionsTable({
   onReject,
   onPageChange,
 }: LocationSuggestionsTableProps) {
-  const items = suggestions.data;
-  const meta = suggestions.meta;
+  const items = suggestions.data.data;
+  const meta = suggestions.data.meta;
 
   function handleSort(field: string) {
     setParams((prev) => ({

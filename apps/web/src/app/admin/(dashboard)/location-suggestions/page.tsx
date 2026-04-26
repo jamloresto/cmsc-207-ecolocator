@@ -110,7 +110,7 @@ export default function AdminLocationSuggestionsPage() {
           params={params}
           setParams={setParams}
           onReject={(id) => {
-            const selected = suggestions.data.find((item) => item.id === id);
+            const selected = suggestions.data.data.find((item) => item.id === id);
             if (!selected) return;
 
             handleReject(id, selected.location_name);
