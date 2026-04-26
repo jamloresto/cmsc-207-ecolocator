@@ -67,7 +67,7 @@ export async function updateAdminLocationSuggestion(
     payload,
   );
 
-  return response.data;
+  return response.data.data;
 }
 
 export async function approveLocationSuggestion(id: number) {

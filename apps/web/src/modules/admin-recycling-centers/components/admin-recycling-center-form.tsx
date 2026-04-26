@@ -12,6 +12,7 @@ import { LocationPickerMap } from '@/components/shared/location-picker-map';
 import { ActiveMaterialType } from '@/modules/admin-material-types';
 import { WasteCollectionLocationPayload } from '@/modules/admin-recycling-centers';
 import { GOOGLE_MAPS_API_KEY } from '@/lib/api';
+import { useUpdateLocationSuggestion } from '@/modules/admin-location-suggestions';
 
 type FormAction = 'draft' | 'approve' | 'save';
 
@@ -21,6 +22,8 @@ type Props = {
   isSubmitting?: boolean;
   submitLabel?: string;
   showDraftActions?: boolean;
+  locationSuggestionId?: number;
+  onDraftSaved?: () => void;
   onSubmit: (
     values: WasteCollectionLocationPayload,
     action: FormAction,
@@ -69,6 +72,8 @@ export function WasteCollectionLocationForm({
   isSubmitting = false,
   submitLabel = 'Save',
   showDraftActions = false,
+  locationSuggestionId,
+  onDraftSaved,
   onSubmit,
 }: Props) {
   const merged = useMemo(
@@ -80,6 +85,8 @@ export function WasteCollectionLocationForm({
 
   const [values, setValues] = useState<WasteCollectionLocationPayload>(merged);
   const [errors, setErrors] = useState<FormErrors>({});
+
+  console.log(errors);
 
   useEffect(() => {
     setValues(merged);
@@ -127,38 +134,24 @@ export function WasteCollectionLocationForm({
   function validate() {
     const nextErrors: FormErrors = {};
 
-    if (!values.name.trim()) {
-      nextErrors.name = 'Location name is required.';
-    }
-
-    if (!String(values.country_name).trim()) {
-      nextErrors.country_name = 'Country name is required.';
-    }
-
-    if (!String(values.country_code).trim()) {
+    if (!values.name.trim()) nextErrors.name = 'Location name is required.';
+    if (!String(values.country_code).trim())
       nextErrors.country_code = 'Country code is required.';
-    }
-
-    if (!String(values.state_province).trim()) {
+    if (!String(values.country_name).trim())
+      nextErrors.country_name = 'Country name is required.';
+    if (!String(values.state_province).trim())
       nextErrors.state_province = 'State / Province is required.';
-    }
-
-    if (!String(values.city_municipality).trim()) {
+    if (!String(values.city_municipality).trim())
       nextErrors.city_municipality = 'City / Municipality is required.';
-    }
-
-    if (!String(values.street_address).trim()) {
+    if (!String(values.street_address).trim())
       nextErrors.street_address = 'Street address is required.';
+
+    if (values.latitude === '' || values.latitude === null) {
+      nextErrors.latitude = 'Latitude is required.';
     }
 
-    if (!GOOGLE_MAPS_API_KEY) {
-      if (values.latitude === '' || values.latitude === null) {
-        nextErrors.latitude = 'Latitude is required.';
-      }
-
-      if (values.longitude === '' || values.longitude === null) {
-        nextErrors.longitude = 'Longitude is required.';
-      }
+    if (values.longitude === '' || values.longitude === null) {
+      nextErrors.longitude = 'Longitude is required.';
     }
 
     if (values.email && !isValidEmail(String(values.email).trim())) {
@@ -182,6 +175,55 @@ export function WasteCollectionLocationForm({
     e.preventDefault();
     submitForm(showDraftActions ? 'draft' : 'save');
   }
+
+  const saveDraftMutation = useUpdateLocationSuggestion();
+
+  const isSavingDraft = saveDraftMutation.isPending;
+
+  function buildDraftPayload() {
+    const selectedMaterials = materialOptions
+      .filter((material) => values.material_type_ids.includes(material.id))
+      .map((material) => material.name);
+
+    return {
+      location_name: values.name,
+      country_code: values.country_code,
+      country_name: values.country_name,
+      state_province: values.state_province,
+      state_code: values.state_code,
+      city_municipality: values.city_municipality,
+      region: values.region,
+      street_address: values.street_address,
+      address: values.street_address,
+      postal_code: values.postal_code,
+      latitude: values.latitude === '' ? null : Number(values.latitude),
+      longitude: values.longitude === '' ? null : Number(values.longitude),
+      contact_number: values.contact_number,
+      location_email: values.email,
+      operating_hours: values.operating_hours,
+      notes: values.notes,
+      is_active: values.is_active,
+      materials_accepted: selectedMaterials,
+    };
+  }
+
+function handleSaveDraft() {
+  if (!locationSuggestionId) return;
+
+  if (!validate()) return;
+
+  saveDraftMutation.mutate(
+    {
+      id: locationSuggestionId,
+      payload: buildDraftPayload(),
+    },
+    {
+      onSuccess: () => {
+        onDraftSaved?.();
+      },
+    },
+  );
+}
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -435,8 +477,13 @@ export function WasteCollectionLocationForm({
         </Button>
         {showDraftActions ? (
           <>
-            <Button type="submit" variant="outline" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Save Draft'}
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isSubmitting || isSavingDraft}
+              onClick={handleSaveDraft}
+            >
+              {isSavingDraft ? 'Saving...' : 'Save Draft'}
             </Button>
 
             <Button

@@ -70,11 +70,11 @@ export default function AdminLocationSuggestionDetailsPage() {
       name: suggestion.location_name ?? '',
       country_code: suggestion.country_code ?? 'PH',
       country_name: suggestion.country_name ?? 'Philippines',
-      state_province: suggestion.state_province ?? '',
+      state_province: suggestion.state_province || suggestion.province || '',
       state_code: suggestion.state_code ?? '',
       city_municipality: suggestion.city_municipality ?? '',
       region: suggestion.region ?? '',
-      street_address: suggestion.street_address ?? '',
+      street_address: suggestion.street_address || suggestion.address || '',
       postal_code: suggestion.postal_code ?? '',
       latitude: suggestion.latitude?.toString() ?? '',
       longitude: suggestion.longitude?.toString() ?? '',
@@ -185,6 +185,7 @@ export default function AdminLocationSuggestionDetailsPage() {
             saveDraftMutation.isPending || approveMutation.isPending
           }
           showDraftActions
+          locationSuggestionId={suggestionId}
           onSubmit={handleSubmit}
         />
       </CardContent>
